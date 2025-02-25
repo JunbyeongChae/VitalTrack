@@ -7,7 +7,7 @@ const Header = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <img className="h-12 w-auto" src="../images/logo.png" alt="Logo" />
+              <img className="h-12 w-auto" src="../images/logo_title.png" alt="Logo" />
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <button className="border-custom text-custom inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</button>
