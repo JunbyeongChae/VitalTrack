@@ -1,21 +1,21 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import  { getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
+// 환경 변수에서 Firebase 설정 읽기
 const firebaseConfig = {
-    apiKey: "AIzaSyCBxz663JdgzRXR2nZDJmQuqxBUJTytSKo",
-    authDomain: "jwj742204-kosmo.firebaseapp.com",
-    databaseURL: "https://jwj742204-kosmo-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "jwj742204-kosmo",
-    storageBucket: "jwj742204-kosmo.firebasestorage.app",
-    messagingSenderId: "508091457064",
-    appId: "1:508091457064:web:242ccf56106435c26d5f1d"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-// Firebase Auth 인스턴스 가져오기
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+export { auth, db, provider };
