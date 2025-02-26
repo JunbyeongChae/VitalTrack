@@ -108,7 +108,7 @@ const Signup = () => {
           <div className="flex space-x-4 mt-1">
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
                 name="gender"
                 checked={formData.gender === 'male'}
                 onChange={() => setFormData({ ...formData, gender: 'male' })}

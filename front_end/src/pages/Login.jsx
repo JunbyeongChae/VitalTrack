@@ -21,6 +21,13 @@ const Login = ({ setUser }) => {
     });
   };
 
+  //로그인 성공 시 로컬에 정보 저장
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    navigate('/');
+  }
+
   // 이메일/비밀번호 로그인 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +50,7 @@ const Login = ({ setUser }) => {
           name: userData.name,
           email: userData.email,
         });
-        navigate('/');
+        handleLoginSuccess(userData);
       } else {
         setError('사용자 정보를 찾을 수 없습니다.');
       }
@@ -52,7 +59,7 @@ const Login = ({ setUser }) => {
     }
   };
 
-    {/* 구글 로그인 처리 */}
+  /* 구글 로그인 처리 */
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -79,6 +86,7 @@ const Login = ({ setUser }) => {
               activityLevel : userData.activityLevel || '',
             },
           });
+          handleLoginSuccess(userData)
           return;
         }
   
@@ -89,6 +97,7 @@ const Login = ({ setUser }) => {
           name: userData.name,
           email: userData.email,
         });
+        handleLoginSuccess(userData)
         navigate('/');
       } else {
         // Firestore에 사용자 정보가 없으면 회원가입 페이지로 데이터와 함께 이동
