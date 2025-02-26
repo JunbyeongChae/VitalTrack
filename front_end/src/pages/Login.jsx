@@ -52,35 +52,63 @@ const Login = ({ setUser }) => {
     }
   };
 
-  // Google 로그인 처리
+    {/* 구글 로그인 처리 */}
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+  
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
-
-      // Firestore에 사용자 정보 저장
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          name: user.displayName,
-          email: user.email,
-          createdAt: new Date(),
+  
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+  
+        // 신장, 체중, 활동량이 없으면 회원가입 페이지로 데이터와 함께 이동
+        if (!userData.height || !userData.weight || !userData.activityLevel) {
+          alert('추가 정보 입력이 필요합니다. 회원가입 페이지로 이동합니다.');
+          navigate('/signup', {
+            state: {
+              email: user.email,
+              name: user.displayName,
+              birthDate: userData.birthDate || '', // Firestore에 저장된 값이 있으면 사용
+              gender: userData.gender || '', // Firestore에 저장된 값이 있으면 사용
+              uid: user.uid, // 회원가입 완료 후 다시 Firestore에 저장할 때 필요
+              height : userData.height || '',
+              weight : userData.weight || '',
+              activityLevel : userData.activityLevel || '',
+            },
+          });
+          return;
+        }
+  
+        // 정상 로그인 처리
+        alert(`${userData.name}님 환영합니다!`);
+        setUser({
+          uid: user.uid,
+          name: userData.name,
+          email: userData.email,
+        });
+        navigate('/');
+      } else {
+        // Firestore에 사용자 정보가 없으면 회원가입 페이지로 데이터와 함께 이동
+        alert('회원정보를 찾을 수 없습니다. 회원가입을 진행해주세요.');
+        navigate('/signup', {
+          state: {
+            email: user.email,
+            name: user.displayName,
+            birthDate: '',
+            gender: '',
+            uid: user.uid,
+          },
         });
       }
-
-      alert(`${user.displayName}님 환영합니다!`);
-      setUser({
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-      });
-      navigate('/');
     } catch (error) {
       setError(`Google 로그인 실패: ${error.message}`);
     }
   };
+  
+  
 
   return (
     <div
