@@ -1,6 +1,5 @@
 import React from 'react';
 import { BButton, CommentArea, FormDiv } from '../../styles/FormStyles';
-import CounselHeader from './CounselHeader';
 
 const CounselDetail = () => {
   return (
