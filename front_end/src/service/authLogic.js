@@ -32,7 +32,7 @@ export const saveUserData = async (uid, formData) => {
   }
 };
 
-// 사용자데이터 수정
+// 사용자데이터 수정 - 미구현 : 채준병
 export const updateUserData = async (uid, formData) => {
   try {
     const bmiResult = await infoBMI(formData);
@@ -94,8 +94,9 @@ export const handleSignup = async (formData, isGoogleSignup, prefilledData, agre
   }
 };
 
+/*------------------------- 건강정보데이터 계산 : 채준병 -------------------------*/
+//BMI 계산
 export const infoBMI = async (userData) => {
-  //saveUserData에서 받아온 userData를 이용하여 계산
   //BMI 계산
   const bmi = userData.weight / ((userData.height / 100) * (userData.height / 100));
   //BMI 결과 저장
@@ -116,9 +117,8 @@ export const infoBMI = async (userData) => {
   //BMI 결과 반환
   return bmiResult;
 };
-
+//에너지필요추정량(EER) 계산
 export const infoCalorie = async (userData) => {
-  //saveUserData에서 받아온 userData를 이용하여 계산
   //에너지필요추정량(EER)＝α+β×연령(세)+PA×[γ×체중(kg)+δ×신장(m)]
   //남성 : α=662, β=-9.53, γ=15.91, δ=539.6
   //여성 : α=354, β=-6.91, γ=9.36, δ=726
@@ -146,11 +146,10 @@ export const infoCalorie = async (userData) => {
   }
   return calorie;
 };
-
+//영양소 섭취필요량 계산
 export const infoNutrition = async (userData) => {
-  //saveUserData에서 받아온 userData를 이용하여 계산
   //영양소 섭취량 계산
-  //탄수화물 : 55~65%, 단백질 : 15~20%, 지방 : 15~30%
+  //탄수화물 : 55~65%, 단백질 : 15~20%, 지방 : 15~30%, 포화지방 : 7%이하, 트랜스지방 : 1%이하, 콜레스테롤 : 300mg이하
   let nutrition = {
     minCarbohydrate: 0,
     maxCarbohydrate: 0,
@@ -173,3 +172,4 @@ export const infoNutrition = async (userData) => {
   nutrition.chole = 300; //mg 이하
   return nutrition;
 };
+/*------------------------- end of 건강정보데이터 계산 : 채준병 -------------------------*/
