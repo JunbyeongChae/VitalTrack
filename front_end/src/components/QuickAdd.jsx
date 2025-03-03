@@ -18,7 +18,7 @@ const QuickAdd = () => {
             <div className="flex flex-col gap-4">
                 {/* Search Foods */}
                 <button
-                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-400 transition"
+                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("calories")}
                 >
                     + Search Foods
@@ -26,7 +26,7 @@ const QuickAdd = () => {
 
                 {/* Recent Meals Button */}
                 <button
-                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-400 transition"
+                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("nutrition")}
                 >
                     + Recent Meals
@@ -34,7 +34,7 @@ const QuickAdd = () => {
 
                 {/* Create Custom Meal Button */}
                 <button
-                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-400 transition"
+                    className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("water")}
                 >
                     + Create Custom Meal

@@ -1,24 +1,72 @@
-const Meals = () => {
-    const meals = [
-        { name: "Breakfast", items: ["Oatmeal with Berries", "Orange Juice"], calories: 250 },
-        { name: "Lunch", items: ["Chicken Salad"], calories: 100 },
-        { name: "Dinner", items: [], calories: 0 },
-        { name: "Snacks", items: [], calories: 0 },
-    ];
+import React, { useState } from "react";
+import MealSection from "./MealSection"; // Import MealSection
+import AddMealModal from "./AddMealModal"; // Import AddMealModal
 
+const Meals = () => {
+    // State to manage meal sections dynamically
+    const [sections, setSections] = useState({
+        Breakfast: [],
+        Lunch: [],
+        Dinner: [],
+        Snack: [],
+    });
+
+    // State to control AddMealModal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalSection, setModalSection] = useState(""); // Section name for which the modal is opened
+
+    // Open modal for a specific section
+    const openModal = (sectionName) => {
+        setModalSection(sectionName);
+        setIsModalOpen(true);
+    };
+
+    // Close modal
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setModalSection("");
+    };
+
+    // Function to handle adding a meal to a specific section
+    const handleAddMeal = (meal) => {
+        setSections((prevSections) => ({
+            ...prevSections,
+            [modalSection]: [...prevSections[modalSection], meal],
+        }));
+        closeModal(); // Close modal
+    };
+
+    // Function to delete a meal from a specific section
+    const handleDeleteMeal = (sectionName, mealId) => {
+        setSections((prevSections) => ({
+            ...prevSections,
+            [sectionName]: prevSections[sectionName].filter((meal) => meal.id !== mealId),
+        }));
+    };
+
+    // Render Meals sections
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {meals.map((meal, index) => (
-                <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md">
-                    <h3 className="font-semibold">{meal.name} ({meal.calories} cal)</h3>
-                    <ul className="mt-2">
-                        {meal.items.map((item, i) => (
-                            <li key={i} className="text-sm">{item}</li>
-                        ))}
-                    </ul>
-                    <button className="mt-2 text-blue-500">+ Add to {meal.name}</button>
-                </div>
-            ))}
+        <div className="meals-container max-w-full mx-auto p-6">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">Meals Today</h2>
+            <div className="meal-grid grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Render MealSection dynamically for each section */}
+                {Object.entries(sections).map(([sectionName, sectionMeals]) => (
+                    <MealSection
+                        key={sectionName}
+                        title={sectionName}
+                        meals={sectionMeals} // Meals for the specific section
+                        onAddClick={() => openModal(sectionName)} // Open AddMealModal for section
+                        onDeleteMeal={(mealId) => handleDeleteMeal(sectionName, mealId)} // Direct delete function
+                    />
+                ))}
+            </div>
+
+            {/* AddMealModal */}
+            <AddMealModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onAddMeal={handleAddMeal}
+            />
         </div>
     );
 };

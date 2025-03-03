@@ -1,30 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-
-const WaterIntake = () => {
-    const [waterCount, setWaterCount] = useState(0); // Track the number of glasses of water
-
-    const addWater = () => {
-        setWaterCount(waterCount + 1); // Increment the counter
-    };
-
-    return (
-        <div className="water-tracker">
-            <h2 className="text-xl font-semibold mb-4">Water Intake</h2>
-            <div className="water-counter">
-                <p className="text-lg mb-4">
-                    Glasses of Water: <span className="font-bold">{waterCount}</span>
-                </p>
-            </div>
-            <button
-                className="add-water-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-                onClick={addWater}
-            >
-                + Add Water
-            </button>
-        </div>
-    );
-};
+import WaterIntake from "./WaterIntake"; // Import the updated WaterIntake component
 
 const Summary = () => {
     // Refs for the charts
@@ -109,7 +85,7 @@ const Summary = () => {
                     <div ref={nutritionChartRef} style={{ width: "100%", height: "200px" }}></div>
                 </div>
 
-                {/* Water Intake Counter */}
+                {/* Updated Water Intake Counter */}
                 <div className="w-1/3 text-center">
                     <WaterIntake />
                 </div>
