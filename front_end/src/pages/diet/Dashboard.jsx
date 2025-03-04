@@ -4,6 +4,7 @@ import Summary from "./Summary";
 import FoodDiary from "./FoodDiary";
 import Community from "./Community";
 import QuickAdd from "./QuickAdd";
+import DietCalendar from "./DietCalendar"; // Import the calendar component
 
 const Dashboard = () => {
     return (
@@ -28,6 +29,9 @@ const Dashboard = () => {
 
             {/* Right Sidebar */}
             <div className="w-full lg:w-1/4 flex flex-col gap-6">
+                {/* Diet Calendar */}
+                <DietCalendar />
+
                 {/* Quick Add Section */}
                 <div className="bg-white p-6 rounded-xl shadow-md">
                     <QuickAdd />

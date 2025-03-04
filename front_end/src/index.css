@@ -19,3 +19,21 @@ body {
 .shadow-md {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+.react-calendar {
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+}
+.react-calendar__tile {
+    background: #f9f9f9;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+.react-calendar__tile:hover {
+    background: #e2e8f0;
+}
+.react-calendar__tile--active {
+    background: #3182ce;
+    color: #fff;
+}
