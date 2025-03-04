@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.oracle.ojdbc:orai18n:19.3.0.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.oracle.ojdbc" artifactId="orai18n" version="19.3.0.0" baseVersion="19.3.0.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Desktop/20250206/step1/.gradle/caches/modules-2/files-2.1/com.oracle.ojdbc/orai18n/19.3.0.0/a6960d6c18840e07dbc5b6afe760d099e47517bb/orai18n-19.3.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
