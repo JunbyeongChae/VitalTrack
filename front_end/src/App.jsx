@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/include/Header';
 import Footer from './components/include/Footer';
 import Home from './pages/Home';
-import Login from './pages/counsel/auth/Login';
-import Signup from './pages/counsel/auth/Signup';
+import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
+import CounselList from './pages/counsel/CounselList';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/" element={<Home user={user} />} />
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/signup" element={<Signup setUser={setUser} />} />
+            <Route path='/counsel' element={<CounselList />} />
           </Routes>
         </main>
         <Footer />

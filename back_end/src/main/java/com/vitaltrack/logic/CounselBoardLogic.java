@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.vitaltrack.dao.FirebaseCounselBoardDao;
+import com.vitaltrack.dao.CounselBoardDao;
 import com.vitaltrack.model.CounselBoard;
 
 import lombok.extern.log4j.Log4j2;
@@ -24,21 +24,17 @@ import lombok.extern.log4j.Log4j2;
 @Service
 public class CounselBoardLogic {
   @Autowired
-  private FirebaseCounselBoardDao boardDao;// 절대로 new하지 않음.-빈관리를 받지않음.
+  private CounselBoardDao counselBoardDao;// 절대로 new하지 않음.-빈관리를 받지않음.
 
   public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
     log.info("boardList 호출 성공.");
     List<Map<String, Object>> bList = null;
-    try {
-      bList = boardDao.boardList(pmap);
-    } catch (ExecutionException | InterruptedException e) {
-      log.error("boardList 호출 실패", e);
-    }
+    bList = counselBoardDao.boardList(pmap);
     return bList;
   }
 
   public String imageUpload(MultipartFile image) {
-    String savePath = "src\\main\\webapp\\image";
+    String savePath = "D:\\workspace-board\\mvc-board\\src\\main\\webapp\\pds";
     String filename = null;
     String fullPath = null;
     if (image != null && !image.isEmpty()) {
@@ -94,61 +90,57 @@ public class CounselBoardLogic {
 
   public int boardInsert(CounselBoard board) {
     int result = -1;
-    result = boardDao.boardInsert(board);
+    result = counselBoardDao.boardInsert(board);
     return result;
   }
 
   public List<Map<String, Object>> boardDetail(Map<String, Object> pmap) {
     List<Map<String, Object>> bList = null;
-    try {
-      bList = boardDao.boardList(pmap);
-      if (bList.size() == 1) {
-        boardDao.hitCount(pmap);
-      }
-      // 댓글가져오기
-      List<Map<String, Object>> commList = boardDao.commentList(pmap);
-      if (commList != null && commList.size() > 0) {
-        Map<String, Object> cmap = new HashMap<>();
-        cmap.put("comments", commList);
-        bList.add(1, cmap);
-      }
-    } catch (ExecutionException | InterruptedException e) {
-      log.error("boardDetail 호출 실패", e);
+    bList = counselBoardDao.boardList(pmap);
+    if (bList.size() == 1) {
+      counselBoardDao.hitCount(pmap);
+    }
+    // 댓글가져오기
+    List<Map<String, Object>> commList = counselBoardDao.commentList(pmap);
+    if (commList != null && commList.size() > 0) {
+      Map<String, Object> cmap = new HashMap<>();
+      cmap.put("comments", commList);
+      bList.add(1, cmap);
     }
     return bList;
   }
 
   public int boardDelete(int b_no) {
     int result = -1;
-    result = boardDao.boardDelete(String.valueOf(b_no));
+    result = counselBoardDao.boardDelete(b_no);
     log.info("Delete result:" + result);
     return result;
   }
 
   public int boardUpdate(Map<String, Object> pmap) {
     int result = -1;
-    result = boardDao.boardUpdate(pmap);
+    result = counselBoardDao.boardUpdate(pmap);
     log.info("Update result:" + result);
     return result;
   }
 
-  public int commentInsert(Map<String, Object> pmap) {
+  public int commentInsert(Map<String,Object> pmap) {
     int result = -1;
-    result = boardDao.commentInsert(pmap);
+    result = counselBoardDao.commentInsert(pmap);
     log.info("commentInsert result:" + result);
     return result;
   }
-
-  public int commentUpdate(Map<String, Object> pmap) {
-    int result = -1;
-    result = boardDao.commentUpdate(pmap);
-    log.info("commentUpdate result:" + result);
-    return result;
-  }
+  
+    public int commentUpdate(Map<String,Object> pmap) {
+      int result = -1;
+      result = counselBoardDao.commentUpdate(pmap);
+      log.info("commentUpdate result:" + result);
+      return result;
+    }
 
   public int commentDelete(int bc_no) {
     int result = -1;
-    result = boardDao.commentDelete(String.valueOf(bc_no), "additionalArgument");
+    result = counselBoardDao.commentDelete(bc_no);
     log.info("commentDelete result:" + result);
     return result;
   }

@@ -7,7 +7,7 @@ export const reCommentInsertDB = (comment) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentInsert',
         data: comment
       });
       resolve(res);
@@ -24,7 +24,7 @@ export const reCommentUpdateDB = (cmt) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentUpdate',
         data: cmt
       });
       resolve(res);
@@ -41,7 +41,7 @@ export const reCommentDeleteDB = (bc_no) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentDelete?bc_no='+bc_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentDelete?bc_no='+bc_no
       });
       resolve(res);
     } catch (error) {
@@ -58,7 +58,7 @@ export const boardListDB = (board) => {
     try {
       const res = axios({
         method: 'get',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardList',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardList',
         params: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -78,7 +78,7 @@ export const boardDetailDB = (b_no) => {
         //REACT_APP_SPRING_IP=http://localhost:8000/
         //@RequestMapping("/api/*") - CORS 이슈 해결하기 위한 접두어
         //@GetMapping("board/boardDetail")
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDetail?b_no=' + b_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardDetail?b_no=' + b_no
       });
       resolve(res);
     } catch (error) {
@@ -95,7 +95,7 @@ export const boardInsertDB = (board) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardInsert',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -114,7 +114,7 @@ export const boardUpdateDB = (board) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardUpdate',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -133,7 +133,7 @@ export const boardDeleteDB = (b_no) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDelete?b_no=' + b_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardDelete?b_no=' + b_no
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
       resolve(res);
@@ -148,7 +148,7 @@ export const uploadImageDB = (file) => {
     try {
       const response = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/imageUpload',
+        url: process.env.REACT_APP_SPRING_IP + 'api/board/imageUpload',
         headers: {
           'Content-Type': 'multipart/form-data'
         },

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { handleSignup } from '../../../service/authLogic'; // 인증 로직 가져오기
+import { handleSignup } from '../../service/authLogic'; // 인증 로직 가져오기
 
 const Signup = () => {
   // 일부 authLogic.js로 분리 : 채준병

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 
-const ReBoardDBItem = (props) => {
+const CounselDBItem = (props) => {
     const {B_NO, B_TITLE, MEM_NAME} = props.board
     //console.log(n_title)
     console.log(props.page)    
@@ -11,7 +11,7 @@ const ReBoardDBItem = (props) => {
                 <td>{B_NO}</td>
                 <td>
                 {/* <Route path="/notice/:n_no" exact={true} element={<NoticeDetail />}/> */}
-                <Link to={`/reboard/${B_NO}?page=${props.page}`} className='btn btn-primary'>{B_TITLE}</Link>
+                <Link to={`/counsel/${B_NO}?page=${props.page}`} className='btn btn-primary'>{B_TITLE}</Link>
                 </td>
                 <td>{MEM_NAME}</td>
             </tr>
@@ -19,4 +19,4 @@ const ReBoardDBItem = (props) => {
     )
 }
 
-export default ReBoardDBItem
+export default CounselDBItem
