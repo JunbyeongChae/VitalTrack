@@ -5,11 +5,12 @@ import Footer from './components/include/Footer';
 import Home from './pages/Home';
 import Login from './pages/counsel/auth/Login';
 import Signup from './pages/counsel/auth/Signup';
+import Mypage from './pages/counsel/auth/Mypage';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
 
-  // ✅ 새로고침해도 로그인 상태 유지 (localStorage 활용)
+  // 새로고침해도 로그인 상태 유지 (localStorage 활용)
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/" element={<Home user={user} />} />
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/signup" element={<Signup setUser={setUser} />} />
+            <Route path="/mypage" element={<Mypage user = {user} setUser={setUser} />} />
           </Routes>
         </main>
         <Footer />

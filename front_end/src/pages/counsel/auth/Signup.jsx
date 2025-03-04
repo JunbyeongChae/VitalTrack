@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { handleSignup } from '../../../service/authLogic'; // 인증 로직 가져오기
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../../firebaseConfig'; // Firebase 설정 파일 가져오기
 
 const Signup = () => {
-  // 일부 authLogic.js로 분리 : 채준병
   const location = useLocation();
   const prefilledData = location.state || {}; // 구글 로그인에서 전달된 데이터
   const isGoogleSignup = !!prefilledData.email; // 구글 로그인 여부 확인
@@ -32,15 +33,66 @@ const Signup = () => {
     });
   };
 
+  // Firestore에 사용자 데이터 저장
+  const saveUserData = async (uid) => {
+    try {
+      await setDoc(
+        doc(db, 'users', uid),
+        {
+          gender: formData.gender,
+          birthDate: formData.birthDate,
+          name: formData.name,
+          email: formData.email,
+          createdAt: new Date(),
+          height: formData.height,
+          weight: formData.weight,
+          activityLevel: formData.activityLevel
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.error('Firestore 저장 에러:', err);
+    }
+  };
+
   // 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 비밀번호 일치 여부 확인
+    if (formData.password !== formData.confirmPassword) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (!agreed) {
+      setError('개인정보 처리방침에 동의해야 합니다.');
+      return;
+    }
+
     try {
-      const message = await handleSignup(formData, isGoogleSignup, prefilledData, agreed);
-      setSuccess(message);
+      let uid;
+      if (isGoogleSignup) {
+        uid = prefilledData.uid;
+        const userDocRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          await saveUserData(uid);
+          setSuccess('회원정보가 업데이트되었습니다.');
+        } else {
+          await saveUserData(uid);
+          setSuccess('회원가입이 완료되었습니다.');
+        }
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        uid = userCredential.user.uid;
+        await saveUserData(uid);
+        setSuccess('회원가입이 완료되었습니다.');
+      }
       setError('');
     } catch (err) {
-      setError(err.message);
+      setError(`회원가입 실패: ${err.message}`);
     }
   };
 
@@ -114,14 +166,13 @@ const Signup = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">일상 활동량</label>
           <select name="activityLevel" value={formData.activityLevel} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">선택하세요</option>
             <option value="sedentary">비활동적</option>
             <option value="lowactive">저활동적</option>
             <option value="active">활동적</option>
             <option value="veryactive">매우 활동적</option>
           </select>
         </div>
-        <div className="text-sm text-gray-700">
+        <div className='text-sm text-gray-700'>
           {/* 일상 활동량 선택지 설명 추가 : 채준병 */}
           <label className="block text-sm font-medium text-gray-700">일상 활동량 선택지 설명</label>
           <p>
