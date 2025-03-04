@@ -1,4 +1,4 @@
-import Button from "../styles/FormStyles";
+import Button from "../../styles/FormStyles";
 
 const Header = () => {
     return (

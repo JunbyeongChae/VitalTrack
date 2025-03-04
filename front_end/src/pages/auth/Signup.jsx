@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebaseConfig'; // Firebase 설정 파일 가져오기
+import { auth, db } from '../../firebaseConfig'; // Firebase 설정 파일 가져오기
 
 const Signup = () => {
   const location = useLocation();
@@ -174,7 +174,7 @@ const Signup = () => {
             <option value="veryactive">매우 활동적</option>
           </select>
         </div>
-        <div className='text-sm text-gray-700'>
+        <div className="text-sm text-gray-700">
           {/* 일상 활동량 선택지 설명 추가 : 채준병 */}
           <label className="block text-sm font-medium text-gray-700">일상 활동량 선택지 설명</label>
           <p>
