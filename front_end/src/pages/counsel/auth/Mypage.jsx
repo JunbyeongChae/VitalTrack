@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import * as echarts from 'echarts';
 
@@ -8,6 +8,7 @@ const Mypage = ({ user }) => {
   const navigate = useNavigate();
   const weightChartRef = useRef(null);
   const bmiChartRef = useRef(null);
+  const [age, setAge] = useState(null);
   const [formData, setFormData] = useState({
     height: user?.height || '',
     weight: user?.weight || '',
@@ -15,11 +16,29 @@ const Mypage = ({ user }) => {
   });
 
   const [bmi, setBmi] = useState(null);
+  const [calorie, setCalorie] = useState(null);
   const [bmiStatus, setBmiStatus] = useState('');
   const [normalWeightRange, setNormalWeightRange] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 🔹 오늘 날짜 가져오기
+  const handleUpdate = async () => {
+    const userRef = doc(db, 'users', user.uid);
+    try{
+      await updateDoc(userRef, {
+        height : formData.height,
+        weight : formData.weight,
+        targetWeight : formData.targetWeight,
+        bmi : bmi,
+        calorie : calorie,
+      });
+      alert('정보가 성공적으로 업데이트됐습니다.')
+    }catch(error){
+      console.error('정보 저장 중 오류가 발생했습니다.', error);
+      alert('정보 저장에 실패하였습니다.');
+    }
+  }
+
+  // 오늘 날짜 가져오기
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -42,8 +61,7 @@ const Mypage = ({ user }) => {
       }
       return;
     }
-
-    const fetchUserData = async () => {
+    const fetchUserData = async () => {   
       try {
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
@@ -55,6 +73,16 @@ const Mypage = ({ user }) => {
             weight: userData.weight || '',
             targetWeight: userData.targetWeight || '',
           });
+
+          if (userData.birthDate) {
+            const userAge = calculateAge(userData.birthDate);
+            setAge(userAge);
+          
+          if (userData.gender && userData.activityLevel) {
+            const calculatedCalorie = await infoCalorie(userData, userAge);
+            setCalorie(calculatedCalorie);
+            }
+          }
         }
       } catch (err) {
         console.error('사용자 데이터를 불러오는 데 실패했습니다.', err);
@@ -65,13 +93,91 @@ const Mypage = ({ user }) => {
 
     fetchUserData();
   }, [user, navigate]);
+  
+  //나이 계산 함수
+  const calculateAge = (birthDate) => {
+    if (!birthDate || typeof birthDate !== "string") {
+      console.error("잘못된 birthDate 값:", birthDate);
+      return null;
+    }
+  
+    const [year, month, day] = birthDate.split("-").map(Number);
+    if (!year || !month || !day) {
+      console.error("birthDate 형식 오류:", birthDate);
+      return null;
+    }
+  
+    const birthDateObj = new Date(year, month - 1, day);
+    const today = new Date();
+  
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+  
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+      age--;
+    }
+  
+    return age;
+  };
+  
+  //칼로리 계산함수
+  const infoCalorie = async (userData, userAge, weight) => {
+    let calorie = 0;
+    const heightInMeters = userData.height / 100;
+  
+    if (userData.gender === 'male') {
+      if (userData.activityLevel === 'sedentary') {
+        calorie = (662 - (9.53 * userAge)) + (1.0 * ((15.91 * weight) + (539.6 * heightInMeters)));
+      } else if (userData.activityLevel === 'lowactive') {
+        calorie = (662 - (9.53 * userAge)) + (1.11 * ((15.91 * weight) + (539.6 * heightInMeters)));
+      } else if (userData.activityLevel === 'active') {
+        calorie = (662 - (9.53 * userAge)) + (1.25 * ((15.91 * weight) + (539.6 * heightInMeters)));
+      } else if (userData.activityLevel === 'veryactive') {
+        calorie = (662 - (9.53 * userAge)) + (1.48 * ((15.91 * weight) + (539.6 * heightInMeters)));
+      }
+    } else {
+      if (userData.activityLevel === 'sedentary') {
+        calorie = (354 - (6.91 * userAge)) + (1.0 * ((9.36 * weight) + (726 * heightInMeters)));
+      } else if (userData.activityLevel === 'lowactive') {
+        calorie = (354 - (6.91 * userAge)) + (1.12 * ((9.36 * weight) + (726 * heightInMeters)));
+      } else if (userData.activityLevel === 'active') {
+        calorie = (354 - (6.91 * userAge)) + (1.27 * ((9.36 * weight) + (726 * heightInMeters)));
+      } else if (userData.activityLevel === 'veryactive') {
+        calorie = (354 - (6.91 * userAge)) + (1.45 * ((9.36 * weight) + (726 * heightInMeters)));
+      }
+    }
+  
+    return Math.round(calorie);
+  };
+  
 
   // 입력값 변경 핸들러
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+  
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  
+    if (name === 'weight') {
+      updateCalorie({ ...formData, weight: value }); // 최신 몸무게 값 반영
+    }
+  };
+
+  const updateCalorie = async (updatedData) => {
+    const userData = await getUserData();
+    if (userData) {
+      const calculatedCalorie = await infoCalorie(userData, age, updatedData.weight);
+      setCalorie(calculatedCalorie);
+    }
+  };
+
+  const getUserData = async () => {
+    if (!user || !user.uid) return null;
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    return userDoc.exists() ? userDoc.data() : null;
   };
 
   // BMI 자동 계산 및 정상 체중 범위 업데이트
@@ -83,18 +189,22 @@ const Mypage = ({ user }) => {
 
       // BMI 상태 설정
       if (calculatedBmi < 18.5) {
-        setBmiStatus('저체중 🟡');
-      } else if (calculatedBmi >= 18.5 && calculatedBmi < 24.9) {
+        setBmiStatus('저체중 ');
+      } else if (calculatedBmi >= 18.5 && calculatedBmi < 23) {
         setBmiStatus('정상 🟢');
-      } else if (calculatedBmi >= 25 && calculatedBmi < 29.9) {
-        setBmiStatus('과체중 🟠');
+      } else if (calculatedBmi >= 23 && calculatedBmi < 25) {
+        setBmiStatus('과체중 ');
+      } else if (calculatedBmi >= 25 && calculatedBmi < 30) {
+        setBmiStatus('경도비만 🟡');
+      } else if (calculatedBmi >= 30 && calculatedBmi < 35) {
+        setBmiStatus('중등도비만 🟠')
       } else {
-        setBmiStatus('비만 🔴');
+        setBmiStatus('고도비만 🔴')
       }
 
       // 정상 체중 범위 계산
       const minNormalWeight = (18.5 * heightInMeters * heightInMeters).toFixed(1);
-      const maxNormalWeight = (24.9 * heightInMeters * heightInMeters).toFixed(1);
+      const maxNormalWeight = (23 * heightInMeters * heightInMeters).toFixed(1);
       setNormalWeightRange(`${minNormalWeight}kg ~ ${maxNormalWeight}kg`);
     }
   }, [formData.height, formData.weight]);
@@ -171,6 +281,16 @@ const Mypage = ({ user }) => {
       <div className="grid grid-cols-2 gap-6">
         {/* 왼쪽 - 건강 정보 입력 */}
         <div className="bg-gray-100 p-4 rounded-lg">
+        <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">나이 (세)</label>
+            <input
+              type="number"
+              name="age"
+              value={age || ''}
+              readOnly
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">신장 (cm)</label>
             <input
@@ -233,6 +353,15 @@ const Mypage = ({ user }) => {
               className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-200"
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">에너지 필요 추정량(TEE)</label>
+            <input
+              type="text"
+              value={calorie || ''}
+              readOnly
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-200"
+            />
+          </div>
         </div>
 
         {/* 오른쪽 - 건강 데이터 시각화 */}
@@ -242,27 +371,21 @@ const Mypage = ({ user }) => {
             <h2 className="bg-white p-4 rounded-md shadow-md text-center">
               체중 변화 추이
             </h2>
-            <div ref={weightChartRef} className='h-80 mt-4'></div>
+            <div ref={weightChartRef} className='h-60 mt-4'></div>
             <h2 className="bg-white p-4 rounded-md shadow-md text-center">
               BMI 변화 그래프
             </h2>
-            <div ref={bmiChartRef} className='h-80 mt-4'></div>
+            <div ref={bmiChartRef} className='h-60 mt-4'></div>
           </div>
         </div>
       </div>
        {/* CRUD 버튼 */}
        <div className="flex justify-center space-x-4 mt-6">
-        <button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">
-          생성
-        </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md">
-          조회
-        </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-md">
-          수정
+        <button onClick={handleUpdate} className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">
+          정보수정
         </button>
         <button className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md">
-          삭제
+          회원탈퇴
         </button>
       </div>
     </div>

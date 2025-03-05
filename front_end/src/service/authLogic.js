@@ -117,31 +117,31 @@ export const infoBMI = async (userData) => {
   //BMI 결과 반환
   return bmiResult;
 };
-//에너지필요추정량(EER) 계산
+//에너지필요추정량(TEE) 계산
 export const infoCalorie = async (userData) => {
   //에너지필요추정량(EER)＝α+β×연령(세)+PA×[γ×체중(kg)+δ×신장(m)]
   //남성 : α=662, β=-9.53, γ=15.91, δ=539.6
   //여성 : α=354, β=-6.91, γ=9.36, δ=726
   let calorie = 0;
-  if (userData.gender === '남성') {
-    if (userData.activityLevel === '비활동적') {
-      calorie = 662 - 9.53 * userData.age + 1.0 * (userData.weight + 539.6 * userData.height);
-    } else if (userData.activityLevel === '저활동적') {
-      calorie = 662 - 9.53 * userData.age + 1.11 * (userData.weight + 539.6 * userData.height);
-    } else if (userData.activityLevel === '활동적') {
-      calorie = 662 - 9.53 * userData.age + 1.25 * (userData.weight + 539.6 * userData.height);
-    } else if (userData.activityLevel === '매우 활동적') {
-      calorie = 662 - 9.53 * userData.age + 1.48 * (userData.weight + 539.6 * userData.height);
+  if (userData.gender === 'male') {
+    if (userData.activityLevel === 'sedentary') {
+      calorie = 662 - 9.53 * userData.age + 1.0 * (userData.weight + 539.6 * userData.height/100);
+    } else if (userData.activityLevel === 'lowactive') {
+      calorie = 662 - 9.53 * userData.age + 1.11 * (userData.weight + 539.6 * userData.height/100);
+    } else if (userData.activityLevel === 'active') {
+      calorie = 662 - 9.53 * userData.age + 1.25 * (userData.weight + 539.6 * userData.height/100);
+    } else if (userData.activityLevel === 'veryactive') {
+      calorie = 662 - 9.53 * userData.age + 1.48 * (userData.weight + 539.6 * userData.height/100);
     }
   } else {
-    if (userData.activityLevel === '비활동적') {
-      calorie = 354 - 6.91 * userData.age + 1.0 * (userData.weight + 726 * userData.height);
-    } else if (userData.activityLevel === '저활동적') {
-      calorie = 354 - 6.91 * userData.age + 1.12 * (userData.weight + 726 * userData.height);
-    } else if (userData.activityLevel === '활동적') {
-      calorie = 354 - 6.91 * userData.age + 1.27 * (userData.weight + 726 * userData.height);
-    } else if (userData.activityLevel === '매우 활동적') {
-      calorie = 354 - 6.91 * userData.age + 1.45 * (userData.weight + 726 * userData.height);
+    if (userData.activityLevel === 'sedentary') {
+      calorie = 354 - 6.91 * userData.age + 1.0 * (userData.weight + 726 * userData.height/100);
+    } else if (userData.activityLevel === 'lowactive') {
+      calorie = 354 - 6.91 * userData.age + 1.12 * (userData.weight + 726 * userData.height/100);
+    } else if (userData.activityLevel === 'active') {
+      calorie = 354 - 6.91 * userData.age + 1.27 * (userData.weight + 726 * userData.height/100);
+    } else if (userData.activityLevel === 'veryactive') {
+      calorie = 354 - 6.91 * userData.age + 1.45 * (userData.weight + 726 * userData.height/100);
     }
   }
   return calorie;
