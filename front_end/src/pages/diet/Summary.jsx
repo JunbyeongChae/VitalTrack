@@ -65,12 +65,12 @@ const Summary = () => {
 
     return (
         <div className="bg-white w-full h-auto p-8 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Today's Summary</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">일일섭취량</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Calorie Chart */}
                 <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
-                    <h3 className="text-lg font-bold text-gray-700 mb-4">Calories</h3>
+                    <h3 className="text-lg font-bold text-gray-700 mb-4">칼로리</h3>
                     <div ref={calorieChartRef} className="w-full" style={{ height: "150px" }}></div>
                     <p className="text-gray-600 mt-4">
                         <span className="font-semibold text-green-500">350</span> / 1,200 kcal
@@ -79,13 +79,13 @@ const Summary = () => {
 
                 {/* Macronutrient Chart */}
                 <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
-                    <h3 className="text-lg font-bold text-gray-700 mb-4">Macronutrients</h3>
+                    <h3 className="text-lg font-bold text-gray-700 mb-4">탄단지</h3>
                     <div ref={nutritionChartRef} className="w-full" style={{ height: "200px" }}></div>
                 </div>
 
                 {/* Water Intake Section */}
                 <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
-                    <h3 className="text-lg font-bold text-gray-700 mb-4">Water Intake</h3>
+                    <h3 className="text-lg font-bold text-gray-700 mb-4">수분섭취량</h3>
                     <div className="grid grid-cols-4 gap-2 mt-4">
                         {[...Array(8)].map((_, index) => (
                             <div
@@ -100,7 +100,7 @@ const Summary = () => {
                         <span className="font-semibold">4</span> / 8 glasses
                     </p>
                     <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4">
-                        Add Water
+                        물 추가
                     </button>
                 </div>
             </div>
