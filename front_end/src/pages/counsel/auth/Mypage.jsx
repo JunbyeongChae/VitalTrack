@@ -23,6 +23,7 @@ const Mypage = ({ user }) => {
 
   const handleUpdate = async () => {
     const userRef = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().split('T')[0];
     try{
       await updateDoc(userRef, {
         height : formData.height,
@@ -30,6 +31,7 @@ const Mypage = ({ user }) => {
         targetWeight : formData.targetWeight,
         bmi : bmi,
         calorie : calorie,
+        [`weightRecords.${today}`] : {weight : formData.weight, bmi : bmi}
       });
       alert('정보가 성공적으로 업데이트됐습니다.')
     }catch(error){
@@ -210,14 +212,29 @@ const Mypage = ({ user }) => {
   }, [formData.height, formData.weight]);
 
   useEffect(() => {
-    if (weightChartRef.current && bmiChartRef.current) {
+    if (!weightChartRef.current || !bmiChartRef.current) return;
+  
+    // 기존 차트 제거
+    const existingWeightChart = echarts.getInstanceByDom(weightChartRef.current);
+    if (existingWeightChart) existingWeightChart.dispose();
+  
+    const existingBmiChart = echarts.getInstanceByDom(bmiChartRef.current);
+    if (existingBmiChart) existingBmiChart.dispose();
+  
+    setTimeout(() => {
       const weightChart = echarts.init(weightChartRef.current);
       const bmiChart = echarts.init(bmiChartRef.current);
+      const today = new Date()
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(today.getDate() - (6 - i)); // 가장 오래된 날짜부터 채우기
+        return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    });
 
       const weightOption = {
         animation: false,
         tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+        xAxis: { type: 'category', data: last7Days },
         yAxis: { type: 'value' },
         series: [
           {
@@ -229,11 +246,11 @@ const Mypage = ({ user }) => {
           }
         ]
       };
-
+  
       const bmiOption = {
         animation: false,
         tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+        xAxis: { type: 'category', data: last7Days },
         yAxis: { type: 'value' },
         series: [
           {
@@ -244,25 +261,26 @@ const Mypage = ({ user }) => {
           }
         ]
       };
-
-
+  
       weightChart.setOption(weightOption);
       bmiChart.setOption(bmiOption);
-
-      window.addEventListener('resize', () => {
+  
+      // Resize 이벤트 핸들러 추가
+      const handleResize = () => {
         weightChart.resize();
         bmiChart.resize();
-      });
-
-      return () => {
-        window.removeEventListener('resize', () => {
-          weightChart.resize();
-          bmiChart.resize();
-        });
       };
-    }
-  }, []);
-
+  
+      window.addEventListener('resize', handleResize);
+  
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        weightChart.dispose();
+        bmiChart.dispose();
+      };
+    }, 100); // DOM 업데이트 후 실행하도록 setTimeout 사용
+  }, [formData.weight, formData.height, bmi]);
+  
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
