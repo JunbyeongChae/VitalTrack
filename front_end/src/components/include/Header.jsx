@@ -36,21 +36,24 @@ const Header = ({ user, setUser }) => {
           <div className="flex">
             {/* 로고 클릭 시 홈으로 이동 */}
             <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <img className="h-12 w-auto" src="/images/logo_title.png" alt="Logo" />
+              <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
             </div>
             {/* 네비게이션 메뉴 */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <button onClick={() => navigate('/')} className="border-b-2 border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
-                Dashboard
+                Home
               </button>
-              <button onClick={() => navigate('/progress')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Progress
+              <button onClick={() => navigate('/healthInfo')} className="border-b-2 border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                건강정보
               </button>
-              <button onClick={() => navigate('/nutrition')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Nutrition
+              <button onClick={() => navigate('/work')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                운동관리
               </button>
-              <button onClick={() => navigate('/community')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Community
+              <button onClick={() => navigate('/diet')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                식단관리
+              </button>
+              <button onClick={() => navigate('/counsel')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                영양상담
               </button>
             </div>
           </div>
