@@ -14,14 +14,14 @@ const QuickAdd = () => {
 
     return (
         <div>
-            <h2 className="text-xl font-semibold mb-4">Quick Add</h2>
+            <h2 className="text-xl font-semibold mb-4">간편 추가</h2>
             <div className="flex flex-col gap-4">
                 {/* Search Foods */}
                 <button
                     className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("calories")}
                 >
-                    + Search Foods
+                    + 식품 찾기
                 </button>
 
                 {/* Recent Meals Button */}
@@ -29,7 +29,7 @@ const QuickAdd = () => {
                     className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("nutrition")}
                 >
-                    + Recent Meals
+                    + 최근 식사
                 </button>
 
                 {/* Create Custom Meal Button */}
@@ -37,7 +37,7 @@ const QuickAdd = () => {
                     className="px-4 py-2 bg-white text-black rounded hover:bg-lime-500 transition"
                     onClick={() => handleOpenModal("water")}
                 >
-                    + Create Custom Meal
+                    + 식품데이터 추가
                 </button>
             </div>
 

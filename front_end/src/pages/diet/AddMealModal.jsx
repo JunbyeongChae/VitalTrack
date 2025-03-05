@@ -14,10 +14,10 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
     const recentSearches = ["Greek Yogurt", "Banana", "Chicken Breast"];
     const popularCategories = [
-        { name: "Fruits", icon: faAppleAlt },
-        { name: "Vegetables", icon: faCarrot },
-        { name: "Proteins", icon: faDrumstickBite },
-        { name: "Grains", icon: faBreadSlice },
+        { name: "과일", icon: faAppleAlt },
+        { name: "채소", icon: faCarrot },
+        { name: "단백질", icon: faDrumstickBite },
+        { name: "곡류", icon: faBreadSlice },
 
     ];
 
@@ -29,7 +29,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                 {/* Modal Header */}
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-gray-900">Quick Add Foods</h2>
+                        <h2 className="text-xl font-semibold text-gray-900">식단 추가</h2>
                         <button className="text-gray-400 hover:text-gray-500" onClick={onClose}>
                             <FontAwesomeIcon icon={faTimes} />
                         </button>
@@ -37,7 +37,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                     <div className="mt-4 relative">
                         <input
                             type="text"
-                            placeholder="Search for foods..."
+                            placeholder="여기에 식품명을 입력하세요..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-custom focus:border-custom"
@@ -52,7 +52,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
                     {/* Recent Searches */}
                     <div className="mb-8">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">Recent Searches</h3>
+                        <h3 className="text-sm font-medium text-gray-500 mb-3">최근 검색기록</h3>
                         <div className="flex flex-wrap gap-2">
                             {recentSearches.map((search, index) => (
                                 <button
@@ -68,7 +68,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
                     {/* Popular Categories Section */}
                     <div className="p-6">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">Popular Categories</h3>
+                        <h3 className="text-sm font-medium text-gray-500 mb-3">인기 카테고리</h3>
                         <div className="grid grid-cols-4 gap-4">
                             {popularCategories.map((category, index) => (
                                 <button
@@ -87,7 +87,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
                     {/* Search Results */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">Search Results</h3>
+                        <h3 className="text-sm font-medium text-gray-500 mb-3">검색 결과</h3>
                         {searchResults.map((result) => (
                             <div
                                 key={result.id}
@@ -97,14 +97,14 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                                     <div>
                                         <h4 className="font-medium text-gray-900">{result.name}</h4>
                                         <p className="text-sm text-gray-500">
-                                            {result.serving} • {result.calories} calories
+                                            {result.serving} • {result.calories} 칼로리
                                         </p>
                                     </div>
                                     <button
                                         className="rounded-button px-4 py-2 bg-custom text-black hover:bg-custom/90"
                                         onClick={() => onAddMeal(result)}
                                     >
-                                        Add
+                                        추가
                                     </button>
                                 </div>
                             </div>

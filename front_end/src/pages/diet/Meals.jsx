@@ -5,10 +5,10 @@ import AddMealModal from "./AddMealModal"; // Import AddMealModal
 const Meals = () => {
     // State to manage meal sections dynamically
     const [sections, setSections] = useState({
-        Breakfast: [],
-        Lunch: [],
-        Dinner: [],
-        Snack: [],
+        아침: [],
+        점심: [],
+        저녁: [],
+        간식: [],
     });
 
     // State to control AddMealModal

@@ -51,17 +51,17 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                 onClick={() => onAddClick(title)}
                 className="add-button bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 transition duration-200 flex items-center gap-2"
             >
-                <FontAwesomeIcon icon={faPlus} /> Add to {title}
+                    <FontAwesomeIcon icon={faPlus} /> {title} 추가
             </button>
 
             {/* Delete Confirmation Modal */}
             {selectedMeal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg max-w-sm w-full shadow-lg p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Deletion</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">삭제하기</h3>
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete{' '}
-                            <span className="font-semibold">{selectedMeal.name}</span>?
+                            {' '}{selectedMeal.name}
+                            <span className="font-semibold">을(를) 정말 삭제하시겠습니까?</span>?
                         </p>
                         <div className="flex justify-end space-x-4">
                             {/* Cancel Button */}
@@ -69,7 +69,7 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                                 onClick={closeDeleteModal}
                                 className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 transition flex items-center gap-2"
                             >
-                                <FontAwesomeIcon icon={faTimes} /> Cancel
+                                <FontAwesomeIcon icon={faTimes} /> 삭제취소
                             </button>
                             {/* Delete Button */}
                             <button
@@ -79,7 +79,7 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                                 }}
                                 className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition flex items-center gap-2"
                             >
-                                <FontAwesomeIcon icon={faTrash} /> Delete
+                                <FontAwesomeIcon icon={faTrash} /> 삭제
                             </button>
                         </div>
                     </div>

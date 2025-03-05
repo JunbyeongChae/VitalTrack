@@ -1,18 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 
 const Summary = () => {
     const calorieChartRef = useRef(null);
     const nutritionChartRef = useRef(null);
+    const [waterIntake, setWaterIntake] = useState(0); // State to track water intake
+    const maxWaterIntake = 8; // Maximum number of water glasses
 
     useEffect(() => {
         // Calorie Chart
         if (calorieChartRef.current) {
             const calorieChartInstance = echarts.init(calorieChartRef.current);
             calorieChartInstance.setOption({
-/*
-                title: { text: "Calories", left: "center" },
-*/
                 series: [
                     {
                         name: "Calories",
@@ -31,9 +30,6 @@ const Summary = () => {
         if (nutritionChartRef.current) {
             const nutritionChartInstance = echarts.init(nutritionChartRef.current);
             nutritionChartInstance.setOption({
-/*
-                title: { text: "Macronutrients", left: "center" },
-*/
                 tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
                 xAxis: { type: "value", axisLabel: { formatter: "{value} g" } },
                 yAxis: { type: "category", data: ["Protein", "Carbs", "Fat"] },
@@ -63,6 +59,20 @@ const Summary = () => {
         };
     }, []);
 
+    // Function to handle water intake increment
+    const handleAddWater = () => {
+        if (waterIntake < maxWaterIntake) {
+            setWaterIntake(waterIntake + 1);
+        } else {
+            alert("오늘의 물 섭취량을 모두 채웠습니다!");
+        }
+    };
+
+    // Function to handle water intake reset
+    const handleResetWater = () => {
+        setWaterIntake(0);
+    };
+
     return (
         <div className="bg-white w-full h-auto p-8 rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">일일섭취량</h2>
@@ -87,21 +97,34 @@ const Summary = () => {
                 <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
                     <h3 className="text-lg font-bold text-gray-700 mb-4">수분섭취량</h3>
                     <div className="grid grid-cols-4 gap-2 mt-4">
-                        {[...Array(8)].map((_, index) => (
+                        {[...Array(maxWaterIntake)].map((_, index) => (
                             <div
                                 key={index}
                                 className={`w-6 h-12 ${
-                                    index < 4 ? "bg-blue-400" : "bg-gray-200"
-                                } rounded-md`}
-                            ></div>
+                                    index < waterIntake ? "bg-blue-500" : "bg-gray-300"
+                                } rounded-lg`}
+                            />
                         ))}
                     </div>
-                    <p className="text-gray-600 mt-4">
-                        <span className="font-semibold">4</span> / 8 glasses
-                    </p>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4">
-                        물 추가
-                    </button>
+
+                    {/* Buttons Section */}
+                    <div className="flex mt-4 space-x-2">
+                        <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                            onClick={handleAddWater}
+                        >
+                            물 추가
+                        </button>
+
+                        <button
+                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                            onClick={handleResetWater}
+                        >
+                            초기화
+                        </button>
+                    </div>
+
+                    <p className="text-gray-600 mt-4">{waterIntake} / {maxWaterIntake}</p>
                 </div>
             </div>
         </div>

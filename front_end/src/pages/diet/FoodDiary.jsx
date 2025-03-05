@@ -14,9 +14,9 @@ const DiaryEntry = ({ title, time, calories, protein, carbs, fat }) => {
             <div className="flex flex-col items-end">
                 <div className="text-sm font-semibold">{calories} cal</div>
                 <div className="flex text-xs text-gray-500 gap-3">
-                    <span>P: {protein}g</span>
-                    <span>C: {carbs}g</span>
-                    <span>F: {fat}g</span>
+                    <span>단: {protein}g</span>
+                    <span>탄: {carbs}g</span>
+                    <span>지: {fat}g</span>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@ const FoodDiary = () => {
     return (
         <div className="bg-white p-6 rounded-xl shadow-md w-full flex flex-col gap-4 h-auto">
             {/* Title */}
-            <h2 className="text-lg font-semibold">Food Diary</h2>
+            <h2 className="text-lg font-semibold">식단 기록</h2>
 
             {/* Diary Entry List */}
             <div className="flex flex-col divide-y divide-gray-200">

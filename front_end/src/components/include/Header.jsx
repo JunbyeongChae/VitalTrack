@@ -49,7 +49,7 @@ const Header = ({ user, setUser }) => {
               <button onClick={() => navigate('/work')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 운동관리
               </button>
-              <button onClick={() => navigate('/diet')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              <button onClick={() => navigate('/nutrition')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 식단관리
               </button>
               <button onClick={() => navigate('/counsel')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">

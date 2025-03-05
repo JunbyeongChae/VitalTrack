@@ -21,7 +21,7 @@ const DietCalendar = () => {
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Diet Calendar</h3>
+            <h3 className="text-lg font-semibold mb-4">일자별 보기</h3>
             <Calendar
                 onChange={handleDateChange}
                 value={selectedDate}
