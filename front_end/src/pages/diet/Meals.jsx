@@ -47,7 +47,7 @@ const Meals = () => {
     // Render Meals sections
     return (
         <div className="meals-container max-w-full mx-auto p-6">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">Meals Today</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">오늘의 식단</h2>
             <div className="meal-grid grid grid-cols-1 md:grid-cols-4 gap-4">
                 {/* Render MealSection dynamically for each section */}
                 {Object.entries(sections).map(([sectionName, sectionMeals]) => (
