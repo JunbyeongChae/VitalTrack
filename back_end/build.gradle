@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.vitaltrack'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '21'
 
 java {
 	toolchain {
@@ -30,7 +29,6 @@ dependencies {
   implementation 'jakarta.el:jakarta.el-api:5.0.1'
   implementation 'com.zaxxer:HikariCP:5.1.0'
   implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
-  runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
   implementation 'com.oracle.ojdbc:orai18n:19.3.0.0'
   implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.34'
   implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -38,6 +36,8 @@ dependencies {
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
   annotationProcessor 'org.projectlombok:lombok'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  implementation 'mysql:mysql-connector-java:8.0.33'
+  runtimeOnly 'com.mysql:mysql-connector-j'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   implementation 'com.google.firebase:firebase-admin:8.1.0'
   implementation 'com.google.cloud:google-cloud-firestore:3.0.0'

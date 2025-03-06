@@ -2,6 +2,12 @@ server:
   port: 4000
   tomcat:
     additional-tld-skip-patterns: '*.jar'
+logging:
+  pattern:
+    console:  "${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}:%line)-%msg%n}"
+  level:
+    org.springframework: INFO
+    root: INFO
 spring:
   output:
     ansi:
@@ -14,18 +20,25 @@ spring:
     multipart:
       max-file-size: "10MB"
       enabled: true
-    datasource:
-      url: jdbc:mysql://localhost:3306/vitaltrack
-      username: root
-      password: abcd1234
-      driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: jdbc:mysql://localhost:3306/vitaltrack
+    username: root
+    password: abcd1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      pool-name: HikariCP
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
 firebase:
   api-key: ${FIREBASE_API_KEY}
   auth-domain: ${FIREBASE_AUTH_DOMAIN}
