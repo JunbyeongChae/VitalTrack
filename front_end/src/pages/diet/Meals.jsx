@@ -18,7 +18,7 @@ const Meals = () => {
     useEffect(() => {
         const fetchFoodData = async () => {
             try {
-                const response = await fetch("http://localhost:4000/api/food-data"); // Backend API to fetch data
+                const response = await fetch("http://localhost:8000/api/food-data"); // Backend API to fetch data
                 if (!response.ok) {
                     throw new Error("Failed to fetch food data.");
                 }

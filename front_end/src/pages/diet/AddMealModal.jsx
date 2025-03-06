@@ -8,6 +8,8 @@ const normalizeText = (text) => {
     return text ? text.normalize("NFC").toLowerCase() : "";
 };
 
+let debounceTimeout; // Declare debounceTimeout globally (outside the component)
+
 const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
     const [searchQuery, setSearchQuery] = useState(""); // Current search query
     const [searchResults, setSearchResults] = useState([]); // Fetched search results
@@ -26,6 +28,68 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
         { name: "곡류", icon: faBreadSlice },
     ];
 
+    // Debounce logic - Wait 300ms after the user stops typing
+    const debouncedSearch = (query) => {
+        clearTimeout(debounceTimeout); // Clear previous timeout if input is still happening
+        debounceTimeout = setTimeout(async () => {
+            if (!query.trim()) {
+                setSearchResults([]); // Clear results if the query is empty
+                return;
+            }
+
+            try {
+                const response = await axios.get("/api/search", { params: { query } });
+                setSearchResults(response.data); // Update search results with response
+            } catch (error) {
+                console.error("Error fetching search results:", error);
+            }
+        }, 300); // Execute the search 300ms after the user stops typing
+    };
+
+    // Handle input changes and trigger debounced search
+    const handleSearchChange = (e) => {
+        const newQuery = e.target.value;
+
+        // Always update the input value so React renders it correctly
+        setSearchQuery(newQuery);
+
+        // Only trigger debounced search if IME composition is not happening
+        if (!isComposing) {
+            debouncedSearch(newQuery);
+        }
+    };
+
+    // Handle IME composition start (Korean input starts)
+    const handleCompositionStart = () => {
+        setIsComposing(true);
+    };
+
+    // Handle IME composition end (Korean composition finished)
+    const handleCompositionEnd = (e) => {
+        setIsComposing(false);
+        const finalQuery = e.target.value;
+        setSearchQuery(finalQuery);
+        debouncedSearch(finalQuery); // Trigger the search with the finalized query
+    };
+
+    // Component cleanup when the modal is closed
+    useEffect(() => {
+        if (isOpen) {
+            setSearchQuery(""); // Clear the search input
+            setSearchResults([]); // Clear the search results
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        // Update recent searches only when not composing and input is finalized
+        if (searchQuery && !isComposing && isOpen) {
+            setRecentSearches((prevSearches) => {
+                const updatedSearches = [searchQuery, ...prevSearches.filter((q) => q !== searchQuery)];
+                return updatedSearches.slice(0, 5); // Limit recent searches to 5 items
+            });
+        }
+    }, [searchQuery, isComposing, isOpen]);
+
     // Fetch search results when the searchQuery changes
     useEffect(() => {
         const fetchSearchResults = async () => {
@@ -33,7 +97,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
             setIsLoading(true);
 
             try {
-                const response = await axios.get("http://localhost:4000/api/foods/search", {
+                const response = await axios.get("http://localhost:8000/api/foods/search", {
                     params: { query: searchQuery },
                 });
 
@@ -48,22 +112,6 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
         fetchSearchResults();
     }, [searchQuery]);
-
-    // Handle input changes
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value); // Update the query directly
-    };
-
-    // Handle IME composition start (Korean input starts)
-    const handleCompositionStart = () => {
-        setIsComposing(true);
-    };
-
-    // Handle IME composition end (Korean composition finished)
-    const handleCompositionEnd = (e) => {
-        setIsComposing(false); // End composition
-        setSearchQuery(e.target.value); // Finalize the composed text
-    };
 
     if (!isOpen) return null; // Return null if modal is closed
 
@@ -97,19 +145,27 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                 {/* Modal Body */}
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
                     {/* Recent Searches */}
-                    <div className="mb-8">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">최근 검색기록</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {recentSearches.map((search, index) => (
+                    <div className="mt-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-medium text-gray-500">최근 검색기록</h3>
+                            <button
+                                onClick={() => setRecentSearches([])} // Clear all recent searches
+                                className="text-xs text-red-500 hover:text-red-700 focus:outline-none"
+                            >
+                                초기화
+                            </button>
+                        </div>
+                        <ul className="list-disc list-inside">
+                            {recentSearches.map((query, index) => (
                                 <button
-                                    key={index}
-                                    className="rounded-button px-3 py-1.5 bg-gray-100 text-gray-700 text-sm hover:bg-gray-200"
-                                    onClick={() => setSearchQuery(search)} // Clicking fills the input
+                                    key={`${query}-${index}`} // Unique key using query and index
+                                    className="text-sm text-gray-600 cursor-pointer hover:underline"
+                                    onClick={() => setSearchQuery(query)} // Clicking sets query to recent suggestion
                                 >
-                                    {search}
+                                    {query}
                                 </button>
                             ))}
-                        </div>
+                        </ul>
                     </div>
 
                     {/* Popular Categories */}
@@ -139,26 +195,25 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                         ) : searchResults.length > 0 ? (
                             searchResults.map((result) => (
                                 <div
-                                    key={result.id}
-                                    className="bg-white border border-gray-200 rounded-lg p-4"
+                                    key={result["식품코드"]}
+                                    className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50"
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="font-medium text-gray-900">{result.name}</h4>
-                                            <p className="text-sm text-gray-500">
-                                                {result.serving} • {result.calories} 칼로리
-                                            </p>
-                                        </div>
-                                        <button
-                                            className="rounded-button px-4 py-2 bg-custom text-black hover:bg-custom/90"
-                                            onClick={() => onAddMeal(result)}
-                                        >
-                                            추가
-                                        </button>
+                                    <div>
+                                        <p className="font-medium text-sm text-gray-800">{result["식품명"]}</p>
+                                        <p className="text-sm text-gray-500">
+                                            Calories: {result["에너지(kcal)"] || "N/A"}
+                                        </p>
                                     </div>
+                                    <button
+                                        onClick={() => onAddMeal(result["식품명"])} // Pass the name to the add handler
+                                        className="text-sm font-medium text-blue-500 hover:text-blue-700"
+                                    >
+                                        Add
+                                    </button>
                                 </div>
                             ))
                         ) : (
+
                             <div className="text-sm text-gray-500">검색 결과가 없습니다.</div>
                         )}
                     </div>
