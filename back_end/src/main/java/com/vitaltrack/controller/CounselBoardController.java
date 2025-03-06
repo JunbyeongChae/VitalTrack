@@ -45,13 +45,13 @@ public class CounselBoardController {
 
   @GetMapping("counsel/imageGet")
   public String imageGet(HttpServletRequest req, HttpServletResponse res) {
-    String b_file = req.getParameter("imageName");
-    log.info("imageGet 호출 성공===>" + b_file);
+    String counsel_file = req.getParameter("imageName");
+    log.info("imageGet 호출 성공===>" + counsel_file);
     String filePath = "src\\main\\webapp\\image";
     // String filePath ="upload"; // 절대경로.
-    String fname = b_file;
-    log.info("b_file: 8->euc" + b_file);
-    File file = new File(filePath, b_file.trim());
+    String fname = counsel_file;
+    log.info("counsel_file: 8->euc" + counsel_file);
+    File file = new File(filePath, counsel_file.trim());
     String mimeType = req.getServletContext().getMimeType(file.toString());
     // 브라우저는 모르는 mime type에 대해서는 다운로드 처리한다.
     // 보통 브라우저가 인지하는 ppt, xsl, word확장자 파일도 강제로 다운로드 처리 하고 싶을 때
@@ -65,9 +65,9 @@ public class CounselBoardController {
     ServletOutputStream sos = null;
     try {
       if (req.getHeader("user-agent").indexOf("MSIE") == -1) {
-        downName = new String(b_file.getBytes("UTF-8"), "8859_1");
+        downName = new String(counsel_file.getBytes("UTF-8"), "8859_1");
       } else {
-        downName = new String(b_file.getBytes("EUC-KR"), "8859_1");
+        downName = new String(counsel_file.getBytes("EUC-KR"), "8859_1");
       }
       res.setHeader("Content-Disposition", "attachment;filename=" + downName);
       fis = new FileInputStream(file);
@@ -102,12 +102,16 @@ public class CounselBoardController {
   @GetMapping("counsel/counselList")
   public String counselboardList(@RequestParam Map<String, Object> pmap) {
     log.info("counselboardList호출 성공");
-    String temp = "[{'b_title':'글제목입니다.','b_content':'글내용입니다.'}]";
     List<Map<String, Object>> bList = null;
-    bList = counselboardLogic.boardList(pmap);
-    Gson g = new Gson();
-    temp = g.toJson(bList);
-    return temp;
+        try {
+            bList = counselboardLogic.boardList(pmap);
+            Gson g = new Gson();
+            String temp = g.toJson(bList);
+            return temp;
+        } catch (Exception e) {
+            log.error("counselList 호출 중 오류 발생: ", e);
+            return "Error: " + e.getMessage();
+        }
   }// end of counselboardList
 
   /**************************************************************
@@ -132,7 +136,7 @@ public class CounselBoardController {
    * 
    * @return 1이면 등록 성공, 0이면 등록 실패
    **************************************************************/
-  @PostMapping("counselboard/counselboardInsert")
+  @PostMapping("counsel/counselboardInsert")
   public String counselboardInsert(@RequestBody CounselBoard counselboard) {
     log.info("counselboardInsert호출 성공");
     log.info(counselboard);
@@ -159,10 +163,10 @@ public class CounselBoardController {
    * URL패핑 이름 : counselboardDelete
    **************************************************************/
   @DeleteMapping("counselboard/counselboardDelete")
-  public String counselboardDelete(@RequestParam(value = "b_no", required = true) int b_no) {
+  public String counselboardDelete(@RequestParam(value = "counsel_no", required = true) int counsel_no) {
     log.info("counselboardDelete호출 성공");
     int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.
-    result = counselboardLogic.boardDelete(b_no);
+    result = counselboardLogic.boardDelete(counsel_no);
     return "" + result;// "-1"
   }
 
@@ -170,7 +174,7 @@ public class CounselBoardController {
    * 댓글 등록 구현하기 - insert|POST
    * URL패핑 이름 : commentInsert
    **************************************************************/
-  @PostMapping("counselboard/commentInsert")
+  @PostMapping("counsel/commentInsert")
   public String commentInsert(@RequestBody Map<String, Object> pmap) {
     log.info("commentInsert호출 성공");
     int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.

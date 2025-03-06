@@ -3,24 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { boardListDB } from '../../service/dbLogic';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleLeft, faAngleLeft, faAngleRight, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
+import CounselDBItem from './CounselDBItem';
 
 const CounselList = () => {
   const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const currentItems = boards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentItems = (boards || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.seach); //쿼리스트링으로 가져오기
+    const queryParams = new URLSearchParams(window.location.search); //쿼리스트링으로 가져오기
     const page = queryParams.get('page'); 
     if (page) setCurrentPage(parseInt(page)); //현재 내가 바라보는 페이지 정보 담기
   }, [navigate]);
   useEffect(() => {
     const asyncDB = async () => {
-      const board = { gubun: null, keyword: null };
-      const res = await boardListDB(board);
-      console.log(res.data);
-      setBoards(res.data);
+      try {
+        const board = { gubun: null, keyword: null };
+        const res = await boardListDB(board);
+        console.log(res.data);
+        setBoards(res.data || []); // 데이터가 없으면 빈 배열 할당
+      } catch (error) {
+        console.error("게시글 목록 불러오기 실패:", error);
+        setBoards([]); // 에러 발생 시 빈 배열 할당
+      }
     };
     asyncDB();
   }, []);
@@ -74,11 +80,13 @@ const CounselList = () => {
         <table className="table-auto w-full mb-4">
           <thead>
             <tr>
-              <th className="border px-4 py-2">분류</th>
+              <th className="border px-4 py-2">글번호</th>
               <th className="border px-4 py-2">제목</th>
               <th className="border px-4 py-2">작성자</th>
+              <th className="border px-4 py-2">작성일</th>
             </tr>
           </thead>
+          <tbody>{Array.isArray(currentItems) && currentItems.map((board, index) => <CounselDBItem key={index} board={board} page={currentPage} />)}</tbody>
         </table>
 
         <div className="flex justify-center mt-4">

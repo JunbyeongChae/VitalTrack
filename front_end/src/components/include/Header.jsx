@@ -36,7 +36,7 @@ const Header = ({ user, setUser }) => {
           <div className="flex">
             {/* 로고 클릭 시 홈으로 이동 */}
             <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
+              <img className="h-12 w-auto" src="/images/logo_title.png" alt="Logo" />
             </div>
             {/* 네비게이션 메뉴 */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

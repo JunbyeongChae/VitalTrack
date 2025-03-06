@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,11 @@ public class CounselBoardLogic {
   public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
     log.info("boardList 호출 성공.");
     List<Map<String, Object>> bList = null;
-    bList = counselBoardDao.boardList(pmap);
+    try {
+      bList = counselBoardDao.boardList(pmap);
+    } catch (Exception e) {
+      log.error("boardList 호출 중 오류 발생: ", e);
+    }
     return bList;
   }
 
@@ -97,9 +100,6 @@ public class CounselBoardLogic {
   public List<Map<String, Object>> boardDetail(Map<String, Object> pmap) {
     List<Map<String, Object>> bList = null;
     bList = counselBoardDao.boardList(pmap);
-    if (bList.size() == 1) {
-      counselBoardDao.hitCount(pmap);
-    }
     // 댓글가져오기
     List<Map<String, Object>> commList = counselBoardDao.commentList(pmap);
     if (commList != null && commList.size() > 0) {
@@ -124,19 +124,19 @@ public class CounselBoardLogic {
     return result;
   }
 
-  public int commentInsert(Map<String,Object> pmap) {
+  public int commentInsert(Map<String, Object> pmap) {
     int result = -1;
     result = counselBoardDao.commentInsert(pmap);
     log.info("commentInsert result:" + result);
     return result;
   }
-  
-    public int commentUpdate(Map<String,Object> pmap) {
-      int result = -1;
-      result = counselBoardDao.commentUpdate(pmap);
-      log.info("commentUpdate result:" + result);
-      return result;
-    }
+
+  public int commentUpdate(Map<String, Object> pmap) {
+    int result = -1;
+    result = counselBoardDao.commentUpdate(pmap);
+    log.info("commentUpdate result:" + result);
+    return result;
+  }
 
   public int commentDelete(int bc_no) {
     int result = -1;
