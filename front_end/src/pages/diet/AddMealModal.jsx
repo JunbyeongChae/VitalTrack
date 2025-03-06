@@ -1,27 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSearch, faAppleAlt, faCarrot, faDrumstickBite, faBreadSlice } from "@fortawesome/free-solid-svg-icons";
 
-
+// Utility to normalize search text for better searching
+const normalizeText = (text) => {
+    return text ? text.normalize("NFC").toLowerCase() : "";
+};
 
 const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
-    const [searchQuery, setSearchQuery] = useState("");
-    const searchResults = [
-        { id: 1, name: "Greek Yogurt", calories: 59, serving: "100g" },
-        { id: 2, name: "Banana", calories: 105, serving: "1 medium" },
-        { id: 3, name: "Chicken Breast", calories: 165, serving: "100g" },
-    ];
+    const [searchQuery, setSearchQuery] = useState(""); // Current search query
+    const [searchResults, setSearchResults] = useState([]); // Fetched search results
+    const [isLoading, setIsLoading] = useState(false); // Loading indicator
+    const [recentSearches, setRecentSearches] = useState([
+        "Greek Yogurt",
+        "Banana",
+        "Chicken Breast",
+    ]); // Recent searches
+    const [isComposing, setIsComposing] = useState(false); // Track IME composition for Korean input
 
-    const recentSearches = ["Greek Yogurt", "Banana", "Chicken Breast"];
     const popularCategories = [
         { name: "과일", icon: faAppleAlt },
         { name: "채소", icon: faCarrot },
         { name: "단백질", icon: faDrumstickBite },
         { name: "곡류", icon: faBreadSlice },
-
     ];
 
-    if (!isOpen) return null;
+    // Fetch search results when the searchQuery changes
+    useEffect(() => {
+        const fetchSearchResults = async () => {
+            if (!searchQuery) return;
+            setIsLoading(true);
+
+            try {
+                const response = await axios.get("http://localhost:4000/api/foods/search", {
+                    params: { query: searchQuery },
+                });
+
+                setSearchResults(response.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setSearchResults([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSearchResults();
+    }, [searchQuery]);
+
+    // Handle input changes
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value); // Update the query directly
+    };
+
+    // Handle IME composition start (Korean input starts)
+    const handleCompositionStart = () => {
+        setIsComposing(true);
+    };
+
+    // Handle IME composition end (Korean composition finished)
+    const handleCompositionEnd = (e) => {
+        setIsComposing(false); // End composition
+        setSearchQuery(e.target.value); // Finalize the composed text
+    };
+
+    if (!isOpen) return null; // Return null if modal is closed
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -39,7 +83,9 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                             type="text"
                             placeholder="여기에 식품명을 입력하세요..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={handleSearchChange} // Typing handler
+                            onCompositionStart={handleCompositionStart} // IME handler start
+                            onCompositionEnd={handleCompositionEnd} // IME handler end
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-custom focus:border-custom"
                         />
                         <FontAwesomeIcon
@@ -58,7 +104,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                                 <button
                                     key={index}
                                     className="rounded-button px-3 py-1.5 bg-gray-100 text-gray-700 text-sm hover:bg-gray-200"
-                                    onClick={() => setSearchQuery(search)}
+                                    onClick={() => setSearchQuery(search)} // Clicking fills the input
                                 >
                                     {search}
                                 </button>
@@ -66,7 +112,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                         </div>
                     </div>
 
-                    {/* Popular Categories Section */}
+                    {/* Popular Categories */}
                     <div className="p-6">
                         <h3 className="text-sm font-medium text-gray-500 mb-3">인기 카테고리</h3>
                         <div className="grid grid-cols-4 gap-4">
@@ -76,7 +122,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                                     className="rounded-button p-4 bg-gray-50 hover:bg-gray-100 text-center"
                                 >
                                     <FontAwesomeIcon
-                                        icon={category.icon} // Use the dynamic FontAwesome icons here
+                                        icon={category.icon}
                                         className="text-custom text-xl mb-2"
                                     />
                                     <div className="text-sm text-gray-700">{category.name}</div>
@@ -88,27 +134,33 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                     {/* Search Results */}
                     <div className="space-y-4">
                         <h3 className="text-sm font-medium text-gray-500 mb-3">검색 결과</h3>
-                        {searchResults.map((result) => (
-                            <div
-                                key={result.id}
-                                className="bg-white border border-gray-200 rounded-lg p-4"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h4 className="font-medium text-gray-900">{result.name}</h4>
-                                        <p className="text-sm text-gray-500">
-                                            {result.serving} • {result.calories} 칼로리
-                                        </p>
+                        {isLoading ? (
+                            <div className="text-sm text-gray-500">검색 중...</div>
+                        ) : searchResults.length > 0 ? (
+                            searchResults.map((result) => (
+                                <div
+                                    key={result.id}
+                                    className="bg-white border border-gray-200 rounded-lg p-4"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-medium text-gray-900">{result.name}</h4>
+                                            <p className="text-sm text-gray-500">
+                                                {result.serving} • {result.calories} 칼로리
+                                            </p>
+                                        </div>
+                                        <button
+                                            className="rounded-button px-4 py-2 bg-custom text-black hover:bg-custom/90"
+                                            onClick={() => onAddMeal(result)}
+                                        >
+                                            추가
+                                        </button>
                                     </div>
-                                    <button
-                                        className="rounded-button px-4 py-2 bg-custom text-black hover:bg-custom/90"
-                                        onClick={() => onAddMeal(result)}
-                                    >
-                                        추가
-                                    </button>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <div className="text-sm text-gray-500">검색 결과가 없습니다.</div>
+                        )}
                     </div>
                 </div>
             </div>
