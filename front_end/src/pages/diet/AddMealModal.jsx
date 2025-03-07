@@ -8,8 +8,6 @@ const normalizeText = (text) => {
     return text ? text.normalize("NFC").toLowerCase() : "";
 };
 
-let debounceTimeout; // Declare debounceTimeout globally (outside the component)
-
 const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
     const [searchQuery, setSearchQuery] = useState(""); // Current search query
     const [searchResults, setSearchResults] = useState([]); // Fetched search results
@@ -27,68 +25,6 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
         { name: "단백질", icon: faDrumstickBite },
         { name: "곡류", icon: faBreadSlice },
     ];
-
-    // Debounce logic - Wait 300ms after the user stops typing
-    const debouncedSearch = (query) => {
-        clearTimeout(debounceTimeout); // Clear previous timeout if input is still happening
-        debounceTimeout = setTimeout(async () => {
-            if (!query.trim()) {
-                setSearchResults([]); // Clear results if the query is empty
-                return;
-            }
-
-            try {
-                const response = await axios.get("/api/search", { params: { query } });
-                setSearchResults(response.data); // Update search results with response
-            } catch (error) {
-                console.error("Error fetching search results:", error);
-            }
-        }, 300); // Execute the search 300ms after the user stops typing
-    };
-
-    // Handle input changes and trigger debounced search
-    const handleSearchChange = (e) => {
-        const newQuery = e.target.value;
-
-        // Always update the input value so React renders it correctly
-        setSearchQuery(newQuery);
-
-        // Only trigger debounced search if IME composition is not happening
-        if (!isComposing) {
-            debouncedSearch(newQuery);
-        }
-    };
-
-    // Handle IME composition start (Korean input starts)
-    const handleCompositionStart = () => {
-        setIsComposing(true);
-    };
-
-    // Handle IME composition end (Korean composition finished)
-    const handleCompositionEnd = (e) => {
-        setIsComposing(false);
-        const finalQuery = e.target.value;
-        setSearchQuery(finalQuery);
-        debouncedSearch(finalQuery); // Trigger the search with the finalized query
-    };
-
-    // Component cleanup when the modal is closed
-    useEffect(() => {
-        if (isOpen) {
-            setSearchQuery(""); // Clear the search input
-            setSearchResults([]); // Clear the search results
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
-        // Update recent searches only when not composing and input is finalized
-        if (searchQuery && !isComposing && isOpen) {
-            setRecentSearches((prevSearches) => {
-                const updatedSearches = [searchQuery, ...prevSearches.filter((q) => q !== searchQuery)];
-                return updatedSearches.slice(0, 5); // Limit recent searches to 5 items
-            });
-        }
-    }, [searchQuery, isComposing, isOpen]);
 
     // Fetch search results when the searchQuery changes
     useEffect(() => {
@@ -112,6 +48,22 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
         fetchSearchResults();
     }, [searchQuery]);
+
+    // Handle input changes
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value); // Update the query directly
+    };
+
+    // Handle IME composition start (Korean input starts)
+    const handleCompositionStart = () => {
+        setIsComposing(true);
+    };
+
+    // Handle IME composition end (Korean composition finished)
+    const handleCompositionEnd = (e) => {
+        setIsComposing(false); // End composition
+        setSearchQuery(e.target.value); // Finalize the composed text
+    };
 
     if (!isOpen) return null; // Return null if modal is closed
 
@@ -145,27 +97,19 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                 {/* Modal Body */}
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
                     {/* Recent Searches */}
-                    <div className="mt-6">
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-medium text-gray-500">최근 검색기록</h3>
-                            <button
-                                onClick={() => setRecentSearches([])} // Clear all recent searches
-                                className="text-xs text-red-500 hover:text-red-700 focus:outline-none"
-                            >
-                                초기화
-                            </button>
-                        </div>
-                        <ul className="list-disc list-inside">
-                            {recentSearches.map((query, index) => (
+                    <div className="mb-8">
+                        <h3 className="text-sm font-medium text-gray-500 mb-3">최근 검색기록</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {recentSearches.map((search, index) => (
                                 <button
-                                    key={`${query}-${index}`} // Unique key using query and index
-                                    className="text-sm text-gray-600 cursor-pointer hover:underline"
-                                    onClick={() => setSearchQuery(query)} // Clicking sets query to recent suggestion
+                                    key={index}
+                                    className="rounded-button px-3 py-1.5 bg-gray-100 text-gray-700 text-sm hover:bg-gray-200"
+                                    onClick={() => setSearchQuery(search)} // Clicking fills the input
                                 >
-                                    {query}
+                                    {search}
                                 </button>
                             ))}
-                        </ul>
+                        </div>
                     </div>
 
                     {/* Popular Categories */}
