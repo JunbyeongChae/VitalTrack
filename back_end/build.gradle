@@ -39,11 +39,12 @@ dependencies {
   implementation 'mysql:mysql-connector-java:8.0.33'
   runtimeOnly 'com.mysql:mysql-connector-j'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-  implementation 'com.google.firebase:firebase-admin:8.1.0'
-  implementation 'com.google.cloud:google-cloud-firestore:3.0.0'
+  implementation 'com.google.firebase:firebase-admin:9.1.1'
+  implementation 'com.google.cloud:google-cloud-firestore:3.14.0'
   implementation 'com.google.api:api-common:1.10.0'
   implementation 'org.apache.logging.log4j:log4j-api:2.14.1'
   implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+    implementation 'com.google.protobuf:protobuf-java:3.25.0'
 }
 
 tasks.named('test') {

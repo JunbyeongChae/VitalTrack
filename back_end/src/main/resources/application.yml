@@ -32,13 +32,10 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       pool-name: HikariCP
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+  mybatis:
+    mapper-locations: classpath:mappers/*.xml
+    configuration:
+      map-underscore-to-camel-case: true
 firebase:
   api-key: ${FIREBASE_API_KEY}
   auth-domain: ${FIREBASE_AUTH_DOMAIN}
