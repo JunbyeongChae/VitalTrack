@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mybatis.mapper.BoardMapper">
-<!-- select -->
+
+<!-- 상담 게시글 목록 조회 -->
 <select id="boardList" parameterType="java.util.Map" resultType="java.util.Map">
-  SELECT cs.counsel_no, cs.counsel_title, cs.counsel_content, DATE_FORMAT(cs.counsel_date, '%Y.%m.%d') AS counsel_date, mem.mem_nick
+  SELECT cs.counsel_no, cs.counsel_title, cs.counsel_content, 
+         DATE_FORMAT(cs.counsel_date, '%Y.%m.%d') AS counsel_date, 
+         mem.mem_nick
   FROM counsel cs
   JOIN member_info mem ON cs.mem_no = mem.mem_no
   WHERE 1=1
-  <if test="counsel_no != null">
-    AND cs.counsel_no = #{counsel_no}
+  <if test="counselNo != null">
+    AND cs.counsel_no = #{counselNo}
   </if>
   <if test="gubun != null and keyword != null and gubun == 'counsel_title'">
     AND cs.counsel_title LIKE CONCAT('%', #{keyword}, '%')
@@ -18,25 +21,49 @@
   </if>
   ORDER BY cs.counsel_no DESC
 </select>
-<!-- insert -->
+
+<!-- 상담 게시글 등록 -->
 <insert id="boardInsert" parameterType="com.vitaltrack.model.CounselBoard">
   INSERT INTO counsel (counsel_title, counsel_content, counsel_writer, counsel_date, mem_no)
-  VALUES (#{counsel_title}, #{counsel_content}, #{counsel_writer}, NOW(), #{mem_no})
+  VALUES (#{counselTitle}, #{counselContent}, #{counselWriter}, NOW(), #{memNo})
 </insert>
-<!-- update -->
+
+<!-- 상담 게시글 수정 -->
 <update id="boardUpdate" parameterType="map">
   UPDATE counsel
-  SET counsel_title = #{counsel_title},
-      counsel_content = #{counsel_content},
-      counsel_writer = #{counsel_writer}
-  WHERE counsel_no = #{counsel_no}
+  SET counsel_title = #{counselTitle},
+      counsel_content = #{counselContent},
+      counsel_writer = #{counselWriter}
+  WHERE counsel_no = #{counselNo}
 </update>
-<!-- delete -->
+
+<!-- 상담 게시글 삭제 -->
 <delete id="boardDelete" parameterType="map">
-  DELETE FROM counsel WHERE counsel_no = #{counsel_no}
+  DELETE FROM counsel WHERE counsel_no = #{counselNo}
 </delete>
 <!-- comment select -->
 <!-- comment insert -->
 <!-- comment update -->
 <!-- comment delete -->
+
+
+<!-- 회원가입 -->
+<insert id="insertMember" parameterType="com.vitaltrack.model.MemberInfo">
+  INSERT INTO member_info (mem_id, mem_pw, mem_nick, mem_phone, mem_email, 
+                           mem_height, mem_weight, mem_bmi, mem_kcal, 
+                           mem_gen, mem_age, stand_nutri, activityLevel)
+  VALUES (#{memId}, #{memPw}, #{memNick}, #{memPhone}, #{memEmail}, 
+          #{memHeight}, #{memWeight}, #{memBmi}, #{memKcal}, 
+          #{memGen}, #{memAge}, #{standNutri}, #{activityLevel})
+</insert>
+
+<!-- 아이디로 회원 조회 -->
+<select id="findById" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
+  SELECT mem_no, mem_id, mem_pw, mem_nick, mem_phone, mem_email, 
+         mem_height, mem_weight, mem_bmi, mem_kcal, 
+         mem_gen, mem_age, stand_nutri, activityLevel
+  FROM member_info 
+  WHERE mem_id = #{memId}
+</select>
+
 </mapper>

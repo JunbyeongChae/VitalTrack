@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/*")
+@RequestMapping("/api/counsel")
 public class CounselBoardController {
   @Autowired
   private CounselBoardLogic counselboardLogic = null;// 선언만 한다. 그러면 ApplicationContext관리해줌.
@@ -36,14 +36,14 @@ public class CounselBoardController {
   //////////////// Quill Editor 사용하여 이미지 처리하기 구현 ///////////////
   // QuillEditor에서 이미지를 선택하면 <input type='file' name='image'
   // 누가 webapp/pds아래 파일을 만들어 주는거야
-  @PostMapping("counsel/imageUpload")
+  @PostMapping("/imageUpload")
   public String imageUpload(@RequestParam(value = "image") MultipartFile image) {
     log.info("image : " + image);
     String filename = counselboardLogic.imageUpload(image);
     return filename;
   }
 
-  @GetMapping("counsel/imageGet")
+  @GetMapping("/imageGet")
   public String imageGet(HttpServletRequest req, HttpServletResponse res) {
     String counsel_file = req.getParameter("imageName");
     log.info("imageGet 호출 성공===>" + counsel_file);
@@ -99,7 +99,7 @@ public class CounselBoardController {
    * 게시글 목록 조회 구현하기 - search|select|where|GET
    * URL패핑 이름 : counselboardList
    **************************************************************/
-  @GetMapping("counsel/counselList")
+  @GetMapping("/counselList")
   public String counselboardList(@RequestParam Map<String, Object> pmap) {
     log.info("counselboardList호출 성공");
     List<Map<String, Object>> bList = null;
@@ -136,7 +136,7 @@ public class CounselBoardController {
    * 
    * @return 1이면 등록 성공, 0이면 등록 실패
    **************************************************************/
-  @PostMapping("counsel/counselboardInsert")
+  @PostMapping("/counselboardInsert")
   public String counselboardInsert(@RequestBody CounselBoard counselboard) {
     log.info("counselboardInsert호출 성공");
     log.info(counselboard);
@@ -174,7 +174,7 @@ public class CounselBoardController {
    * 댓글 등록 구현하기 - insert|POST
    * URL패핑 이름 : commentInsert
    **************************************************************/
-  @PostMapping("counsel/commentInsert")
+  @PostMapping("/commentInsert")
   public String commentInsert(@RequestBody Map<String, Object> pmap) {
     log.info("commentInsert호출 성공");
     int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.

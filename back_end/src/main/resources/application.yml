@@ -2,6 +2,12 @@ server:
   port: 8000
   tomcat:
     additional-tld-skip-patterns: '*.jar'
+logging:
+  pattern:
+    console: '${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}:%line)-%msg%n}'
+  level:
+    org.springframework: INFO
+    root: INFO
 spring:
   output:
     ansi:
@@ -28,3 +34,5 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

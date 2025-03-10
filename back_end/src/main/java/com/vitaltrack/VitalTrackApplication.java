@@ -9,5 +9,4 @@ public class VitalTrackApplication {
   public static void main(String[] args) {
     SpringApplication.run(VitalTrackApplication.class, args);
   }
-
 }
