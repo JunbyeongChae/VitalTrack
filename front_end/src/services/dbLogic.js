@@ -7,7 +7,7 @@ export const reCommentInsertDB = (comment) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentInsert',
         data: comment
       });
       resolve(res);
@@ -24,7 +24,7 @@ export const reCommentUpdateDB = (cmt) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentUpdate',
         data: cmt
       });
       resolve(res);
@@ -41,7 +41,7 @@ export const reCommentDeleteDB = (bc_no) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/commentDelete?bc_no='+bc_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentDelete?bc_no='+bc_no
       });
       resolve(res);
     } catch (error) {
@@ -50,7 +50,7 @@ export const reCommentDeleteDB = (bc_no) => {
   });
 }; //end of reCommentDeleteDB
 
-//http://localhost:8000/api/board/boardList
+//http://localhost:8000/api/counsel/boardList
 export const boardListDB = (board) => {
   //console.log(board)[Object Object]
   console.log(JSON.stringify(board)); //JSON.stringify(), JSON.parse()
@@ -58,7 +58,7 @@ export const boardListDB = (board) => {
     try {
       const res = axios({
         method: 'get',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardList',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselList',
         params: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -69,8 +69,8 @@ export const boardListDB = (board) => {
   }); //end of boardListDB
 }; //end of boardListDB
 
-export const boardDetailDB = (b_no) => {
-  console.log(b_no);
+export const boardDetailDB = (counsel_no) => {
+  console.log(counsel_no);
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
@@ -78,7 +78,7 @@ export const boardDetailDB = (b_no) => {
         //REACT_APP_SPRING_IP=http://localhost:8000/
         //@RequestMapping("/api/*") - CORS 이슈 해결하기 위한 접두어
         //@GetMapping("board/boardDetail")
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardDetail?b_no=' + b_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDetail?counsel_no=' + counsel_no
       });
       resolve(res);
     } catch (error) {
@@ -87,7 +87,7 @@ export const boardDetailDB = (b_no) => {
   });
 }; //end of boardDetailDB
 
-//http://localhost:8000/api/board/boardInsert
+//http://localhost:8000/api/counsel/boardInsert
 export const boardInsertDB = (board) => {
   //console.log(board)[Object Object]
   console.log(JSON.stringify(board)); //JSON.stringify(), JSON.parse()
@@ -95,7 +95,7 @@ export const boardInsertDB = (board) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardInsert',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -106,7 +106,7 @@ export const boardInsertDB = (board) => {
   }); //end of boardInsertDB
 }; //end of boardInsertDB
 
-//http://localhost:8000/api/board/boardUpdate
+//http://localhost:8000/api/counsel/boardUpdate
 export const boardUpdateDB = (board) => {
   //console.log(board)[Object Object]
   console.log('boardUpdateDB called with:', board); // 디버깅 로그 추가
@@ -114,7 +114,7 @@ export const boardUpdateDB = (board) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardUpdate',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -125,15 +125,15 @@ export const boardUpdateDB = (board) => {
   }); //end of boardUpdateDB
 }; //end of boardUpdateDB
 
-//http://localhost:8000/api/board/boardDelete?b_no=
-export const boardDeleteDB = (b_no) => {
+//http://localhost:8000/api/counsel/boardDelete?counsel_no=
+export const boardDeleteDB = (counsel_no) => {
   //console.log(board)[Object Object]
-  console.log(b_no); //JSON.stringify(), JSON.parse()
+  console.log(counsel_no); //JSON.stringify(), JSON.parse()
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/boardDelete?b_no=' + b_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDelete?counsel_no=' + counsel_no
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
       resolve(res);
@@ -148,7 +148,7 @@ export const uploadImageDB = (file) => {
     try {
       const response = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/board/imageUpload',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/imageUpload',
         headers: {
           'Content-Type': 'multipart/form-data'
         },
