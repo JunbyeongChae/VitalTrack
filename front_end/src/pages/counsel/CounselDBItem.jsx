@@ -1,22 +1,24 @@
-import React from 'react'
-import { Link } from 'react-router'
+import React from 'react';
+import { Link } from 'react-router';
 
 const CounselDBItem = (props) => {
-    const {B_NO, B_TITLE, MEM_NAME} = props.board
-    //console.log(n_title)
-    console.log(props.page)    
-    return (
-        <>
-            <tr>
-                <td>{B_NO}</td>
-                <td>
-                {/* <Route path="/notice/:n_no" exact={true} element={<NoticeDetail />}/> */}
-                <Link to={`/counsel/${B_NO}?page=${props.page}`} className='btn btn-primary'>{B_TITLE}</Link>
-                </td>
-                <td>{MEM_NAME}</td>
-            </tr>
-        </>
-    )
-}
+  const { counsel_no, counsel_title, mem_nick, counsel_date } = props.board;
+  //console.log(n_title)
+  console.log(props.page);
+  return (
+    <>
+      <tr>
+        <td>{counsel_no}</td>
+        <td>
+          <Link to={`/counsel/${counsel_no}?page=${props.page}`} className="btn btn-primary">
+            {counsel_title}
+          </Link>
+        </td>
+        <td>{mem_nick}</td>
+        <td>{counsel_date}</td>
+      </tr>
+    </>
+  );
+};
 
-export default CounselDBItem
+export default CounselDBItem;
