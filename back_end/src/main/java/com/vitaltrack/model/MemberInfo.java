@@ -1,7 +1,5 @@
 package com.vitaltrack.model;
 
-import javax.persistence.Transient;
-
 import lombok.Data;
 
 @Data
@@ -26,6 +24,5 @@ public class MemberInfo {
   private Integer fatMax;
   private String activityLevel;
 
-  @Transient
-  private String confirmPassword; // DB 저장 제외 필드 추가
+  private transient String confirmPassword; // DB 저장 제외 필드 추가
 }
