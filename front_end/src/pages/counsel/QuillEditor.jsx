@@ -1,10 +1,13 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
 import ReactQuill from 'react-quill';
-import { uploadImageDB } from '../../service/dbLogic';
+import { uploadImageDB } from '../../services/dbLogic';
 
-const QuillEditor = ({ value, handleContent, quillRef }) => {
+const QuillEditor = forwardRef(({ value, handleContent }, ref) => {
+  const quillRef = useRef(null);
+  useImperativeHandle(ref, () => ({
+    getEditor: () => quillRef.current
+  }));
   const imageHandler = useCallback(() => {
-    const formData = new FormData();
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -17,6 +20,7 @@ const QuillEditor = ({ value, handleContent, quillRef }) => {
           alert('파일이 선택되지 않았습니다.');
           return;
         }
+        const formData = new FormData();
         const fileType = file.name.split('.').pop().toUpperCase();
         if (!['JPG', 'PNG', 'JPEG'].includes(fileType)) {
           alert('jpg, png, jpeg 형식만 지원합니다.');
@@ -28,26 +32,25 @@ const QuillEditor = ({ value, handleContent, quillRef }) => {
           alert('이미지 업로드에 실패하였습니다.');
           return;
         }
-        const url = `${process.env.REACT_APP_SPRING_IP}api/board/imageGet?imageName=${res.data}`;
-        const quill = quillRef.current.getEditor();
-        const range = quill.getSelection().index;
+        const url = `${process.env.REACT_APP_SPRING_IP}api/counsel/imageGet?imageName=${res.data}`;
+        const editor = quillRef.current.getEditor();
+        const range = editor.getSelection(true);
         if (typeof range !== 'number') {
           alert('에디터에 포커스가 필요합니다.');
           return;
         }
-        quill.setSelection(range, 1);
-        quill.clipboard.dangerouslyPasteHTML(range, `<img src=${url} style="width: 100%; height: auto;" alt="image" />`);
+        editor.insertEmbed(range.index, 'image', url);
       } catch (error) {
         console.error('이미지 업로드 중 오류 발생:', error);
         alert('이미지 업로드 중 오류가 발생하였습니다.');
       }
     };
-  }, [quillRef]);
+  }, []);
 
   const modules = useMemo(
     () => ({
       toolbar: {
-        container: [[{ header: [1, 2, 3, 4, 5, 6, false] }, { color: [] }, { align: [] }, { background: [] }], ['bold', 'italic', 'underline', 'strike', 'blockquote'], [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }], ['clean'], ['link', 'image']],
+        container: [[{ header: [1, 2, 3, false] }], ['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link', 'image']],
         handlers: {
           image: imageHandler
         }
@@ -56,23 +59,13 @@ const QuillEditor = ({ value, handleContent, quillRef }) => {
     [imageHandler]
   );
 
-  const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'align', 'color', 'background'];
+  const formats = ['header', 'bold', 'italic', 'underline', 'list', 'bullet', 'link', 'image'];
 
   return (
     <div style={{ height: '550px', display: 'flex', justifyContent: 'center', padding: '0px' }}>
-      <ReactQuill
-        ref={quillRef}
-        style={{ height: '470px', width: '100%' }}
-        theme="snow"
-        modules={modules}
-        formats={formats}
-        value={value}
-        onChange={(content, delta, source, editor) => {
-          handleContent(editor.getHTML());
-        }}
-      />
+      <ReactQuill ref={quillRef} style={{ height: '470px', width: '100%' }} theme="snow" modules={modules} formats={formats} value={value} onChange={handleContent} />
     </div>
   );
-};
+});
 
 export default QuillEditor;

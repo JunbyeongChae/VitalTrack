@@ -37,7 +37,7 @@ public class CounselBoardLogic {
   }
 
   public String imageUpload(MultipartFile image) {
-    String savePath = "D:\\workspace-board\\mvc-board\\src\\main\\webapp\\pds";
+    String savePath = "src\\main\\webapp\\image";
     String filename = null;
     String fullPath = null;
     if (image != null && !image.isEmpty()) {
@@ -60,13 +60,7 @@ public class CounselBoardLogic {
           bos.flush();
         }
         log.info("파일 저장 성공: " + fullPath);
-        // 파일처리하는 경우 - 추가파일 정보가 필요할 때
-        // 예 : 파일크기
-        // double size = Math.floor(file.length() / (1024.0 * 1024.0) * 10) / 10;
-        // log.info("size:" + size);
-        // pmap.put("file_name", filename);
-        // pmap.put("file_size", size);
-        // pmap.put("file_path", fullPath);
+
       } catch (Exception e) {
         log.error("imageUpload Exception: " + e.toString());
         filename = null; // 예외 발생 시 null 반환

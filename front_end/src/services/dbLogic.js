@@ -1,55 +1,5 @@
 import axios from 'axios';
 
-//댓글 쓰기 구현
-export const reCommentInsertDB = (comment) => {
-  console.log(comment);
-  return new Promise((resolve, reject) => {
-    try {
-      const res = axios({
-        method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentInsert',
-        data: comment
-      });
-      resolve(res);
-    } catch (error) {
-      reject(error);
-    }
-  });
-}; //end of reCommentInsertDB
-// 댓글 수정 구현
-export const reCommentUpdateDB = (cmt) => {
-  //사용자가 입력한 값을 출력해 보기
-  console.log(cmt);
-  return new Promise((resolve, reject) => {
-    try {
-      const res = axios({
-        method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentUpdate',
-        data: cmt
-      });
-      resolve(res);
-    } catch (error) {
-      reject(error);
-    }
-  });
-}; //end of reCommentUpdateDB
-
-//댓글삭제구현
-export const reCommentDeleteDB = (bc_no) => {
-  console.log(bc_no);
-  return new Promise((resolve, reject) => {
-    try {
-      const res = axios({
-        method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentDelete?bc_no='+bc_no
-      });
-      resolve(res);
-    } catch (error) {
-      reject(error);
-    }
-  });
-}; //end of reCommentDeleteDB
-
 //http://localhost:8000/api/counsel/boardList
 export const boardListDB = (board) => {
   //console.log(board)[Object Object]
@@ -75,10 +25,7 @@ export const boardDetailDB = (counsel_no) => {
     try {
       const res = axios({
         method: 'get',
-        //REACT_APP_SPRING_IP=http://localhost:8000/
-        //@RequestMapping("/api/*") - CORS 이슈 해결하기 위한 접두어
-        //@GetMapping("board/boardDetail")
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDetail?counsel_no=' + counsel_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/boardDetail?counsel_no=' + counsel_no
       });
       resolve(res);
     } catch (error) {
@@ -95,7 +42,7 @@ export const boardInsertDB = (board) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboardInsert',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -114,7 +61,7 @@ export const boardUpdateDB = (board) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/counselboardUpdate',
         data: board
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
@@ -133,7 +80,7 @@ export const boardDeleteDB = (counsel_no) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/boardDelete?counsel_no=' + counsel_no
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/counselboardDelete?counsel_no=' + counsel_no
       });
       //스프링에서 응답이 성공적으로 나오면 - 200OK
       resolve(res);
@@ -162,3 +109,53 @@ export const uploadImageDB = (file) => {
     }
   });
 };
+
+//댓글 쓰기 구현
+export const reCommentInsertDB = (comment) => {
+  console.log(comment);
+  return new Promise((resolve, reject) => {
+    try {
+      const res = axios({
+        method: 'post',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/commentInsert',
+        data: comment
+      });
+      resolve(res);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}; //end of reCommentInsertDB
+// 댓글 수정 구현
+export const reCommentUpdateDB = (cmt) => {
+  //사용자가 입력한 값을 출력해 보기
+  console.log(cmt);
+  return new Promise((resolve, reject) => {
+    try {
+      const res = axios({
+        method: 'put',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/commentUpdate',
+        data: cmt
+      });
+      resolve(res);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}; //end of reCommentUpdateDB
+
+//댓글삭제구현
+export const reCommentDeleteDB = (bc_no) => {
+  console.log(bc_no);
+  return new Promise((resolve, reject) => {
+    try {
+      const res = axios({
+        method: 'delete',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/commentDelete?bc_no=' + bc_no
+      });
+      resolve(res);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}; //end of reCommentDeleteDB

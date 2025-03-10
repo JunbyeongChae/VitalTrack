@@ -3,8 +3,8 @@ import Header from '../include/Header';
 import { BButton, ContainerDiv, FormDiv, HeaderDiv } from '../../styles/FormStyles';
 import QuillEditor from './QuillEditor';
 import Footer from '../include/Footer';
-import { useNavigate, useParams } from 'react-router';
-import { boardDetailDB, boardUpdateDB } from '../../service/dbLogic';
+import { boardDetailDB, boardUpdateDB } from '../../services/dbLogic';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CounselDBUpdate = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const CounselDBUpdate = () => {
       setEmail(res.data[0].MEM_NAME);
     };
     asyncDB(); //화면이 열리기 전에 오라클 서버 경유하기 위해
-  },[b_no,setTitle,setContent,setEmail]); //의존성 배열에 값이 변할 때 마다 useEffect안에 선언된 화살표 함수가 실행됨.
+  }, [b_no, setTitle, setContent, setEmail]); //의존성 배열에 값이 변할 때 마다 useEffect안에 선언된 화살표 함수가 실행됨.
   //함수를 메모이제이션 처리할 때 useCallback훅을 사용한다.
   //BoardDBUpdate는 함수이지만 return에서 멀티 엘리먼트를 갖고 있어서 화면 출력함.
   //이 함수는 props나 state가 변하면 새로 렌더링을 한다.

@@ -5,7 +5,6 @@ const CounselDetail = () => {
   return (
     <>
       <FormDiv>
-        {/*<CounselHeader board={board} b_no={b_no} page={page} />*/}
         <section>
           <div dangerouslySetInnerHTML={{}}></div>
         </section>
@@ -31,7 +30,7 @@ const CounselDetail = () => {
             </div>
           </div>
           <div>
-            <CommentArea/>
+            <CommentArea />
           </div>
         </div>
       </FormDiv>

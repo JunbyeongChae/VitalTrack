@@ -13,7 +13,7 @@ const CounselList = () => {
   const currentItems = (boards || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search); //쿼리스트링으로 가져오기
-    const page = queryParams.get('page'); 
+    const page = queryParams.get('page');
     if (page) setCurrentPage(parseInt(page)); //현재 내가 바라보는 페이지 정보 담기
   }, [navigate]);
   useEffect(() => {
@@ -24,7 +24,7 @@ const CounselList = () => {
         console.log(res.data);
         setBoards(res.data || []); // 데이터가 없으면 빈 배열 할당
       } catch (error) {
-        console.error("게시글 목록 불러오기 실패:", error);
+        console.error('게시글 목록 불러오기 실패:', error);
         setBoards([]); // 에러 발생 시 빈 배열 할당
       }
     };
@@ -102,19 +102,19 @@ const CounselList = () => {
             </button>
 
             {/* 페이지 번호 버튼 */}
-            {Array.from({ length: Math.ceil(boards.length / itemsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+            {Array.from({ length: boards ? Math.ceil(boards.length / itemsPerPage) : 0 }, (_, i) => i + 1).map((pageNumber) => (
               <button key={pageNumber} onClick={() => handlePageChange(pageNumber)} className={`px-3 py-1 rounded border ${currentPage === pageNumber ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
                 {pageNumber}
               </button>
             ))}
 
             {/* Next 버튼 */}
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(boards.length / itemsPerPage)} className="px-3 py-1 rounded border disabled:opacity-50">
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(boards ? boards.length / itemsPerPage : 0)} className="px-3 py-1 rounded border disabled:opacity-50">
               <FontAwesomeIcon icon={faAngleRight} />
             </button>
 
             {/* Last 버튼 */}
-            <button onClick={() => handlePageChange(Math.ceil(boards.length / itemsPerPage))} disabled={currentPage === Math.ceil(boards.length / itemsPerPage)} className="px-3 py-1 rounded border disabled:opacity-50">
+            <button onClick={() => handlePageChange(Math.ceil(boards ? boards.length / itemsPerPage : 0))} disabled={currentPage === Math.ceil(boards ? boards.length / itemsPerPage : 0)} className="px-3 py-1 rounded border disabled:opacity-50">
               <FontAwesomeIcon icon={faAngleDoubleRight} />
             </button>
           </nav>
@@ -125,7 +125,9 @@ const CounselList = () => {
           <button className="btn btn-warning p-2 bg-yellow-500 text-white rounded" onClick={boardList}>
             전체조회
           </button>
-          <button className="btn btn-success p-2 bg-green-500 text-white rounded" onClick={() => navigate('/counsel/write')}>상담글쓰기</button>
+          <button className="btn btn-success p-2 bg-green-500 text-white rounded" onClick={() => navigate('/counsel/write')}>
+            상담글쓰기
+          </button>
         </div>
       </div>
     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const CounselDBItem = (props) => {
   const { counsel_no, counsel_title, mem_nick, counsel_date } = props.board;
