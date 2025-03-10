@@ -45,13 +45,12 @@ public class CounselBoardController {
 
   @GetMapping("/imageGet")
   public String imageGet(HttpServletRequest req, HttpServletResponse res) {
-    String counsel_file = req.getParameter("imageName");
-    log.info("imageGet 호출 성공===>" + counsel_file);
+    String imageName  = req.getParameter("imageName");
+    log.info("imageGet 호출 성공===>" + imageName );
     String filePath = "src\\main\\webapp\\image";
     // String filePath ="upload"; // 절대경로.
-    String fname = counsel_file;
-    log.info("counsel_file: 8->euc" + counsel_file);
-    File file = new File(filePath, counsel_file.trim());
+    log.info("imageName : 8->euc" + imageName );
+    File file = new File(filePath, imageName .trim());
     String mimeType = req.getServletContext().getMimeType(file.toString());
     // 브라우저는 모르는 mime type에 대해서는 다운로드 처리한다.
     // 보통 브라우저가 인지하는 ppt, xsl, word확장자 파일도 강제로 다운로드 처리 하고 싶을 때
@@ -65,9 +64,9 @@ public class CounselBoardController {
     ServletOutputStream sos = null;
     try {
       if (req.getHeader("user-agent").indexOf("MSIE") == -1) {
-        downName = new String(counsel_file.getBytes("UTF-8"), "8859_1");
+        downName = new String(imageName .getBytes("UTF-8"), "8859_1");
       } else {
-        downName = new String(counsel_file.getBytes("EUC-KR"), "8859_1");
+        downName = new String(imageName .getBytes("EUC-KR"), "8859_1");
       }
       res.setHeader("Content-Disposition", "attachment;filename=" + downName);
       fis = new FileInputStream(file);
@@ -163,10 +162,10 @@ public class CounselBoardController {
    * URL패핑 이름 : counselboardDelete
    **************************************************************/
   @DeleteMapping("counselboard/counselboardDelete")
-  public String counselboardDelete(@RequestParam(value = "counsel_no", required = true) int counsel_no) {
+  public String counselboardDelete(@RequestParam(value = "counselNo", required = true) int counselNo) {
     log.info("counselboardDelete호출 성공");
     int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.
-    result = counselboardLogic.boardDelete(counsel_no);
+    result = counselboardLogic.boardDelete(counselNo);
     return "" + result;// "-1"
   }
 
@@ -197,10 +196,10 @@ public class CounselBoardController {
    * URL패핑 이름 : commentDelete
    **************************************************************/
   @DeleteMapping("counselboard/commentDelete")
-  public String commentDelete(@RequestParam(value = "bc_no", required = true) int bc_no) {
+  public String commentDelete(@RequestParam(value = "answerNo", required = true) int answerNo) {
     log.info("commentDelete 호출 성공");
     int result = -1;
-    result = counselboardLogic.commentDelete(bc_no);
+    result = counselboardLogic.commentDelete(answerNo);
     log.info("result : " + result);
     return "" + result;
   }

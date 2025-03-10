@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginMember } from '../../services/authLogic';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebaseConfig';
-import { checkUserExists } from '../../services/authLogic';
 
 // mySQL사용으로 전체 수정 : 채준병
 // 로그인 페이지
@@ -11,7 +9,7 @@ const Login = ({ setUser }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     memEmail: '',
-    memPw: '',
+    memPw: ''
   });
 
   const [error, setError] = useState('');
@@ -19,23 +17,37 @@ const Login = ({ setUser }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const userData = await loginMember(formData);
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      alert(`${userData.memNick}님, 환영합니다!`);
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                memEmail: formData.memEmail,
+                memPw: formData.memPw,
+            }),
+        });
+
+        const userData = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+            alert(`${userData.memNick}님, 환영합니다!`);
+            navigate('/');
+        } else {
+            throw new Error(userData.error || '로그인 실패');
+        }
+    } catch (err) {
+        alert(`로그인 중 오류가 발생했습니다: ${err.message}`);
+    }
+};
 
   const handleGoogleLogin = async () => {
     try {
@@ -43,29 +55,22 @@ const Login = ({ setUser }) => {
       const user = result.user;
 
       // DB에서 사용자 존재 여부 확인
-      const exists = await checkUserExists(user.email);
+      const response = await fetch(`/api/auth/getUserByEmail?email=${user.email}`);
+      const userData = await response.json();
 
-      if (exists) {
-        // DB에 사용자가 있으면 로그인 처리
-        const userData = {
-          email: user.email,
-          name: user.displayName,
-          uid: user.uid,
-        };
-
-        setUser(userData);
+      if (response.ok) {
         localStorage.setItem('user', JSON.stringify(userData));
-        alert(`${user.displayName}님, 환영합니다!`);
+        setUser(userData);
+        alert(`${userData.memNick}님, 환영합니다!`);
         navigate('/');
       } else {
-        // DB에 사용자가 없으면 회원가입 페이지로 이동
         alert('회원정보를 찾을 수 없습니다. 회원가입을 진행해주세요.');
         navigate('/signup', {
           state: {
             email: user.email,
             name: user.displayName,
-            uid: user.uid,
-          },
+            uid: user.uid
+          }
         });
       }
     } catch (error) {
@@ -74,7 +79,8 @@ const Login = ({ setUser }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen justify-center items-center bg-white font-[Inter]"
+    <div
+      className="flex flex-col h-screen justify-center items-center bg-white font-[Inter]"
       style={{
         padding: '0',
         margin: '0',
@@ -104,7 +110,7 @@ const Login = ({ setUser }) => {
           </form>
 
           <div className="text-center text-gray-600 text-sm">Or sign in with</div>
-          
+
           {/* Google 로그인 버튼 */}
           <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition">
             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="h-4 w-4 mr-2" />

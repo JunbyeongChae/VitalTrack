@@ -51,10 +51,10 @@ public class CounselBoardDao {
     return commList;
   }
 
-  public int boardDelete(int b_no) {
+  public int boardDelete(int counselNo) {
     log.info("boardDelete 호출");
     int result = -1;
-    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.boardDelete", b_no);
+    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.boardDelete", counselNo);
     return result;
   }
 
@@ -82,10 +82,10 @@ public class CounselBoardDao {
     return result;
   }
 
-  public int commentDelete(int bc_no) {
+  public int commentDelete(int answerNo) {
     log.info("commentDelete 호출");
     int result = -1;
-    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.commentDelete", bc_no);
+    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.commentDelete", answerNo);
     log.info("commentDelete result:" + result);
     return result;
   }

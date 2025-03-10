@@ -72,7 +72,7 @@ const Header = ({ user, setUser }) => {
             ) : (
               <>
                 <button onClick={() => navigate('/mypage')} className="text-gray-700 cursor-pointer hover:underline">
-                  {currentUser.name}님
+                  {currentUser.memNick}님
                 </button>
                 <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md">
                   Logout

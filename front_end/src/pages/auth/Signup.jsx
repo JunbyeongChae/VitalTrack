@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { registerMember } from '../../services/authLogic';
 
-// mySQL사용으로 전체 수정정
+// mySQL사용으로 전체 수정
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,28 +15,67 @@ const Signup = () => {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   const [formData, setFormData] = useState({
-    mem_id: '',
-    mem_pw: '',
+    memId: '',
+    memPw: '',
     confirmPassword: '',
-    mem_nick: prefilledData.name || '',
-    mem_phone: '',
-    mem_email: prefilledData.email || '',
-    mem_height: '',
-    mem_weight: '',
-    mem_gen: '',
-    mem_age: '',
+    memNick: prefilledData.name || '',
+    memPhone: '',
+    memEmail: prefilledData.email || '',
+    memHeight: '',
+    memWeight: '',
+    memGen: '',
+    memAge: '',
     activityLevel: ''
   });
 
   const [agreed, setAgreed] = useState(false);
 
-  // 나이 계산 함수
+  // 입력조건식
+  const validateForm = () => {
+    const idRegex = /^[a-zA-Z0-9]{5,15}$/;
+    const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+    const phoneRegex = /^010\d{7,8}$/;
+    const heightRegex = /^(5[0-9]|[6-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)$/;
+    const weightRegex = /^([1-9][0-9]|[1-9][0-9]{1,2}|300)$/;
+
+    if (!idRegex.test(formData.memId)) {
+      alert('아이디는 5~15자의 영문과 숫자로 입력해 주세요.');
+      return false;
+    }
+
+    if (!pwRegex.test(formData.memPw)) {
+      alert('비밀번호는 8~20자의 영문, 숫자를 포함해야 합니다.');
+      return false;
+    }
+
+    if (formData.memPw !== formData.confirmPassword) {
+      alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      return false;
+    }
+
+    if (!phoneRegex.test(formData.memPhone)) {
+      alert("전화번호는 '010'으로 시작하고, 10~11자리 숫자만 입력해 주세요.");
+      return false;
+    }
+
+    if (!heightRegex.test(formData.memHeight)) {
+      alert('신장은 50cm에서 250cm 사이 소수점 제외한 정수로 입력해 주세요.');
+      return false;
+    }
+
+    if (!weightRegex.test(formData.memWeight)) {
+      alert('체중은 10kg에서 300kg 사이 소수점 제외한 정수로 입력해 주세요.');
+      return false;
+    }
+
+    return true;
+  };
+  // 생년월일 입력 시 memAge 자동 계산
   const calculateAge = (year, month, day) => {
     const today = new Date();
     const birthDate = new Date(year, month - 1, day);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
@@ -45,36 +84,32 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let updatedFormData = { ...formData, [name]: value };
 
-    // 생년월일 입력 시 mem_age 자동 계산
+    // 생년월일 입력 시 memAge 자동 계산
     if (updatedFormData.birthYear && updatedFormData.birthMonth && updatedFormData.birthDay) {
-      updatedFormData.mem_age = calculateAge(updatedFormData.birthYear, updatedFormData.birthMonth, updatedFormData.birthDay);
+      updatedFormData.memAge = calculateAge(updatedFormData.birthYear, updatedFormData.birthMonth, updatedFormData.birthDay);
     }
 
     setFormData(updatedFormData);
-
-    console.log('Updated mem_age:', updatedFormData.mem_age); // 디버깅 로그 추가
+    console.log('Updated memAge:', updatedFormData.memAge); // 디버깅 로그
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.mem_age) {
-      alert('mem_age error');
+    if (!validateForm()) {
       return;
     }
 
     try {
-      const response = await registerMember(formData);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '회원가입 실패');
-      }
+      const result = await registerMember(formData);
 
-      alert('회원가입이 완료되었습니다.');
-      navigate('/login');
+      // 성공 메시지 처리
+      if (result.status === "success") {
+        alert(result.message);
+        navigate('/login');
+      }
     } catch (err) {
       alert(`회원가입 중 오류가 발생했습니다: ${err.message}`);
     }
@@ -87,19 +122,19 @@ const Signup = () => {
         {/* 이메일 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">이메일</label>
-          <input type="email" name="mem_email" placeholder="이메일을 입력하세요" value={formData.mem_email} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="email" name="memEmail" placeholder="이메일을 입력하세요" value={formData.memEmail} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
 
         {/* 아이디 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">아이디</label>
-          <input type="text" name="mem_id" placeholder="아이디를 입력하세요" value={formData.mem_id} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="text" name="memId" placeholder="아이디를 입력하세요.(5~15자, 영문+숫자)" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
 
         {/* 비밀번호 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">비밀번호</label>
-          <input type="password" name="mem_pw" placeholder="비밀번호를 입력하세요" value={formData.mem_pw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="password" name="memPw" placeholder="비밀번호를 입력하세요(8~20자, 영문+숫자+특수문자)" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
 
         {/* 비밀번호 확인 */}
@@ -111,7 +146,7 @@ const Signup = () => {
         {/* 닉네임 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">닉네임</label>
-          <input type="text" name="mem_nick" placeholder="닉네임을 입력하세요" value={formData.mem_nick} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="text" name="memNick" placeholder="닉네임을 입력하세요" value={formData.memNick} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
 
         {/* 생년월일 입력 */}
@@ -149,7 +184,7 @@ const Signup = () => {
         {/* 전화번호 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">전화번호</label>
-          <input type="tel" name="mem_phone" placeholder="전화번호를 입력하세요. (-제외)" value={formData.mem_phone} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="tel" name="memPhone" placeholder="전화번호를 입력하세요. (-제외)" value={formData.memPhone} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
 
         {/* 성별 선택 */}
@@ -157,16 +192,17 @@ const Signup = () => {
           <label className="block text-sm font-medium text-gray-700">성별</label>
           <div className="flex space-x-4 mt-1">
             <label className="flex items-center">
-              <input type="radio" name="mem_gen" checked={formData.mem_gen === 'male'} onChange={() => setFormData({ ...formData, mem_gen: 'male' })} className="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+              <input type="radio" name="memGen" checked={formData.memGen === 'male'} onChange={() => setFormData({ ...formData, memGen: 'male' })} className="h-4 w-4 text-indigo-600 border-gray-300 rounded" required />
               <span className="ml-2 text-sm text-gray-700">남성</span>
             </label>
             <label className="flex items-center">
               <input
                 type="radio" // checkbox -> radio 수정 : 채준병
-                name="mem_gen"
-                checked={formData.mem_gen === 'female'}
-                onChange={() => setFormData({ ...formData, mem_gen: 'female' })}
+                name="memGen"
+                checked={formData.memGen === 'female'}
+                onChange={() => setFormData({ ...formData, memGen: 'female' })}
                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                required
               />
               <span className="ml-2 text-sm text-gray-700">여성</span>
             </label>
@@ -176,12 +212,12 @@ const Signup = () => {
         {/* 신장 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">신장 (cm)</label>
-          <input type="number" name="mem_height" placeholder="신장을 입력하세요" value={formData.mem_height || ''} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          <input type="number" name="memHeight" placeholder="신장을 입력하세요" value={formData.memHeight || ''} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
         </div>
         {/* 체중 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">체중 (kg)</label>
-          <input type="number" name="mem_weight" placeholder="체중을 입력하세요" value={formData.mem_weight} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          <input type="number" name="memWeight" placeholder="체중을 입력하세요" value={formData.memWeight} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
         </div>
 
         {/* 일상 활동량 선택 */}

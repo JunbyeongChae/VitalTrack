@@ -110,9 +110,9 @@ public class CounselBoardLogic {
     return bList;
   }
 
-  public int boardDelete(int b_no) {
+  public int boardDelete(int counselNo) {
     int result = -1;
-    result = counselBoardDao.boardDelete(b_no);
+    result = counselBoardDao.boardDelete(counselNo);
     log.info("Delete result:" + result);
     return result;
   }
@@ -138,9 +138,9 @@ public class CounselBoardLogic {
     return result;
   }
 
-  public int commentDelete(int bc_no) {
+  public int commentDelete(int answerNo) {
     int result = -1;
-    result = counselBoardDao.commentDelete(bc_no);
+    result = counselBoardDao.commentDelete(answerNo);
     log.info("commentDelete result:" + result);
     return result;
   }

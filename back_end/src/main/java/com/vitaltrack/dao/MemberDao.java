@@ -2,6 +2,7 @@ package com.vitaltrack.dao;
 
 import com.vitaltrack.model.MemberInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MemberDao {
@@ -9,7 +10,7 @@ public interface MemberDao {
     int insertMember(MemberInfo member);
 
     // 이메일로 회원 조회
-    MemberInfo findByEmail(String email);
+    MemberInfo findByEmail(@Param("memEmail")String memEmail);
 
     // 아이디로 회원 조회
     MemberInfo findById(String memId);

@@ -9,10 +9,6 @@ public class MemberInfo {
   private Integer memNo;
   private String memId;
   private String memPw;
-
-  @Transient
-  private String confirmPassword;
-
   private String memNick;
   private String memPhone;
   private String memEmail;
@@ -22,6 +18,14 @@ public class MemberInfo {
   private Integer memKcal;
   private String memGen;
   private Integer memAge;
-  private String standNutri;
-  private String activityLevel; // ENUM 값 그대로 사용
+  private Integer carbMin;
+  private Integer carbMax;
+  private Integer proteinMin;
+  private Integer proteinMax;
+  private Integer fatMin;
+  private Integer fatMax;
+  private String activityLevel;
+
+  @Transient
+  private String confirmPassword; // DB 저장 제외 필드 추가
 }
