@@ -4,6 +4,8 @@ import {Button, Form, Modal} from "react-bootstrap";
 import Select from "react-select/base";
 import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 
 const ScheduleModal = () => {
@@ -151,12 +153,12 @@ const ScheduleModal = () => {
         <Modal show={showModal} onHide={handleClose} centered>
 
             <Modal.Header closeButton className="custom-header">
-                <Button variant="secondary" onClick={handleClose}>
-                    <i className="fa-solid fa-xmark"></i>
+                <Button variant="primary" onClick={handleClose}>
+                    <FontAwesomeIcon icon={faXmark} />
                 </Button>
                 <Modal.Title>운동 일정</Modal.Title>
                 <Button variant="primary" onClick={handleSave}>
-                    <i className="fa-solid fa-check"></i>
+                    <FontAwesomeIcon icon={faCheck} />
                 </Button>
             </Modal.Header>
 
@@ -190,7 +192,7 @@ const ScheduleModal = () => {
                                 />
                             }
                         </div>
-                        <i className="fa-solid fa-angle-right"></i>
+                        <FontAwesomeIcon icon={faAngleRight} />
                         <div className="date-time-box right-box">
                             <Form.Control
                                 type="date"

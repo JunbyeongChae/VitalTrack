@@ -3,6 +3,8 @@ import {motion} from "framer-motion";
 import {useScheduleContext} from "./Context";
 import ScheduleModal from "./ScheduleModal";
 import {Button, Form, Modal} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCirclePlus, faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 const DateClick = () => {
     const { schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, selectedSchedule, setSelectedSchedule, modalMode,setModalMode } = useScheduleContext()
@@ -93,7 +95,7 @@ const DateClick = () => {
                         일정
                     </h2>
                     <button onClick={() => setSelectedDate(null)} className="text-xl ml-auto mr-3">
-                        <i className="fa-solid fa-xmark text-gray-600"></i>
+                        <FontAwesomeIcon icon={faXmark} className="text-gray-600" />
                     </button>
                 </div>
                 <div className="mt-6">
@@ -107,9 +109,10 @@ const DateClick = () => {
                                         onClick={() => checkClick(schedule)}
                                         aria-pressed={schedule.isFinished}
                                 >
-                                    <i
-                                        className={`fa-solid fa-circle-check border-2 rounded-full ${schedule.extendedProps.isFinished ? 'text-gray-500 border-gray-500' : 'border-gray-500 text-white'}`}
-                                    ></i>
+                                    <FontAwesomeIcon
+                                        icon={faCircleCheck}
+                                        className={`border-2 rounded-full ${schedule.extendedProps.isFinished ? 'text-gray-500 border-gray-500' : 'border-gray-500 text-white'}`}
+                                    />
                                 </button>
                                 {/* 색상 표시 부분 */}
                                 <div
@@ -145,8 +148,8 @@ const DateClick = () => {
                                 </div>
                                 <div
                                     className="items-center ml-auto cursor-pointer text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    <i className="fa-solid fa-trash text-lg mr-5 "
-                                       onClick={() => deleteSchedule(schedule)}></i>
+                                    <FontAwesomeIcon icon={faTrash} className="text-lg mr-5"
+                                       onClick={() => deleteSchedule(schedule)}/>
                                 </div>
                             </div>
 
@@ -168,7 +171,7 @@ const DateClick = () => {
                 </div>
                 <div className="flex ml-auto mt-auto mb-10">
                     <button onClick={handleAddSchedule} className="text-teal-400 text-4xl cursor-pointer transition-transform duration-100 hover:text-teal-600">
-                        <i className="fa-solid fa-circle-plus"></i>
+                        <FontAwesomeIcon icon={faCirclePlus} />
                     </button>
                 </div>
             </motion.div>

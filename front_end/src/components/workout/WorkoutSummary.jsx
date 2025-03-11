@@ -1,4 +1,6 @@
 import React from 'react'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPersonRunning, faPersonSwimming} from "@fortawesome/free-solid-svg-icons";
 
 const WorkoutSummary = () => {
     const today = new Date();
@@ -13,7 +15,7 @@ const WorkoutSummary = () => {
                   {1 ? (
                       <>
                           <div className="flex items-center justify-center space-x-4">
-                              <i className="text-teal-500 fa-solid fa-person-swimming mr-4 text-5xl"></i>
+                              <FontAwesomeIcon icon={faPersonSwimming} className="text-teal-500 mr-4 text-5xl" />
                               <div className="flex flex-col items-center justify-center">
                                   <div className="font-bold">수영</div>
                                   <div className="flex items-center justify-center space-x-4 mt-3">
@@ -33,7 +35,7 @@ const WorkoutSummary = () => {
               <div
                   className="workout-box  items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-full">
                   <div className="flex items-center justify-center space-x-4">
-                      <i className="text-teal-500 fa-solid fa-person-running mr-4 text-5xl"></i>
+                      <FontAwesomeIcon icon={faPersonRunning} className="text-teal-500 mr-4 text-5xl" />
                       <div className="flex flex-col items-center justify-center">
                           <div className="font-bold">실외 달리기</div>
                           <div className="flex items-center justify-center space-x-4 mt-3">
