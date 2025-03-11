@@ -22,11 +22,21 @@ const App = () => {
   }, []);
 
   return (
-    <div className="bg-gray-50 font-[Inter]">
-      <Header />
-      <Home />
+    <>
+      <Header user={user} setUser={setUser} />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home user={user} />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/signup" element={<Signup setUser={setUser} />} />
+          <Route path="/counsel" element={<CounselList />} />
+          <Route path="/counsel/write" element={<CounselDBWrite />} />
+          <Route path="/nutrition" element={<Dashboard />} />
+          <Route path="/workout" exact={true} element={<WorkoutPage/>}/>
+        </Routes>
+      </main>
       <Footer />
-    </div>
+    </>
   );
 };
 
