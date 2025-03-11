@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vitaltrack.mapper.DietRecordMapper">
+
+    <!-- Insert a single diet record -->
+    <insert id="insertDietRecord">
+        INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
+        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{foodName}, #{calories}, #{memo})
+    </insert>
+
+    <!-- Insert multiple diet records -->
+    <insert id="insertDietRecords">
+        <foreach collection="records" item="record" separator=";">
+            INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
+            VALUES (#{record.memNo}, #{record.dietDate}, #{record.mealType}, #{record.foodName}, #{record.calories}, #{record.memo})
+        </foreach>
+    </insert>
+
+    <!-- Select all diet records for a specific user -->
+    <select id="getDietRecordsByMemNo" resultType="com.example.diettracker.model.DietRecord">
+        SELECT * FROM diet_record WHERE mem_no = #{memNo}
+    </select>
+
+</mapper>

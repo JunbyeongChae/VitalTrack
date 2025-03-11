@@ -71,7 +71,8 @@ const Meals = () => {
     // Event handler for "저장" button
     const handleSaveMeals = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/save-meals", {
+            const memberNumber = new URLSearchParams(window.location.search).get("memberNumber");
+            const response = await fetch(`http://localhost:8000/api/save-meals/${memberNumber}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
