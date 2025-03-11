@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vitaltrack.mapper.DietRecordMapper">
-
     <!-- Insert a single diet record -->
-    <insert id="insertDietRecord">
-        INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
-        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{foodName}, #{calories}, #{memo})
-    </insert>
-
-    <!-- Insert multiple diet records -->
-    <insert id="insertDietRecords">
-        <foreach collection="records" item="record" separator=";">
+    <insert id="insertDietRecord" parameterType="java.util.List">
+        <if test="list != null and list.size() > 0">
             INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
-            VALUES (#{record.memNo}, #{record.dietDate}, #{record.mealType}, #{record.foodName}, #{record.calories}, #{record.memo})
-        </foreach>
+            VALUES
+            <foreach collection="list" item="item" separator=",">
+                (#{item.memNo}, #{item.dietDate}, #{item.mealType}, #{item.foodName}, #{item.calories}, #{item.memo})
+            </foreach>
+        </if>
     </insert>
 
     <!-- Select all diet records for a specific user -->
-    <select id="getDietRecordsByMemNo" resultType="com.example.diettracker.model.DietRecord">
-        SELECT * FROM diet_record WHERE mem_no = #{memNo}
+    <select id="findDietRecordsByMemNo" resultType="com.vitaltrack.model.DietRecord">
+        SELECT
+            record_id AS recordId,
+            mem_no AS memNo,
+            diet_date AS dietDate,
+            meal_type AS mealType,
+            food_name AS foodName,
+            calories,
+            memo,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM diet_record
+        WHERE mem_no = #{memNo}
     </select>
-
 </mapper>

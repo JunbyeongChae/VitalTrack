@@ -1,17 +1,9 @@
 package com.vitaltrack.mapper;
 
 import com.vitaltrack.model.Diet;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
-@Mapper
 public interface DietMapper {
-
-    @Select("SELECT * FROM diet WHERE mem_no = #{memNo}")
-    List<Diet> findByMemNo(String memNo);
-
-    @Insert("INSERT INTO diet (mem_no, date, diet_kcal, diet_menu) VALUES (#{memNo}, #{date}, #{dietKcal}, #{dietMenu})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    Diet findByMemNo(@Param("memNo") String memNo);
     void insertDiet(Diet diet);
 }
