@@ -109,10 +109,9 @@ const DateClick = () => {
                                         onClick={() => checkClick(schedule)}
                                         aria-pressed={schedule.isFinished}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faCircleCheck}
-                                        className={`border-2 rounded-full ${schedule.extendedProps.isFinished ? 'text-gray-500 border-gray-500' : 'border-gray-500 text-white'}`}
-                                    />
+                                    <i
+                                        className={`fa-solid fa-circle-check border-2 rounded-full ${schedule.extendedProps.isFinished ? 'text-gray-500 border-gray-500' : 'border-gray-500 text-white'}`}
+                                    ></i>
                                 </button>
                                 {/* 색상 표시 부분 */}
                                 <div

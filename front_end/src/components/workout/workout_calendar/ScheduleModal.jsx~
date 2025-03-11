@@ -153,7 +153,10 @@ const ScheduleModal = () => {
         <Modal show={showModal} onHide={handleClose} centered>
 
             <Modal.Header closeButton className="custom-header">
-                <Button variant="primary" onClick={handleClose}>
+                <Button
+                    onClick={handleClose}
+                    className="border-none bg-transparent text-gray-600"
+                >
                     <FontAwesomeIcon icon={faXmark} />
                 </Button>
                 <Modal.Title>운동 일정</Modal.Title>
