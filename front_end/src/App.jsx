@@ -8,6 +8,7 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
 import CounselDBWrite from './pages/counsel/CounselDBWrite';
+import WorkoutPage from "./pages/WorkoutPage";
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -21,20 +22,11 @@ const App = () => {
   }, []);
 
   return (
-    <>
-      <Header user={user} setUser={setUser} />
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home user={user} />} />
-          <Route path="/login" element={<Login setUser={setUser} />} />
-          <Route path="/signup" element={<Signup setUser={setUser} />} />
-          <Route path="/counsel" element={<CounselList />} />
-          <Route path="/counsel/write" element={<CounselDBWrite />} />
-          <Route path="/nutrition" element={<Dashboard />} />
-        </Routes>
-      </main>
+    <div className="bg-gray-50 font-[Inter]">
+      <Header />
+      <Home />
       <Footer />
-    </>
+    </div>
   );
 };
 
