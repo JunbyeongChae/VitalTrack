@@ -32,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 public class CounselBoardController {
   @Autowired
   private CounselBoardLogic counselboardLogic = null;
+
   @PostMapping("/imageUpload")
   public String imageUpload(@RequestParam(value = "image") MultipartFile image) {
     log.info("image : " + image);
@@ -83,29 +84,27 @@ public class CounselBoardController {
     return null;
   }// end of imageGet
 
-
-
   /**************************************************************
    * 게시글 목록 조회 구현하기 - search|select|where|GET
    * URL패핑 이름 : counselboardList
    **************************************************************/
   @GetMapping("/counselList")
   public String counselboardList(@RequestParam Map<String, Object> pmap) {
-    log.info("counselboardList호출 성공");
-    List<Map<String, Object>> bList = null;
-    try {
-      bList = counselboardLogic.boardList(pmap);
-      if (bList == null) {
-        bList = new ArrayList<>(); // null 방지
-      }
-      Gson g = new Gson();
-      String temp = g.toJson(bList);
-      return temp;
-    } catch (Exception e) {
-      log.error("counselList 호출 중 오류 발생: ", e);
-      return "Error: " + e.getMessage();
+    log.info("counselboardList 호출");
+
+    // admin 값이 문자열로 전달될 경우, Integer로 변환
+    if (pmap.containsKey("admin")) {
+      pmap.put("admin", Integer.parseInt(pmap.get("admin").toString()));
     }
-  }// end of counselboardList
+
+    List<Map<String, Object>> bList = counselboardLogic.boardList(pmap);
+    if (bList == null) {
+      bList = new ArrayList<>();
+    }
+
+    Gson gson = new Gson();
+    return gson.toJson(bList);
+  }
 
   /**************************************************************
    * 게시글 상세 조회 구현하기 - search|select|where|GET
@@ -131,11 +130,9 @@ public class CounselBoardController {
    **************************************************************/
   @PostMapping("/counselboardInsert")
   public String counselboardInsert(@RequestBody CounselBoard counselboard) {
-    log.info("counselboardInsert호출 성공");
-    log.info(counselboard);
-    int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.
-    result = counselboardLogic.boardInsert(counselboard);
-    return "" + result;// "-1"
+    log.info("counselboardInsert 호출 성공");
+    int result = counselboardLogic.boardInsert(counselboard);
+    return String.valueOf(result);
   }
 
   /**************************************************************

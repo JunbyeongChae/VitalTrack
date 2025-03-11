@@ -86,6 +86,7 @@ public class CounselBoardLogic {
   }
 
   public int boardInsert(CounselBoard board) {
+    log.info("boardInsert 호출");
     int result = -1;
     result = counselBoardDao.boardInsert(board);
     return result;

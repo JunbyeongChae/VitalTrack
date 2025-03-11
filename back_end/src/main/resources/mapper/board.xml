@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.vitaltrack.dao.BoardDao">
+<mapper namespace="com.vitaltrack.dao.CounselBoardDao">
 
 <!-- 상담 게시글 목록 조회 -->
 <select id="boardList" parameterType="java.util.Map" resultType="java.util.Map">
@@ -8,8 +8,9 @@
   FROM counsel cs
   JOIN memberinfo mem ON cs.memNo = mem.memNo
   WHERE 1=1
-  <if test="counselNo != null">
-    AND cs.counselNo = #{counselNo}
+  <!-- 관리자가 아닌 경우 자신이 작성한 글만 조회 -->
+  <if test="admin != null and admin == 0">
+    AND cs.memNo = #{memNo}
   </if>
   <if test="gubun != null and keyword != null and gubun == 'counselTitle'">
     AND cs.counselTitle LIKE CONCAT('%', #{keyword}, '%')
@@ -22,8 +23,8 @@
 
 <!-- 상담 게시글 등록 -->
 <insert id="boardInsert" parameterType="com.vitaltrack.model.CounselBoard">
-  INSERT INTO counsel (counselTitle, counselContent, counselWriter, counselDate, memNo)
-  VALUES (#{counselTitle}, #{counselContent}, #{counselWriter}, NOW(), #{memNo})
+  INSERT INTO counsel (counselTitle, counselContent, counselDate, memNo)
+  VALUES (#{counselTitle}, #{counselContent}, NOW(), #{memNo})
 </insert>
 
 

@@ -24,7 +24,7 @@ public class CounselBoardDao {
 
     List<Map<String, Object>> bList = null;
     try {
-      bList = sessionTemplate.selectList("com.mybatis.mapper.BoardMapper.boardList", pmap);
+      bList = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.boardList", pmap);
       if (bList == null) {
         log.warn("boardList 결과가 null입니다.");
         bList = new ArrayList<>(); // null 방지
@@ -38,7 +38,7 @@ public class CounselBoardDao {
   public int boardInsert(CounselBoard board) {
     log.info("boardInsert 호출");
     int result = -1;
-    result = sessionTemplate.insert("com.mybatis.mapper.BoardMapper.boardInsert", board);
+    result = sessionTemplate.insert("com.vitaltrack.dao.CounselBoardDao.boardInsert", board);
     return result;
   }
 
@@ -46,7 +46,7 @@ public class CounselBoardDao {
   public List<Map<String, Object>> commentList(Map<String, Object> pmap) {
     log.info("commentList 호출 성공");
     List<Map<String, Object>> commList = null;
-    commList = sessionTemplate.selectList("com.mybatis.mapper.BoardMapper.commentList", pmap);
+    commList = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.commentList", pmap);
     log.info(commList);
     return commList;
   }
@@ -54,14 +54,14 @@ public class CounselBoardDao {
   public int boardDelete(int counselNo) {
     log.info("boardDelete 호출");
     int result = -1;
-    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.boardDelete", counselNo);
+    result = sessionTemplate.delete("com.vitaltrack.dao.CounselBoardDao.boardDelete", counselNo);
     return result;
   }
 
   public int boardUpdate(Map<String, Object> pmap) {
     log.info("boardUpdate 호출");
     int result = -1;
-    result = sessionTemplate.update("com.mybatis.mapper.BoardMapper.boardUpdate", pmap);
+    result = sessionTemplate.update("com.vitaltrack.dao.CounselBoardDao.boardUpdate", pmap);
     log.info("result : " + result);
     return result;
   }
@@ -69,7 +69,7 @@ public class CounselBoardDao {
   public int commentInsert(Map<String, Object> pmap) {
     log.info("commentInsert 호출");
     int result = -1;
-    result = sessionTemplate.insert("com.mybatis.mapper.BoardMapper.commentInsert", pmap);
+    result = sessionTemplate.insert("com.vitaltrack.dao.CounselBoardDao.commentInsert", pmap);
     log.info("commentInsert result:" + result);
     return result;
   }
@@ -77,7 +77,7 @@ public class CounselBoardDao {
   public int commentUpdate(Map<String, Object> pmap) {
     log.info("commentUpdate 호출");
     int result = -1;
-    result = sessionTemplate.update("com.mybatis.mapper.BoardMapper.commentUpdate", pmap);
+    result = sessionTemplate.update("com.vitaltrack.dao.CounselBoardDao.commentUpdate", pmap);
     log.info("commentUpdate result:" + result);
     return result;
   }
@@ -85,7 +85,7 @@ public class CounselBoardDao {
   public int commentDelete(int answerNo) {
     log.info("commentDelete 호출");
     int result = -1;
-    result = sessionTemplate.delete("com.mybatis.mapper.BoardMapper.commentDelete", answerNo);
+    result = sessionTemplate.delete("com.vitaltrack.dao.CounselBoardDao.commentDelete", answerNo);
     log.info("commentDelete result:" + result);
     return result;
   }

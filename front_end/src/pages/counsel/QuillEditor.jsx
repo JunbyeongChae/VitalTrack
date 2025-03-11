@@ -4,8 +4,13 @@ import { uploadImageDB } from '../../services/dbLogic';
 
 const QuillEditor = forwardRef(({ value, handleContent }, ref) => {
   const quillRef = useRef(null);
+
   useImperativeHandle(ref, () => ({
     getEditor: () => quillRef.current
+  }));
+
+  useImperativeHandle(ref, () => ({
+    getEditor: () => quillRef.current.getEditor()
   }));
   const imageHandler = useCallback(() => {
     const input = document.createElement('input');
@@ -35,7 +40,7 @@ const QuillEditor = forwardRef(({ value, handleContent }, ref) => {
         const url = `${process.env.REACT_APP_SPRING_IP}api/counsel/imageGet?imageName=${res.data}`;
         const editor = quillRef.current.getEditor();
         const range = editor.getSelection(true);
-        if (typeof range !== 'number') {
+        if (!range) {
           alert('에디터에 포커스가 필요합니다.');
           return;
         }

@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 public class CounselBoard {
-  private int counselNo = 0; // 글번호
-  private String counselTitle = ""; // 글제목
-  private String memNick = null; // 닉네임
-  private String counselContent = null; // 글내용
-  private Date counselDate = null; // 작성일
-  private String counselFile = null; // 첨부파일
+  private int counselNo;          // 글번호
+  private String counselTitle;    // 글제목
+  private String counselContent;  // 글내용
+  private Date counselDate;       // 작성일
+  private String counselFile;     // 첨부파일
+  private int memNo;              // 회원번호 (외래키)
 }

@@ -1,23 +1,22 @@
 import axios from 'axios';
 
-//http://localhost:8000/api/counsel/boardList
 export const boardListDB = (board) => {
-  //console.log(board)[Object Object]
-  console.log(JSON.stringify(board)); //JSON.stringify(), JSON.parse()
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'get',
         url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselList',
-        params: board
+        params: {
+          memNo: board.memNo,
+          admin: board.admin // 1 또는 0으로 전달
+        }
       });
-      //스프링에서 응답이 성공적으로 나오면 - 200OK
       resolve(res);
     } catch (error) {
       reject(error);
-    } //end of try..catch
-  }); //end of boardListDB
-}; //end of boardListDB
+    }
+  });
+};
 
 export const boardDetailDB = (counsel_no) => {
   console.log(counsel_no);
@@ -34,10 +33,8 @@ export const boardDetailDB = (counsel_no) => {
   });
 }; //end of boardDetailDB
 
-//http://localhost:8000/api/counsel/boardInsert
 export const boardInsertDB = (board) => {
-  //console.log(board)[Object Object]
-  console.log(JSON.stringify(board)); //JSON.stringify(), JSON.parse()
+  console.log(JSON.stringify(board));
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
@@ -45,7 +42,6 @@ export const boardInsertDB = (board) => {
         url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboardInsert',
         data: board
       });
-      //스프링에서 응답이 성공적으로 나오면 - 200OK
       resolve(res);
     } catch (error) {
       reject(error);
@@ -53,7 +49,6 @@ export const boardInsertDB = (board) => {
   }); //end of boardInsertDB
 }; //end of boardInsertDB
 
-//http://localhost:8000/api/counsel/boardUpdate
 export const boardUpdateDB = (board) => {
   //console.log(board)[Object Object]
   console.log('boardUpdateDB called with:', board); // 디버깅 로그 추가
@@ -72,7 +67,6 @@ export const boardUpdateDB = (board) => {
   }); //end of boardUpdateDB
 }; //end of boardUpdateDB
 
-//http://localhost:8000/api/counsel/boardDelete?counsel_no=
 export const boardDeleteDB = (counsel_no) => {
   //console.log(board)[Object Object]
   console.log(counsel_no); //JSON.stringify(), JSON.parse()

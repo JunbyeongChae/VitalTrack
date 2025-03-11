@@ -40,6 +40,7 @@ const Login = ({ setUser }) => {
             localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
             alert(`${userData.memNick}님, 환영합니다!`);
+            console.log(userData);
             navigate('/');
         } else {
             throw new Error(userData.error || '로그인 실패');

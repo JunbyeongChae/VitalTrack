@@ -28,6 +28,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.vitaltrack.model
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true

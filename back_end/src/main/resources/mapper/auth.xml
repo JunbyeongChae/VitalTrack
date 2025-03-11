@@ -4,14 +4,18 @@
 
 <!-- 회원가입 -->
 <insert id="insertMember" parameterType="com.vitaltrack.model.MemberInfo">
-  INSERT INTO memberinfo (memId, memPw, memNick, memPhone, memEmail, 
-                          memHeight, memWeight, memBmi, memKcal, 
-                          memGen, memAge, carbMin, carbMax, 
-                          proteinMin, proteinMax, fatMin, fatMax, activityLevel)
-  VALUES (#{memId}, #{memPw}, #{memNick}, #{memPhone}, #{memEmail}, 
-          #{memHeight}, #{memWeight}, #{memBmi}, #{memKcal}, 
-          #{memGen}, #{memAge}, #{carbMin}, #{carbMax}, 
-          #{proteinMin}, #{proteinMax}, #{fatMin}, #{fatMax}, #{activityLevel})
+  INSERT INTO memberinfo(
+    memId, memPw, memNick, memPhone, memEmail, 
+    memHeight, memWeight, memBmi, memKcal, 
+    memGen, memAge, carbMin, carbMax, 
+    proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
+  ) VALUES (
+    #{memId}, #{memPw}, #{memNick}, #{memPhone}, #{memEmail}, 
+    #{memHeight}, #{memWeight}, #{memBmi}, #{memKcal}, 
+    #{memGen}, #{memAge}, #{carbMin}, #{carbMax}, 
+    #{proteinMin}, #{proteinMax}, #{fatMin}, #{fatMax}, #{activityLevel},
+    0 <!-- admin을 무조건 0으로 저장 -->
+  )
 </insert>
 
 
@@ -19,7 +23,7 @@
 <select id="findByEmail" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
   SELECT memNo, memId, memPw, memNick, memPhone, memEmail, 
          memHeight, memWeight, memBmi, memKcal, 
-         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax, activityLevel
+         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
   FROM memberinfo 
   WHERE memEmail = #{memEmail}
 </select>
@@ -28,7 +32,7 @@
 <select id="findById" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
   SELECT memNo, memId, memPw, memNick, memPhone, memEmail, 
          memHeight, memWeight, memBmi, memKcal, 
-         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax
+         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
   FROM memberinfo 
   WHERE memId = #{memId}
 </select>
