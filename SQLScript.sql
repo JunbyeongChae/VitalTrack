@@ -176,3 +176,9 @@ CREATE TABLE `diet_record` (
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정일
     FOREIGN KEY (`mem_no`) REFERENCES `memberinfo`(`memNo`) ON DELETE CASCADE
 );
+
+SELECT * FROM memberinfo WHERE memNo = 10;
+
+ALTER TABLE memberinfo ADD COLUMN admin BOOLEAN DEFAULT false;
+
+commit;
