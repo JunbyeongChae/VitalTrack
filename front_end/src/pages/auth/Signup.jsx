@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../../firebaseConfig'; // Firebase 설정 파일 가져오기
+import { auth, db } from '../../firebaseConfig'; // Firebase 설정 파일 가져오기
 
 const Signup = () => {
   const location = useLocation();

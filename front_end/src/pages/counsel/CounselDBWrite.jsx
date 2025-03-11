@@ -8,7 +8,7 @@ import QuillEditor from './QuillEditor'
 /*
 
 */
-const ReBoardDBWrite = () => {
+const CounselDBWrite = () => {
     const navigate = useNavigate()
     const quillRef = useRef()
     //이 때 마다 handlTitle함수가 매번 새로 만들어 진다. - 비효율적임.
@@ -43,7 +43,7 @@ const ReBoardDBWrite = () => {
         }
         const res = await boardInsertDB(board)
         if(!res.data) alert('게시판 글쓰기에 실패하였습니다.')
-        navigate('/reboard?page=1')
+        navigate('/counsel?page=1')
     }//end of boardInsert
     return (
         <>
@@ -79,4 +79,4 @@ const ReBoardDBWrite = () => {
 
 }
 
-export default ReBoardDBWrite
+export default CounselDBWrite

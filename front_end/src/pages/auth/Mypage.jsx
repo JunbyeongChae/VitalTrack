@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import * as echarts from 'echarts';
 
 const Mypage = ({ user }) => {

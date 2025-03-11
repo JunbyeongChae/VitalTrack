@@ -9,7 +9,7 @@ const Header = ({ user, setUser }) => {
 
   // 새로고침해도 로그인 상태 유지
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
@@ -19,7 +19,7 @@ const Header = ({ user, setUser }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      localStorage.removeItem("user");
+      localStorage.removeItem('user');
       setUser(null);
       setCurrentUser(null); // UI 즉시 반영
       alert('로그아웃하였습니다.');
@@ -35,29 +35,29 @@ const Header = ({ user, setUser }) => {
         <div className="flex justify-between h-16">
           <div className="flex">
             {/* 로고 클릭 시 홈으로 이동 */}
-            <div
-              className="flex-shrink-0 flex items-center cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
+            <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => navigate('/')}>
+              <img className="h-12 w-auto" src="/images/logo_title.png" alt="Logo" />
             </div>
             {/* 네비게이션 메뉴 */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <button onClick={() => navigate('/')} className="border-b-2 border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
-                Dashboard
+                Home
               </button>
-              <button onClick={() => navigate('/progress')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Progress
+              <button onClick={() => navigate('/healthInfo')} className="border-b-2 border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                건강정보
               </button>
-              <button onClick={() => navigate('/nutrition')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Nutrition
+              <button onClick={() => navigate('/work')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                운동관리
               </button>
-              <button onClick={() => navigate('/community')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Community
+              <button onClick={() => navigate('/diet')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                식단관리
+              </button>
+              <button onClick={() => navigate('/counsel')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                영양상담
               </button>
             </div>
           </div>
-          
+
           {/* 로그인 상태에 따른 버튼 UI 변경 */}
           <div className="flex items-center space-x-4">
             {!currentUser ? (
@@ -71,16 +71,10 @@ const Header = ({ user, setUser }) => {
               </>
             ) : (
               <>
-                <button 
-                  onClick={() => navigate('/mypage')}
-                  className="text-gray-700 cursor-pointer hover:underline"
-                >
+                <button onClick={() => navigate('/mypage')} className="text-gray-700 cursor-pointer hover:underline">
                   {currentUser.name}님
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md"
-                >
+                <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md">
                   Logout
                 </button>
               </>

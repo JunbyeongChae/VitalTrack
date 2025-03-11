@@ -5,8 +5,8 @@ import QuillEditor from './QuillEditor';
 import Footer from '../include/Footer';
 import { useNavigate, useParams } from 'react-router';
 import { boardDetailDB, boardUpdateDB } from '../../service/dbLogic';
-//-> http://localhost:3000/reboard/update/:b_no
-const ReBoardDBUpdate = () => {
+
+const CounselDBUpdate = () => {
   const navigate = useNavigate();
   //쿼리 스트링이 아니라 hash값으로 받아오기
   const { b_no } = useParams();
@@ -82,7 +82,7 @@ const ReBoardDBUpdate = () => {
       //목록 페이지로 이동하는 URL요청에서 쿼리스트링으로 붙은 page=1값은
       //목록 페이지 처리할 때 현재 내가 있었던 위치를 기억하는 값이어야 한다.
       //후처리가 필요하다.
-      navigate('/reboard?page=1');
+      navigate('/counsel?page=1');
     } else {
       //수정이 실패한 경우
       console.log('수정 실패하였습니다.');
@@ -141,4 +141,4 @@ const ReBoardDBUpdate = () => {
   );
 };
 
-export default ReBoardDBUpdate;
+export default CounselDBUpdate;

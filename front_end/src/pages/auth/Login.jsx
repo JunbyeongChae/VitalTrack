@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db, provider } from '../../../firebaseConfig'; // Firebase 설정 파일 가져오기
+import { auth, db, provider } from '../../firebaseConfig'; // Firebase 설정 파일 가져오기
 
 const Login = ({ setUser }) => {
   const [formData, setFormData] = useState({

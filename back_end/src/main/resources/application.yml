@@ -14,6 +14,18 @@ spring:
     multipart:
       max-file-size: "10MB"
       enabled: true
+    datasource:
+      url: jdbc:mysql://localhost:3306/vitaltrack
+      username: root
+      password: abcd1234
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
 firebase:
   api-key: ${FIREBASE_API_KEY}
   auth-domain: ${FIREBASE_AUTH_DOMAIN}
