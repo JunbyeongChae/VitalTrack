@@ -23,6 +23,7 @@ public class MemberInfo {
   private Integer fatMin;
   private Integer fatMax;
   private String activityLevel;
+  private int admin = 0; //기본값 0으로 초기화
 
   private transient String confirmPassword; // DB 저장 제외 필드 추가
 }
