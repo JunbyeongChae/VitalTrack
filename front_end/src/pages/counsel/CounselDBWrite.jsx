@@ -2,6 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { boardInsertDB } from '../../services/dbLogic';
 import TiptapEditor from './TiptapEditor';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 const CounselDBWrite = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const CounselDBWrite = () => {
 
   const boardInsert = async () => {
     if (!title || !content) {
-      alert('제목과 내용을 모두 입력하세요.');
+      toast.warn('제목과 내용을 모두 입력하세요.');
       return;
     }
     const board = {
@@ -37,16 +39,17 @@ const CounselDBWrite = () => {
       if (res.data) {
         navigate('/counsel?page=1');
       } else {
-        alert('글쓰기 실패');
+        toast.warn('글쓰기 실패');
       }
     } catch (error) {
       console.error('서버 오류:', error);
-      alert('서버 오류가 발생했습니다.');
+      toast.error('서버 오류가 발생했습니다.');
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">1:1 상담 작성</h1>
       </header>

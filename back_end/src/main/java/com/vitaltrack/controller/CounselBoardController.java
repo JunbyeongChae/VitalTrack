@@ -92,7 +92,7 @@ public class CounselBoardController {
   public String counselboardList(@RequestParam Map<String, Object> pmap) {
     log.info("counselboardList 호출");
 
-    // admin 값이 문자열로 전달될 경우, Integer로 변환
+    // admin 값이 문자열로 전달될 경우, 정수 변환
     if (pmap.containsKey("admin")) {
       pmap.put("admin", Integer.parseInt(pmap.get("admin").toString()));
     }
@@ -111,16 +111,13 @@ public class CounselBoardController {
    * URL패핑 이름 : counselboardDetail
    **************************************************************/
   @GetMapping("counselboard/boardDetail")
-  public String counselboardDetail(@RequestParam Map<String, Object> pmap) {
-    log.info("counselboardDetail호출 성공");
-    List<Map<String, Object>> bList = null;
-    // 전체 조회와 다른 부분이 조회수 업데이트 처리하기 + 댓글이 있을 때 포함시키기
-    bList = counselboardLogic.boardDetail(pmap);
-    Gson g = new Gson();
-    String temp = null;
-    temp = g.toJson(bList);
-    return temp;
-  }// end of counselboardDetail
+  public String counselboardDetail(@RequestParam("counselNo") int counselNo) {
+      log.info("counselboardDetail 호출, counselNo: " + counselNo);
+      List<Map<String, Object>> boardDetail = counselboardLogic.boardDetail(counselNo);
+      
+      Gson gson = new Gson();
+      return gson.toJson(boardDetail);
+  }  // end of counselboardDetail
 
   /**************************************************************
    * 게시글 등록 구현하기 - param(@RequestParam)|insert|POST
@@ -157,7 +154,7 @@ public class CounselBoardController {
     log.info("counselboardDelete호출 성공");
     int result = -1;// 초기값을 -1로 한 이유는 0과 1이 의미있는 숫자임.
     result = counselboardLogic.boardDelete(counselNo);
-    return "" + result;// "-1"
+    return String.valueOf(result);// "-1"
   }
 
   /**************************************************************
@@ -189,10 +186,10 @@ public class CounselBoardController {
    * URL패핑 이름 : commentDelete
    **************************************************************/
   @DeleteMapping("counselboard/commentDelete")
-  public String commentDelete(@RequestParam(value = "answerNo", required = true) int answerNo) {
+  public String commentDelete(@RequestParam(value = "answerId", required = true) int answerId) {
     log.info("commentDelete 호출 성공");
     int result = -1;
-    result = counselboardLogic.commentDelete(answerNo);
+    result = counselboardLogic.commentDelete(answerId);
     log.info("result : " + result);
     return "" + result;
   }

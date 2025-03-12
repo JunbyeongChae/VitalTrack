@@ -8,6 +8,8 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
 import CounselDBWrite from './pages/counsel/CounselDBWrite';
+import CounselDetail from './pages/counsel/CounselDetail';
+import CounselDBUpdate from './pages/counsel/CounselDBUpdate';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -30,6 +32,8 @@ const App = () => {
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/counsel" element={<CounselList />} />
           <Route path="/counsel/write" element={<CounselDBWrite />} />
+          <Route path="/counsel/:counselNo" element={<CounselDetail />} />
+          <Route path="/counsel/update/:counselNo" element={<CounselDBUpdate />} />
           <Route path="/nutrition" element={<Dashboard />} />
         </Routes>
       </main>
