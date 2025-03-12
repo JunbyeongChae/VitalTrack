@@ -14,23 +14,63 @@ const Meals = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalSection, setModalSection] = useState(""); // Section name for the modal
 
-    // Fetch FoodData.json from the backend
+    // Fetch FoodData20250312.json from the backend
     useEffect(() => {
         const fetchFoodData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/food-data"); // Backend API to fetch data
+                const response = await fetch("http://localhost:8000/api/food-data");
+
+                // DEBUG: Check raw response and log
+                const rawResponse = await response.text();
+                console.log("Raw API Response:", rawResponse);
+
                 if (!response.ok) {
-                    throw new Error("Failed to fetch food data.");
+                    throw new Error(`Server Error: ${rawResponse}`);
                 }
-                const data = await response.json(); // Parse JSON response
-                const foodObjects = data.records.map((record) => new Food(record)); // Map records to Food objects
+
+                // Parse JSON after validating response format
+                const data = JSON.parse(rawResponse);
+                const foodObjects = data.records.map((record) => new Food(record));
                 setFoods(foodObjects);
             } catch (error) {
                 console.error("Error fetching food data:", error);
             }
-        };
+        };//end of fetchFoodData
+        const loadClientMeals = async () => {
+            try {
+                const memberNumber = new URLSearchParams(window.location.search).get("memberNumber");
 
+                if (!memberNumber) {
+                    console.warn("No member number found in the URL.");
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:8000/api/meals/${memberNumber}`);
+                const rawResponse = await response.text();
+                console.log("Raw API Response for meals:", rawResponse);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch client meals: ${rawResponse}`);
+                }
+
+                const mealsResponse = JSON.parse(rawResponse);
+
+                const formattedSections = {
+                    아침: mealsResponse.아침 || [],
+                    점심: mealsResponse.점심 || [],
+                    저녁: mealsResponse.저녁 || [],
+                    간식: mealsResponse.간식 || [],
+                };
+
+                console.log("Loaded client meals and formatted into sections:", formattedSections);
+
+                setSections(formattedSections);
+            } catch (error) {
+                console.error("Error loading client meals:", error);
+            }
+        };
         fetchFoodData();
+        loadClientMeals(); // Fetch client meals
     }, []);
 
     // Utility function to find a food by name
@@ -47,17 +87,45 @@ const Meals = () => {
         setModalSection("");
     };
 
-    const handleAddMeal = (mealName) => {
-        const food = findFoodByName(mealName); // Find food by name
-        if (food) {
-            setSections((prevSections) => ({
+    const handleAddMeal = (meal) => {
+        console.log("Incoming Meal Object:", meal);
+
+        setSections((prevSections) => {
+            console.log("Previous sections state:", prevSections);
+            console.log("Current modalSection:", modalSection);
+
+            if (!prevSections[modalSection]) {
+                console.error(
+                    `Error: Section "${modalSection}" does not exist.`,
+                    prevSections
+                );
+                return prevSections;
+            }
+
+            // Explicitly validate properties before processing
+            const updatedMeal = {
+                id: meal.id || "(no id specified)", // Fallback if property is undefined
+                name: meal.name || "(no name specified)",
+                calories: meal.calories || 0, // Default to 0 if calories is missing
+            };
+
+            console.log("Validated Updated Meal Object:", updatedMeal);
+
+            // Prevent adding invalid meals
+            if (!updatedMeal.id || !updatedMeal.name || updatedMeal.calories === undefined) {
+                console.error("Invalid Meal Data:", updatedMeal);
+                return prevSections;
+            }
+
+            const updatedSection = [...prevSections[modalSection], updatedMeal];
+            console.log(`Updated section "${modalSection}" after adding:`, updatedSection);
+
+            return {
                 ...prevSections,
-                [modalSection]: [
-                    ...prevSections[modalSection],
-                    { id: food.id, name: food.name, calories: food.calories }, // Minimal details
-                ],
-            }));
-        }
+                [modalSection]: updatedSection,
+            };
+        });
+
         closeModal();
     };
 
