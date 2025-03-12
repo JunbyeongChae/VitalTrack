@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { registerMember } from '../../services/authLogic';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 // mySQL사용으로 전체 수정
 const Signup = () => {
@@ -39,32 +41,32 @@ const Signup = () => {
     const weightRegex = /^([1-9][0-9]|[1-9][0-9]{1,2}|300)$/;
 
     if (!idRegex.test(formData.memId)) {
-      alert('아이디는 5~15자의 영문과 숫자로 입력해 주세요.');
+      toast.warn('아이디는 5~15자의 영문과 숫자로 입력해 주세요.');
       return false;
     }
 
     if (!pwRegex.test(formData.memPw)) {
-      alert('비밀번호는 8~20자의 영문, 숫자를 포함해야 합니다.');
+      toast.warn('비밀번호는 8~20자의 영문, 숫자를 포함해야 합니다.');
       return false;
     }
 
     if (formData.memPw !== formData.confirmPassword) {
-      alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      toast.warn('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       return false;
     }
 
     if (!phoneRegex.test(formData.memPhone)) {
-      alert("전화번호는 '010'으로 시작하고, 10~11자리 숫자만 입력해 주세요.");
+      toast.warn("전화번호는 '010'으로 시작하고, 10~11자리 숫자만 입력해 주세요.");
       return false;
     }
 
     if (!heightRegex.test(formData.memHeight)) {
-      alert('신장은 50cm에서 250cm 사이 소수점 제외한 정수로 입력해 주세요.');
+      toast.warn('신장은 50cm에서 250cm 사이 소수점 제외한 정수로 입력해 주세요.');
       return false;
     }
 
     if (!weightRegex.test(formData.memWeight)) {
-      alert('체중은 10kg에서 300kg 사이 소수점 제외한 정수로 입력해 주세요.');
+      toast.warn('체중은 10kg에서 300kg 사이 소수점 제외한 정수로 입력해 주세요.');
       return false;
     }
 
@@ -106,17 +108,18 @@ const Signup = () => {
       const result = await registerMember(formData);
 
       // 성공 메시지 처리
-      if (result.status === "success") {
-        alert(result.message);
+      if (result.status === 'success') {
+        toast.success(result.message);
         navigate('/login');
       }
     } catch (err) {
-      alert(`회원가입 중 오류가 발생했습니다: ${err.message}`);
+      toast.error(`회원가입 중 오류가 발생했습니다: ${err.message}`);
     }
   };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-white font-[Inter]">
+      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg space-y-4 border-4 border-gray-700">
         {/* 순서 변경 : 채준병 */}
         {/* 이메일 입력 */}

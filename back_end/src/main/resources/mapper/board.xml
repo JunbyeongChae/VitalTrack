@@ -2,71 +2,88 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vitaltrack.dao.CounselBoardDao">
 
-<!-- 상담 게시글 목록 조회 -->
-<select id="boardList" parameterType="java.util.Map" resultType="java.util.Map">
-  SELECT cs.counselNo, cs.counselTitle, cs.counselContent, DATE_FORMAT(cs.counselDate, '%Y.%m.%d') AS counselDate, mem.memNick
-  FROM counsel cs
-  JOIN memberinfo mem ON cs.memNo = mem.memNo
-  WHERE 1=1
-  <!-- 관리자가 아닌 경우 자신이 작성한 글만 조회 -->
-  <if test="admin != null and admin == 0">
-    AND cs.memNo = #{memNo}
-  </if>
-  <if test="gubun != null and keyword != null and gubun == 'counselTitle'">
-    AND cs.counselTitle LIKE CONCAT('%', #{keyword}, '%')
-  </if>
-  <if test="gubun != null and keyword != null and gubun == 'counselContent'">
-    AND cs.counselContent LIKE CONCAT('%', #{keyword}, '%')
-  </if>
-  ORDER BY cs.counselNo DESC
-</select>
+  <!-- 상담 게시글 목록 조회 -->
+  <select id="boardList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT cs.counselNo,
+           cs.counselTitle,
+           cs.counselContent,
+           DATE_FORMAT(cs.counselDate, '%Y.%m.%d') AS counselDate,
+           mem.memNick
+      FROM counsel cs
+      JOIN memberinfo mem ON cs.memNo = mem.memNo
+     WHERE 1=1
+       <!-- 관리자가 아닌 경우 자신이 작성한 글만 조회 -->
+       <if test="admin != null and admin == 0">
+         AND cs.memNo = #{memNo}
+       </if>
+       <if test="gubun != null and keyword != null and gubun == 'counselTitle'">
+         AND cs.counselTitle LIKE CONCAT('%', #{keyword}, '%')
+       </if>
+       <if test="gubun != null and keyword != null and gubun == 'counselContent'">
+         AND cs.counselContent LIKE CONCAT('%', #{keyword}, '%')
+       </if>
+     ORDER BY cs.counselNo DESC
+  </select>
 
-<!-- 상담 게시글 등록 -->
-<insert id="boardInsert" parameterType="com.vitaltrack.model.CounselBoard">
-  INSERT INTO counsel (counselTitle, counselContent, counselDate, memNo)
-  VALUES (#{counselTitle}, #{counselContent}, NOW(), #{memNo})
-</insert>
+  <!-- 상담 게시글 상세 조회 -->
+  <select id="boardDetail" parameterType="int" resultType="java.util.Map">
+    SELECT cs.counselNo,
+           cs.counselTitle,
+           cs.counselContent,
+           DATE_FORMAT(cs.counselDate, '%Y.%m.%d') AS counselDate,
+           mem.memNick
+      FROM counsel cs
+      LEFT JOIN memberinfo mem ON cs.memNo = mem.memNo
+     WHERE cs.counselNo = #{counselNo}
+  </select>
 
+  <!-- 상담 게시글 등록 --> 
+  <insert id="boardInsert" parameterType="com.vitaltrack.model.CounselBoard">
+    INSERT INTO counsel (counselTitle, counselContent, counselDate, memNo)
+    VALUES (#{counselTitle}, #{counselContent}, NOW(), #{memNo})
+  </insert>
 
-<!-- 상담 게시글 수정 -->
+  <!-- 상담 게시글 수정 -->
 <update id="boardUpdate" parameterType="map">
   UPDATE counsel
-  SET counselTitle = #{counselTitle},
-      counselContent = #{counselContent},
-      counselWriter = #{counselWriter}
-  WHERE counselNo = #{counselNo}
+     SET counselTitle = #{counselTitle},
+         counselContent = #{counselContent}
+   WHERE counselNo = #{counselNo}
 </update>
 
-<!-- 상담 게시글 삭제 -->
-<delete id="boardDelete" parameterType="map">
-  DELETE FROM counsel WHERE counselNo = #{counselNo}
-</delete>
+  <!-- 상담 게시글 삭제 -->
+  <delete id="boardDelete" parameterType="map">
+    DELETE FROM counsel WHERE counselNo = #{counselNo}
+  </delete>
 
-<!-- 댓글 목록 조회 -->
-<select id="commentList" parameterType="int" resultType="java.util.Map">
-  SELECT commentId, commentContent, commentWriter, DATE_FORMAT(commentDate, '%Y.%m.%d') AS commentDate
-  FROM counselanswer
-  WHERE counselNo = #{counselNo}
-  ORDER BY commentDate DESC
-</select>
+  <!-- 댓글 목록 조회 -->
+  <select id="commentList" parameterType="int" resultType="java.util.Map">
+    SELECT answerId        AS commentId,
+           answerContent   AS commentContent,
+           answerWriter    AS commentWriter,
+           DATE_FORMAT(answerDate, '%Y.%m.%d') AS commentDate
+      FROM counselanswer
+     WHERE counselNo = #{counselNo}
+     ORDER BY answerDate DESC
+  </select>
 
-<!-- 댓글 등록 -->
-<insert id="commentInsert" parameterType="com.vitaltrack.model.CounselBoardComent">
-  INSERT INTO counselanswer (counselNo, commentContent, commentWriter, commentDate)
-  VALUES (#{counselNo}, #{commentContent}, #{commentWriter}, NOW())
-</insert>
+  <!-- 댓글 등록 -->
+  <insert id="commentInsert" parameterType="com.vitaltrack.model.CounselBoardComent">
+    INSERT INTO counselanswer (counselNo, answerContent, answerWriter, answerDate, memNo)
+    VALUES (#{counselNo}, #{answerContent}, #{answerWriter}, NOW(), #{memNo})
+  </insert>
 
-<!-- 댓글 수정 -->
-<update id="commentUpdate" parameterType="map">
-  UPDATE counselanswer
-  SET commentContent = #{commentContent},
-      commentWriter = #{commentWriter}
-  WHERE commentId = #{commentId}
-</update>
+  <!-- 댓글 수정 -->
+  <update id="commentUpdate" parameterType="map">
+    UPDATE counselanswer
+       SET answerContent = #{answerContent},
+           answerWriter = #{answerWriter}
+     WHERE answerId = #{answerId}
+  </update>
 
-<!-- 댓글 삭제 -->
-<delete id="commentDelete" parameterType="int">
-  DELETE FROM counselanswer WHERE commentId = #{commentId}
-</delete>
+  <!-- 댓글 삭제 -->
+  <delete id="commentDelete" parameterType="int">
+    DELETE FROM counselanswer WHERE answerId = #{answerId}
+  </delete>
 
 </mapper>

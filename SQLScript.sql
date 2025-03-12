@@ -28,8 +28,9 @@ CREATE TABLE `memberinfo` (
   `proteinMax` int NOT NULL,
   `fatMin` int NOT NULL,
   `fatMax` int NOT NULL,
+  `admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`memNo`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- 상담게시판

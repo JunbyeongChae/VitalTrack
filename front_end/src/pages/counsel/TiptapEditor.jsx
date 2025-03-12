@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBold, faItalic, faUnderline, faImage } from '@fortawesome/free-solid-svg-icons';
 import { uploadImageDB } from '../../services/dbLogic';
 import '../../styles/TiptapEditor.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 // 폰트 사이즈 확장
 const FontSize = TextStyle.extend({
@@ -33,7 +35,6 @@ const TiptapEditor = ({ value, handleContent }) => {
     extensions: [
       StarterKit,
       Underline,
-      TextStyle,
       FontSize,
       Image.configure({
         inline: false,
@@ -49,10 +50,19 @@ const TiptapEditor = ({ value, handleContent }) => {
     }
   });
 
+  // value(부모 state) 변경 시 Tiptap도 업데이트
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
+
+  // 폰트 사이즈 변경
   const setFontSize = (size) => {
     editor.chain().focus().setMark('textStyle', { fontSize: size }).run();
   };
 
+  // 이미지 업로드
   const addImage = async () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -70,10 +80,10 @@ const TiptapEditor = ({ value, handleContent }) => {
           const url = `${process.env.REACT_APP_SPRING_IP}api/counsel/imageGet?imageName=${res.data}`;
           editor.chain().focus().setImage({ src: url }).run();
         } else {
-          alert('이미지 업로드 실패');
+          toast.warn('이미지 업로드 실패');
         }
       } catch (error) {
-        console.error('이미지 업로드 중 오류:', error);
+        toast.error('이미지 업로드 중 오류:', error);
       }
     };
     input.click();
@@ -81,6 +91,7 @@ const TiptapEditor = ({ value, handleContent }) => {
 
   return (
     <div>
+      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       {/* 툴바 */}
       <div className="flex flex-wrap space-x-2 mb-4">
         <select onChange={(e) => setFontSize(e.target.value)} title="폰트 크기 조절" className="font-size-select">

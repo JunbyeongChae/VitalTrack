@@ -8,6 +8,8 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
 import CounselDBWrite from './pages/counsel/CounselDBWrite';
+import CounselDetail from './pages/counsel/CounselDetail';
+import CounselDBUpdate from './pages/counsel/CounselDBUpdate';
 import WorkoutPage from "./pages/WorkoutPage";
 
 const App = () => {
@@ -31,6 +33,8 @@ const App = () => {
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/counsel" element={<CounselList />} />
           <Route path="/counsel/write" element={<CounselDBWrite />} />
+          <Route path="/counsel/:counselNo" element={<CounselDetail />} />
+          <Route path="/counsel/update/:counselNo" element={<CounselDBUpdate />} />
           <Route path="/nutrition" element={<Dashboard />} />
           <Route path="/workout" exact={true} element={<WorkoutPage/>}/>
         </Routes>
