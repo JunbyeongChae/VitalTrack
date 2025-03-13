@@ -17,37 +17,37 @@ const Mypage = ({ user }) => {
 
   const todayDate = new Date().toISOString().split('T')[0];
 
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`/api/auth/getUserByEmail?email=${user.memEmail}`);
+      const data = await response.json();
+
+      if (data) {
+        setUserData(data);
+        setFormData({
+          memId : data.memId || '',
+          memEmail : data.memEmail || '',
+          memNick : data.memNick || '',
+          memPhone : data.memPhone || '',
+          memHeight : data.memHeight || '',
+          memWeight : data.memWeight || '',
+          memAge: data.memAge !== null ? data.memAge : '',
+        });
+        calculateBmiStatus(data.memBmi);
+      }
+    } catch (error) {
+      console.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       alert('로그인이 필요합니다.');
       navigate('/login');
       return;
     }
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`/api/auth/getUserByEmail?email=${user.memEmail}`);
-        const data = await response.json();
-
-        if (data) {
-          setUserData(data);
-          setFormData({
-            memId : data.memId || '',
-            memEmail : data.memEmail || '',
-            memNick : data.memNick || '',
-            memPhone : data.memPhone || '',
-            memHeight : data.memHeight || '',
-            memWeight : data.memWeight || '',
-          });
-          calculateBmiStatus(data.memBmi);
-        }
-      } catch (error) {
-        console.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserData();
   }, [user, navigate]);
 
@@ -68,6 +68,34 @@ const Mypage = ({ user }) => {
     });
   };
 
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch('/api/auth/updateUser', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const result = await response.text();
+      if (response.ok) {
+        alert('회원 정보가 업데이트되었습니다.');
+      } else {
+        alert(`업데이트 실패: ${result}`);
+      }
+    } catch (error) {
+      console.error('회원 정보 업데이트 실패:', error);
+      alert('서버 오류가 발생했습니다.');
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchUserData();
+    alert('새로고침 완료!');
+  };
+  
+  
   if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
@@ -137,11 +165,11 @@ const Mypage = ({ user }) => {
 
       {/* 버튼 */}
       <div className="flex justify-center space-x-4 mt-6">
-        <button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">
+        <button onClick={handleUpdate} className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">
           정보수정
         </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md">
-          회원탈퇴
+        <button onClick={handleRefresh} className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md">
+          새로고침
         </button>
       </div>
     </div>

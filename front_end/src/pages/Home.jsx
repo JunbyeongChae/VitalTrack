@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import * as echarts from 'echarts';
+import {Link} from "react-router";
 
 const Home = () => {
   useEffect(() => {
@@ -111,7 +112,10 @@ const Home = () => {
         </div>
         <div className="bg-white rounded-lg shadow">
           <div className="p-6">
-            <h2 className="text-lg font-medium text-gray-900">Activity Overview</h2>
+            <div className="flex items-center">
+              <h2 className="text-lg font-medium text-gray-900">Activity Overview</h2>
+              <Link to={"/workout"} className="ml-auto text-blue-500 hover:text-blue-700 border p-4">운동 관리</Link>
+            </div>
             <div id="activityChart" className="h-80 mt-4"></div>
           </div>
         </div>

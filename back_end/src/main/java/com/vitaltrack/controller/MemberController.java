@@ -52,6 +52,21 @@ public class MemberController {
     }
   }
 
+  @PutMapping("/updateUser")
+  public ResponseEntity<?> updateUser(@RequestBody MemberInfo member) {
+      try {
+          int updatedRows = memberLogic.updateUser(member);
+          if (updatedRows > 0) {
+              return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
+          } else {
+              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+          }
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 업데이트 실패: " + e.getMessage());
+      }
+  }
+
+
   @GetMapping("/checkUser")
   public ResponseEntity<Boolean> checkUserExists(@RequestParam String email) {
     log.info("구글 로그인 이메일: " + email);

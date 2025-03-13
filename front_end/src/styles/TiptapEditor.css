@@ -1,0 +1,56 @@
+/* 버튼 기본 스타일 */
+.btn {
+  padding: 5px 10px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+}
+
+.btn-active {
+  padding: 5px 10px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #c8c8c8;
+}
+
+/* 에디터 외곽 스타일 */
+.editor-wrapper {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+}
+
+/* 에디터 컨테이너 */
+.editor-container {
+  min-height: 100%;
+  padding: 10px;
+  cursor: text;
+}
+
+/* ProseMirror 기본 포커스 테두리 제거 */
+.ProseMirror {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 10px;
+  min-height: 100%;
+}
+
+/* 포커스 상태에서도 테두리 제거 */
+.ProseMirror:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 폰트사이즈 */
+.font-size-select {
+  padding: 5px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+}

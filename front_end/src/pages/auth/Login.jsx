@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebaseConfig';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 // mySQL사용으로 전체 수정 : 채준병
 // 로그인 페이지
@@ -25,29 +27,30 @@ const Login = ({ setUser }) => {
     e.preventDefault();
   
     try {
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                memEmail: formData.memEmail,
-                memPw: formData.memPw,
-            }),
-        });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memEmail: formData.memEmail,
+          memPw: formData.memPw
+        })
+      });
 
-        const userData = await response.json();
+      const userData = await response.json();
 
-        if (response.ok) {
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
-            alert(`${userData.memNick}님, 환영합니다!`);
-            navigate('/');
-        } else {
-            throw new Error(userData.error || '로그인 실패');
-        }
+      if (response.ok) {
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        toast.success(`${userData.memNick}님, 환영합니다!`);
+        navigate('/');
+      } else {
+        toast.warn('로그인 실패');
+        throw new Error(userData.error || '로그인 실패');
+      }
     } catch (err) {
-        alert(`로그인 중 오류가 발생했습니다: ${err.message}`);
+      toast.error(`로그인 중 오류가 발생했습니다: ${err.message}`);
     }
-};
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -61,10 +64,10 @@ const Login = ({ setUser }) => {
       if (response.ok) {
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
-        alert(`${userData.memNick}님, 환영합니다!`);
+        toast.success(`${userData.memNick}님, 환영합니다!`);
         navigate('/');
       } else {
-        alert('회원정보를 찾을 수 없습니다. 회원가입을 진행해주세요.');
+        toast.warn('회원정보를 찾을 수 없습니다. 회원가입을 진행해주세요.');
         navigate('/signup', {
           state: {
             email: user.email,
@@ -90,6 +93,7 @@ const Login = ({ setUser }) => {
         height: '86vh',
         minHeight: '600px'
       }}>
+      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <main className="flex flex-col justify-center items-center p-2 w-full flex-grow">
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">

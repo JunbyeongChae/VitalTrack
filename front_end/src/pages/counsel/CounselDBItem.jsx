@@ -1,23 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
-const CounselDBItem = (props) => {
-  const { counsel_no, counsel_title, mem_nick, counsel_date } = props.board;
-  //console.log(n_title)
-  console.log(props.page);
+const CounselDBItem = ({ board, page, index, itemsPerPage }) => {
+  const rowNumber = (page - 1) * itemsPerPage + index + 1;
+  const { counselNo, counselTitle, memNick, counselDate } = board;
   return (
-    <>
-      <tr>
-        <td>{counsel_no}</td>
-        <td>
-          <Link to={`/counsel/${counsel_no}?page=${props.page}`} className="btn btn-primary">
-            {counsel_title}
-          </Link>
-        </td>
-        <td>{mem_nick}</td>
-        <td>{counsel_date}</td>
-      </tr>
-    </>
+    <tr>
+      <td className="text-center">{rowNumber}</td>
+      <td>
+        <Link to={`/counsel/${counselNo}?page=${page}`} className="text-blue-500 hover:underline">
+          {counselTitle}
+        </Link>
+      </td>
+      <td className="text-center">{memNick}</td>
+      <td className="text-center">{counselDate}</td>
+    </tr>
   );
 };
 

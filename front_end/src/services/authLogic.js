@@ -2,6 +2,10 @@
 //회원가입
 export const registerMember = async (formData) => {
   console.log('회원가입 요청 데이터:', formData); // 디버깅용 출력
+
+  // 회원가입시 admin 값을 무조건 0으로 설정
+  formData.admin = 0;
+
   try {
     const response = await fetch('/api/auth/signup', {
       method: 'POST',
@@ -36,8 +40,19 @@ export const loginMember = async (formData) => {
       const errorData = await response.json();
       throw new Error(errorData.error || '로그인 실패');
     }
+    const userInfo = await response.json(); // 로그인 성공 시 사용자 정보 반환
 
-    return await response.json(); // 로그인 성공 시 사용자 정보 반환
+    // 사용자 정보를 localStorage에 저장
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        memNo: userInfo.memNo,
+        memNick: userInfo.memNick,
+        admin: userInfo.admin
+      })
+    );
+
+    return userInfo;
   } catch (error) {
     throw new Error(error.message);
   }

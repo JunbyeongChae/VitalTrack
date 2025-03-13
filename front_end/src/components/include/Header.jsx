@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 const Header = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const Header = ({ user, setUser }) => {
       localStorage.removeItem('user');
       setUser(null);
       setCurrentUser(null); // UI 즉시 반영
-      alert('로그아웃하였습니다.');
+      toast.success('로그아웃하였습니다.');
       navigate('/');
     } catch (error) {
       console.error('로그아웃 실패:', error);
@@ -32,6 +34,7 @@ const Header = ({ user, setUser }) => {
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
         <div className="flex justify-between h-16">
           <div className="flex">
             {/* 로고 클릭 시 홈으로 이동 */}

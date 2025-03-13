@@ -17,7 +17,7 @@ public class MemberInfo {
   private Double memBmi;
   private Integer memKcal;
   private String memGen;
-  private Integer memAge;
+  private Integer memAge = 0;
   private Integer carbMin;
   private Integer carbMax;
   private Integer proteinMin;
@@ -25,6 +25,7 @@ public class MemberInfo {
   private Integer fatMin;
   private Integer fatMax;
   private String activityLevel;
+  private int admin; //기본값 0으로 초기화
 
   @Transient
   private String confirmPassword; // DB 저장 제외 필드 추가
