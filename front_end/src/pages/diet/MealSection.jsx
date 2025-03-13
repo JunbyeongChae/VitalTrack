@@ -57,7 +57,6 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                     </p>
                 )}
             </div>
-
             {/* Add Button */}
             <button
                 onClick={() => onAddClick(title)}

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import MealSection from "./MealSection";
 import AddMealModal from "./AddMealModal";
 import Food from "../../Food";
+import axios from "axios";
+
 
 const Meals = () => {
     const [foods, setFoods] = useState([]); // State for food data
@@ -13,38 +15,28 @@ const Meals = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalSection, setModalSection] = useState(""); // Section name for the modal
+    const [memNo, setMemNo] = useState(null); // Member number state
 
-    // Fetch FoodData20250312.json from the backend
     useEffect(() => {
         const fetchFoodData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/food-data");
-
-                // DEBUG: Check raw response and log
-                const rawResponse = await response.text();
-                console.log("Raw API Response:", rawResponse);
-
-                if (!response.ok) {
-                    throw new Error(`Server Error: ${rawResponse}`);
-                }
-
-                // Parse JSON after validating response format
-                const data = JSON.parse(rawResponse);
-                const foodObjects = data.records.map((record) => new Food(record));
+                const response = await axios.get("http://localhost:8000/api/food-data");
+                const foodObjects = response.data.records.map((record) => new Food(record));
                 setFoods(foodObjects);
             } catch (error) {
                 console.error("Error fetching food data:", error);
             }
-        };//end of fetchFoodData
+        };
+
         const loadClientMeals = async () => {
             try {
-                const memNo = new URLSearchParams(window.location.search).get("memNo");
-
-                if (!memNo) {
-                    console.warn("No member number found in the URL.");
+                const userData = JSON.parse(localStorage.getItem("user"));
+                if (!userData || !userData.memNo) {
+                    console.warn("No member number found for the logged-in user.");
                     return;
                 }
 
+                const memNo = userData.memNo;
                 const response = await fetch(`http://localhost:8000/api/meals/${memNo}`);
                 const rawResponse = await response.text();
                 console.log("Raw API Response for meals:", rawResponse);
@@ -54,29 +46,37 @@ const Meals = () => {
                 }
 
                 const mealsResponse = JSON.parse(rawResponse);
+                const groupedMeals = { 아침: [], 점심: [], 저녁: [], 간식: [] };
 
-                const formattedSections = {
-                    아침: mealsResponse.아침 || [],
-                    점심: mealsResponse.점심 || [],
-                    저녁: mealsResponse.저녁 || [],
-                    간식: mealsResponse.간식 || [],
-                };
+                mealsResponse.forEach((meal, index) => {
+                    const { mealType, foodName, calories, memo, id } = meal;
+                    if (groupedMeals[mealType]) {
+                        groupedMeals[mealType].push({
+                            id: id || `meal-${mealType}-${index}`,
+                            name: foodName,
+                            calories,
+                            unit: "Serving",
+                            memo: memo || "",
+                            photo: null,
+                        });
+                    } else {
+                        console.warn(`Unexpected mealType: ${mealType}`, meal);
+                    }
+                });
 
-                console.log("Loaded client meals and formatted into sections:", formattedSections);
-
-                setSections(formattedSections);
+                setSections(groupedMeals);
+                console.log("Updated Sections:", groupedMeals);
             } catch (error) {
                 console.error("Error loading client meals:", error);
             }
         };
+
         fetchFoodData();
-        loadClientMeals(); // Fetch client meals
+        loadClientMeals();
     }, []);
 
-    // Utility function to find a food by name
     const findFoodByName = (name) => foods.find((food) => food.name.includes(name));
 
-    // Open and close modal for adding meals
     const openModal = (sectionName) => {
         setModalSection(sectionName);
         setIsModalOpen(true);
@@ -87,110 +87,63 @@ const Meals = () => {
         setModalSection("");
     };
 
-    const handleAddMeal = (meal) => {
-        console.log("Incoming Meal Object:", meal);
+    const saveMeal = async (meal) => {
+        try {
+            // Get memNo from localStorage to send with each request
+            const userData = JSON.parse(localStorage.getItem("user"));
+            const memNo = userData?.memNo;
 
-        setSections((prevSections) => {
-            console.log("Previous sections state:", prevSections);
-            console.log("Current modalSection:", modalSection);
-
-            if (!prevSections[modalSection]) {
-                console.error(
-                    `Error: Section "${modalSection}" does not exist.`,
-                    prevSections
-                );
-                return prevSections;
+            if (!memNo) {
+                console.error("Member number (memNo) is missing for this user.");
+                alert("User is not logged in or missing member number. Please log in again.");
+                return;
             }
 
-            // Explicitly validate properties before processing
-            const updatedMeal = {
-                id: meal.id || "(no id specified)", // Fallback if property is undefined
-                name: meal.name || "(no name specified)",
-                calories: meal.calories || 0, // Default to 0 if calories is missing
+            // Prepare the meal data to send to the API
+            const mealData = {
+                memNo: memNo, // Member number
+                dietDate: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+                mealType: modalSection, // The meal section (e.g., "아침", "점심")
+                foodName: meal.name, // Name of the food
+                calories: meal.calories, // Number of calories
+                memo: meal.memo || "", // Optional memo
             };
 
-            console.log("Validated Updated Meal Object:", updatedMeal);
+            console.log("Saving meal data:", mealData);
 
-            // Prevent adding invalid meals
-            if (!updatedMeal.id || !updatedMeal.name || updatedMeal.calories === undefined) {
-                console.error("Invalid Meal Data:", updatedMeal);
-                return prevSections;
-            }
+            // Make a POST request to save the meal
+            const response = await axios.post("http://localhost:8000/api/meals", mealData);
 
-            const updatedSection = [...prevSections[modalSection], updatedMeal];
-            console.log(`Updated section "${modalSection}" after adding:`, updatedSection);
+            // Response should return the saved meal
+            const savedMeal = response.data;
 
-            return {
+            // Update the state to include the newly added meal
+            setSections((prevSections) => ({
                 ...prevSections,
-                [modalSection]: updatedSection,
-            };
-        });
+                [modalSection]: [...prevSections[modalSection], savedMeal],
+            }));
 
-        closeModal();
+            console.log(`Meal added successfully:`, savedMeal);
+
+            // Close the modal after success
+            closeModal();
+        } catch (error) {
+            console.error("Error saving meal:", error);
+            alert("Failed to save the meal. Please try again.");
+        }
     };
+
+    const addMealToSection = async (meal) => {
+        console.log(`Adding meal to section: ${modalSection}`, meal);
+        await saveMeal(meal);
+    };
+
 
     const handleDeleteMeal = (sectionName, mealId) => {
         setSections((prevSections) => ({
             ...prevSections,
             [sectionName]: prevSections[sectionName].filter((meal) => meal.id !== mealId),
         }));
-    };
-
-    // Event handler for "저장" button
-    const handleSaveMeals = async () => {
-        try {
-            // 1. Get the selected date from localStorage
-            const selectedDate = localStorage.getItem("selectedDate");
-            if (!selectedDate) {
-                console.error("No selected date found in localStorage.");
-                return;
-            }
-
-            // 2. Example meals data structure (could come from state or a form)
-            const mealsData = [
-                {
-                    mem_no: 11,
-                    diet_date: selectedDate, // Use the selected date from localStorage
-                    meal_type: "아침", // Breakfast
-                    food_name: "가자미구이", // Grilled fish
-                    calories: 123,
-                    memo: "생선ㅠㅠ",
-                },
-                {
-                    mem_no: 11,
-                    diet_date: selectedDate,
-                    meal_type: "점심", // Lunch
-                    food_name: "김치찌개", // Kimchi stew
-                    calories: 200,
-                    memo: "매워요!",
-                },
-            ];
-
-            // 3. API Call
-            const response = await fetch("/api/meals/save", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(mealsData), // Serialize the meal data
-            });
-
-            // 4. Handle Response
-            if (!response.ok) {
-                throw new Error(`Failed to save meals: ${response.statusText}`);
-            }
-
-            const result = await response.json();
-            console.log("Meals saved successfully:", result);
-
-            // Optional: Notify the user
-            alert("Meals saved successfully!");
-        } catch (error) {
-            console.error("Error saving meals:", error);
-
-            // Optional: Notify the user
-            alert("Failed to save meals. Please try again.");
-        }
     };
 
     // Event handler for "초기화" button
@@ -205,43 +158,39 @@ const Meals = () => {
     };
 
     return (
-        <div className="meals-container max-w-full mx-auto p-6">
-            {/* Updated Section */}
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-gray-800">오늘의 식단</h2>
-                <div className="flex space-x-2">
-                    <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        onClick={handleSaveMeals} // Save meals event
-                    >
-                        저장
-                    </button>
-                    <button
-                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                        onClick={handleResetMeals} // Reset meals event
-                    >
-                        초기화
-                    </button>
-                </div>
-            </div>
+        <div className="meals-page px-4 py-6">
+            <h1 className="text-xl font-bold mb-4">오늘의 식단</h1>
 
-            <div className="meal-grid grid grid-cols-1 md:grid-cols-4 gap-4">
-                {Object.entries(sections).map(([sectionName, sectionMeals]) => (
-                    <MealSection
-                        key={sectionName}
-                        title={sectionName}
-                        meals={sectionMeals}
-                        onAddClick={() => openModal(sectionName)}
-                        onDeleteMeal={(mealId) => handleDeleteMeal(sectionName, mealId)}
-                    />
-                ))}
+            <div className="meal-sections grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <MealSection
+                    title="아침"
+                    meals={sections.아침}
+                    onAddClick={() => openModal("아침")}
+                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
+                />
+                <MealSection
+                    title="점심"
+                    meals={sections.점심}
+                    onAddClick={() => openModal("점심")}
+                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
+                />
+                <MealSection
+                    title="저녁"
+                    meals={sections.저녁}
+                    onAddClick={() => openModal("저녁")}
+                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
+                />
+                <MealSection
+                    title="간식"
+                    meals={sections.간식}
+                    onAddClick={() => openModal("간식")}
+                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
+                />
             </div>
-
-            {/* Pass foods to AddMealModal */}
             <AddMealModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                onAddMeal={handleAddMeal}
+                onAddMeal={addMealToSection}
                 foods={foods} // Pass food data to modal
             />
         </div>
