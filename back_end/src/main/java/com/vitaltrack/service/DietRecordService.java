@@ -1,37 +1,34 @@
 package com.vitaltrack.service;
 
-import com.vitaltrack.model.DietRecord;
-import com.vitaltrack.mapper.DietRecordMapper;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.vitaltrack.dao.DietRecordDao;
+import com.vitaltrack.mapper.DietRecordMapper;
 
 @Service
 public class DietRecordService {
-
     private final DietRecordMapper dietRecordMapper;
 
+    @Autowired
     public DietRecordService(DietRecordMapper dietRecordMapper) {
         this.dietRecordMapper = dietRecordMapper;
     }
 
-    public void saveDietRecord(DietRecord dietRecord) {
-        // Validation
-        if (dietRecord.getFoodName() == null || dietRecord.getFoodName().isEmpty()) {
-            throw new IllegalArgumentException("Food name is required");
-        }
-        if (dietRecord.getMealType() == null) {
-            throw new IllegalArgumentException("Meal type is required");
-        }
-        if (dietRecord.getDietDate() == null) {
-            dietRecord.setDietDate(LocalDate.now()); // Set default to today
-        }
-        if (dietRecord.getMemo() == null) {
-            dietRecord.setMemo(""); // Default memo to empty string
-        }
+    /**
+     * Save a single diet record
+     */
+    public DietRecordDao saveDietRecord(DietRecordDao dietRecord) {
+        dietRecordMapper.insertDietRecord(dietRecord); // Save to DB via MyBatis
+        return dietRecord; // Return the saved record (assuming fields like ID are auto-populated)
+    }
 
-        // Save record
-        dietRecordMapper.insertDietRecord(List.of(dietRecord));
+
+    // Fetch meals by member number (used by the /api/meals/{memNo} endpoint)
+    public List<DietRecordDao> getMealsByMemberNumber(int memNo) {
+        // Call the MyBatis mapper to fetch records by memNo
+        return dietRecordMapper.findDietRecordsByMemNo(memNo);
     }
 }

@@ -1,42 +1,57 @@
 package com.vitaltrack.controller;
 
-import com.vitaltrack.model.DietRecord;
+import java.util.List;
+
 import com.vitaltrack.service.DietRecordService;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import com.vitaltrack.dao.DietRecordDao;
+import com.vitaltrack.service.DietRecordService;
 
-@Log4j2
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/meals")
 public class DietRecordController {
-
     private final DietRecordService dietRecordService;
 
+    @Autowired
     public DietRecordController(DietRecordService dietRecordService) {
         this.dietRecordService = dietRecordService;
     }
 
-    @PostMapping("/save-meal/{memNo}")
-    public ResponseEntity<String> saveMeal(
-            @PathVariable int memNo,
-            @RequestBody DietRecord dietRecord) {
+    @PostMapping
+    public ResponseEntity<DietRecordDao> saveMeal(@RequestBody DietRecordDao dietRecord) {
         try {
-            // Set required values
-            dietRecord.setMemNo(memNo);
-            dietRecord.setDietDate(dietRecord.getDietDate() != null ? dietRecord.getDietDate() : LocalDate.now());
-
-            // Save diet record
-            dietRecordService.saveDietRecord(dietRecord);
-            return ResponseEntity.status(201).body("Meal saved successfully!");
-        } catch (IllegalArgumentException e) {
-            log.error("Validation error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            DietRecordDao savedRecord = dietRecordService.saveDietRecord(dietRecord);
+            return ResponseEntity.status(201).body(savedRecord); // 201 Created
         } catch (Exception e) {
-            log.error("Unexpected error: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("An error occurred while saving the meal.");
+            System.err.println("Error saving meal: " + e.getMessage());
+            return ResponseEntity.internalServerError().build(); // 500 Internal Server Error
+        }
+    }
+
+
+
+    // GET: /api/meals/{memNo}
+    @GetMapping("/{memNo}")
+    public ResponseEntity<?> getMealsByMemberNumber(@PathVariable int memNo) {
+        try {
+            // Delegate to the service layer
+            List<DietRecordDao> meals = dietRecordService.getMealsByMemberNumber(memNo);
+
+            // Return 404 if no meals are found
+            if (meals == null || meals.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No meals found for member number: " + memNo);
+            }
+
+            return ResponseEntity.ok(meals);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch meals: " + e.getMessage());
         }
     }
 }
