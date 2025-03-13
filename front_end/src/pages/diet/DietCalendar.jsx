@@ -1,30 +1,65 @@
-// src/pages/diet/DietCalendar.jsx
-import React, { useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // Import calendar styles
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import DateExplorer from "../diet/DateExplorer";
 
 const DietCalendar = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const navigate = useNavigate();
+    // Initialize selectedDate from localStorage or default to today's date
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const storedDate = localStorage.getItem("selectedDate");
+        return storedDate ? new Date(storedDate) : new Date(); // Default to today if no stored date
+    });
 
-    // Function to handle date click and navigate to diet page
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
+    // Helper function to format date to DB-compatible format
+    const formatDateToDB = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Zero-padded month
+        const day = String(date.getDate()).padStart(2, "0"); // Zero-padded day
+        const hours = String(date.getHours()).padStart(2, "0"); // Zero-padded hours
+        const minutes = String(date.getMinutes()).padStart(2, "0"); // Zero-padded minutes
+        const seconds = String(date.getSeconds()).padStart(2, "0"); // Zero-padded seconds
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
 
-        // Format date to pass as a parameter (e.g., yyyy-mm-dd)
-        const formattedDate = date.toISOString().split("T")[0];
+    // Store the DB-compatible formatted date in localStorage when selectedDate changes
+    useEffect(() => {
+        const formattedDate = formatDateToDB(selectedDate); // Convert to DB-compatible format
+        localStorage.setItem("selectedDate", formattedDate);
+    }, [selectedDate]);
 
-        // Navigate to the diet page with the selected date
-        navigate(`/diet?date=${formattedDate}`);
+    // Function to fetch data for the formatted selectedDate
+    useEffect(() => {
+        const fetchDatasetForDate = async () => {
+            const formattedDate = formatDateToDB(selectedDate); // Format date for database
+            console.log("Fetching data for:", formattedDate);
+
+            // Example: Fetch data from the database
+            // const response = await fetch(`/api/data?date=${formattedDate}`);
+            // const data = await response.json();
+            // console.log("Data for selectedDate:", data);
+        };
+
+        fetchDatasetForDate();
+    }, [selectedDate]);
+
+    // Handle Today Button Click
+    const handleTodayClick = () => {
+        const today = new Date(); // Get today's date
+        setSelectedDate(today); // Update the selected date
     };
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-md">
-            <h3 className="text-lg font-semibold mb-4">일자별 보기</h3>
-            <Calendar
-                onChange={handleDateChange}
-                value={selectedDate}
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">날짜 선택</h3>
+                <button
+                    onClick={handleTodayClick}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600"
+                >
+                    TODAY
+                </button>
+            </div>
+            <DateExplorer
+                selectedDate={selectedDate}
+                onDateChange={(newDate) => setSelectedDate(newDate)} // Update the format when the user selects a date
             />
         </div>
     );

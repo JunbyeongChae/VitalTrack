@@ -38,14 +38,14 @@ const Meals = () => {
         };//end of fetchFoodData
         const loadClientMeals = async () => {
             try {
-                const memberNumber = new URLSearchParams(window.location.search).get("memberNumber");
+                const memNo = new URLSearchParams(window.location.search).get("memNo");
 
-                if (!memberNumber) {
+                if (!memNo) {
                     console.warn("No member number found in the URL.");
                     return;
                 }
 
-                const response = await fetch(`http://localhost:8000/api/meals/${memberNumber}`);
+                const response = await fetch(`http://localhost:8000/api/meals/${memNo}`);
                 const rawResponse = await response.text();
                 console.log("Raw API Response for meals:", rawResponse);
 
@@ -139,21 +139,57 @@ const Meals = () => {
     // Event handler for "저장" button
     const handleSaveMeals = async () => {
         try {
-            const memberNumber = new URLSearchParams(window.location.search).get("memberNumber");
-            const response = await fetch(`http://localhost:8000/api/save-meals/${memberNumber}`, {
+            // 1. Get the selected date from localStorage
+            const selectedDate = localStorage.getItem("selectedDate");
+            if (!selectedDate) {
+                console.error("No selected date found in localStorage.");
+                return;
+            }
+
+            // 2. Example meals data structure (could come from state or a form)
+            const mealsData = [
+                {
+                    mem_no: 11,
+                    diet_date: selectedDate, // Use the selected date from localStorage
+                    meal_type: "아침", // Breakfast
+                    food_name: "가자미구이", // Grilled fish
+                    calories: 123,
+                    memo: "생선ㅠㅠ",
+                },
+                {
+                    mem_no: 11,
+                    diet_date: selectedDate,
+                    meal_type: "점심", // Lunch
+                    food_name: "김치찌개", // Kimchi stew
+                    calories: 200,
+                    memo: "매워요!",
+                },
+            ];
+
+            // 3. API Call
+            const response = await fetch("/api/meals/save", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(sections), // Send 'sections' as JSON
+                body: JSON.stringify(mealsData), // Serialize the meal data
             });
+
+            // 4. Handle Response
             if (!response.ok) {
-                throw new Error("Failed to save meals.");
+                throw new Error(`Failed to save meals: ${response.statusText}`);
             }
-            alert("Meals saved successfully!"); // Alert the user on success
+
+            const result = await response.json();
+            console.log("Meals saved successfully:", result);
+
+            // Optional: Notify the user
+            alert("Meals saved successfully!");
         } catch (error) {
             console.error("Error saving meals:", error);
-            alert("Error saving meals. Please try again.");
+
+            // Optional: Notify the user
+            alert("Failed to save meals. Please try again.");
         }
     };
 
