@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Mypage = ({ user }) => {
+const Mypage = ({ user, setUser }) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
@@ -95,6 +95,47 @@ const Mypage = ({ user }) => {
     alert('새로고침 완료!');
   };
   
+  const handleDeleteAccount = async () => {
+    const password = prompt("비밀번호를 한 번 더 입력하세요:");
+    if (!password) return;
+  
+    try {
+      const checkResponse = await fetch('/api/auth/checkPassword', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memEmail: user.memEmail, memPw: password }),
+      });
+  
+      const checkResult = await checkResponse.json();
+      if (!checkResponse.ok || !checkResult.success) {
+        alert("비밀번호가 올바르지 않습니다.");
+        return;
+      }
+  
+      const confirmDelete = window.confirm("정말 탈퇴하시겠습니까?");
+      if (!confirmDelete) return;
+  
+      const deleteResponse = await fetch('/api/auth/deleteUser', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memEmail: user.memEmail }),
+      });
+  
+      if (deleteResponse.ok) {
+        alert("회원탈퇴가 완료되었습니다.");
+        localStorage.removeItem("user"); // 로컬 스토리지 삭제
+        setUser(null); // Header에서 로그인 전 상태로 변경
+        navigate('/'); // 홈으로 이동
+      } else {
+        alert("회원탈퇴에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("회원탈퇴 오류:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+  
+  
   
   if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
@@ -170,6 +211,9 @@ const Mypage = ({ user }) => {
         </button>
         <button onClick={handleRefresh} className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md">
           새로고침
+        </button>
+        <button onClick={handleDeleteAccount} className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md">
+          회원탈퇴
         </button>
       </div>
     </div>

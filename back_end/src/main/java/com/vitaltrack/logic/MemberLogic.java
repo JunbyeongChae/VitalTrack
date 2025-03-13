@@ -123,4 +123,8 @@ public class MemberLogic {
   public MemberInfo findById(String memId) {
     return memberDao.findById(memId);
   }
+
+  public int deleteUser(String email) {
+    return memberDao.deleteByEmail(email);
+  }
 }

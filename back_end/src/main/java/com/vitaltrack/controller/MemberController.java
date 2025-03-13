@@ -66,6 +66,42 @@ public class MemberController {
       }
   }
 
+  @PostMapping("/checkPassword")
+  public ResponseEntity<?> checkPassword(@RequestBody Map<String, String> request) {
+      String email = request.get("memEmail");
+      String inputPw = request.get("memPw");
+
+      // 이메일로 사용자 조회
+      MemberInfo member = memberLogic.findByEmail(email);
+      if (member == null) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                  .body(Map.of("success", false, "message", "존재하지 않는 이메일입니다."));
+      }
+
+      // 비밀번호 검증
+      if (!member.getMemPw().equals(inputPw)) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                  .body(Map.of("success", false, "message", "비밀번호가 일치하지 않습니다."));
+      }
+
+      return ResponseEntity.ok(Map.of("success", true));
+  }
+
+  @DeleteMapping("/deleteUser")
+  public ResponseEntity<?> deleteUser(@RequestBody Map<String, String> request) {
+      String email = request.get("memEmail");
+
+      // 회원 탈퇴 처리
+      int deleted = memberLogic.deleteUser(email);
+      if (deleted > 0) {
+          return ResponseEntity.ok(Map.of("success", true, "message", "회원 탈퇴 성공"));
+      } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                  .body(Map.of("success", false, "message", "회원 탈퇴 실패"));
+      }
+  }
+
+
 
   @GetMapping("/checkUser")
   public ResponseEntity<Boolean> checkUserExists(@RequestParam String email) {
