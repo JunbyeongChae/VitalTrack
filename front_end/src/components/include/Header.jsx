@@ -14,6 +14,8 @@ const Header = ({ user, setUser }) => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
+    } else {
+      setCurrentUser(null);
     }
   }, [user]); // user 값이 변경될 때마다 실행
 
@@ -49,7 +51,7 @@ const Header = ({ user, setUser }) => {
               <button onClick={() => navigate('/healthInfo')} className="border-b-2 border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
                 건강정보
               </button>
-              <button onClick={() => navigate('/work')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              <button onClick={() => navigate('/workout')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 운동관리
               </button>
               <button onClick={() => navigate('/diet')} className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">

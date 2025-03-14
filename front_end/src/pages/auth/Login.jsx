@@ -19,13 +19,13 @@ const Login = ({ setUser }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -80,6 +80,8 @@ const Login = ({ setUser }) => {
       setError(`Google 로그인 실패: ${error.message}`);
     }
   };
+  
+  
 
   return (
     <div
@@ -96,7 +98,9 @@ const Login = ({ setUser }) => {
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">
             <img src="../images/logo.png" alt="Logo" className="h-16" />
-            <h2 className="text-xl font-semibold text-gray-700">Sign in to your account</h2>
+            <h2 className="text-xl font-semibold text-gray-700">
+              Sign in to your account
+            </h2>
           </div>
 
           <form className="space-y-3" onSubmit={handleSubmit}>
@@ -108,7 +112,10 @@ const Login = ({ setUser }) => {
               <label className="block text-sm font-medium text-gray-700">Password</label>
               <input type="password" name="memPw" placeholder="Enter your password" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
             </div>
-            <button type="submit" className="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-700 transition">
+            <button
+              type="submit"
+              className="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-700 transition"
+            >
               Login
             </button>
           </form>
@@ -116,8 +123,15 @@ const Login = ({ setUser }) => {
           <div className="text-center text-gray-600 text-sm">Or sign in with</div>
 
           {/* Google 로그인 버튼 */}
-          <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition">
-            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="h-4 w-4 mr-2" />
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+          >
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google"
+              className="h-4 w-4 mr-2"
+            />
             Sign in with Google
           </button>
 
