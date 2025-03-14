@@ -7,7 +7,7 @@
     <!-- Insert statement for inserting a record into the diet_records table -->
     <insert id="insertDietRecord">
         INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
-        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{foodName}, #{calories}, #{memo})
+        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{name}, #{calories}, #{memo})
     </insert>
 
     <!-- Fetch diet records by member number -->
@@ -16,7 +16,7 @@
             mem_no AS memNo,
             diet_date AS dietDate,
             meal_type AS mealType,
-            food_name AS foodName,
+            food_name AS name,
             calories,
             memo
         FROM

@@ -9,7 +9,7 @@ public class DietRecord {
     private int memNo;                 // Foreign Key to memberinfo table
     private LocalDate dietDate;        // Date of the meal
     private MealType mealType;         // Enum for meal type (아침, 점심, 저녁, 간식)
-    private String foodName;           // Name of the food
+    private String name;             // Name of the food
     private int calories;              // Calories consumed
     private String memo;               // Optional memo
 

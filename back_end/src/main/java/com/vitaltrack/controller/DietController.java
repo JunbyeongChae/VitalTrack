@@ -53,7 +53,7 @@ public class DietController {
                 JsonToken token = parser.nextToken();
 
                 // Look for the start of the 'records' array
-                if (JsonToken.FIELD_NAME.equals(token) && "records".equals(parser.getCurrentName())) {
+                if (JsonToken.FIELD_NAME.equals(token) && "records".equals(parser.currentName())) {
                     parser.nextToken(); // Move to the start of the 'records' array
 
                     if (JsonToken.START_ARRAY.equals(parser.currentToken())) {
@@ -61,7 +61,7 @@ public class DietController {
                         while (parser.nextToken() != JsonToken.END_ARRAY) {
                             if (JsonToken.START_OBJECT.equals(parser.currentToken())) {
                                 // Parse individual record into a map
-                                Map<String, Object> record = parser.readValueAs(Map.class); // Deserialize directly
+                                Map record = parser.readValueAs(Map.class); // Deserialize directly
 
                                 // Filter records based on query
                                 if (record.containsKey("식품명")) {
