@@ -49,11 +49,11 @@ const Meals = () => {
                 const groupedMeals = { 아침: [], 점심: [], 저녁: [], 간식: [] };
 
                 mealsResponse.forEach((meal, index) => {
-                    const { mealType, foodName, calories, memo, id } = meal;
+                    const { mealType, name, calories, memo, id } = meal;
                     if (groupedMeals[mealType]) {
                         groupedMeals[mealType].push({
                             id: id || `meal-${mealType}-${index}`,
-                            name: foodName,
+                            name: name,
                             calories,
                             unit: "Serving",
                             memo: memo || "",
@@ -74,8 +74,6 @@ const Meals = () => {
         fetchFoodData();
         loadClientMeals();
     }, []);
-
-    const findFoodByName = (name) => foods.find((food) => food.name.includes(name));
 
     const openModal = (sectionName) => {
         setModalSection(sectionName);
@@ -104,7 +102,7 @@ const Meals = () => {
                 memNo: memNo, // Member number
                 dietDate: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
                 mealType: modalSection, // The meal section (e.g., "아침", "점심")
-                foodName: meal.name, // Name of the food
+                name: meal.name, // Name of the food
                 calories: meal.calories, // Number of calories
                 memo: meal.memo || "", // Optional memo
             };
@@ -116,6 +114,7 @@ const Meals = () => {
 
             // Response should return the saved meal
             const savedMeal = response.data;
+            console.log("Saved meal:", savedMeal);
 
             // Update the state to include the newly added meal
             setSections((prevSections) => ({
@@ -138,23 +137,11 @@ const Meals = () => {
         await saveMeal(meal);
     };
 
-
     const handleDeleteMeal = (sectionName, mealId) => {
         setSections((prevSections) => ({
             ...prevSections,
             [sectionName]: prevSections[sectionName].filter((meal) => meal.id !== mealId),
         }));
-    };
-
-    // Event handler for "초기화" button
-    const handleResetMeals = () => {
-        setSections({
-            아침: [],
-            점심: [],
-            저녁: [],
-            간식: [],
-        });
-        alert("Meals have been reset!");
     };
 
     return (

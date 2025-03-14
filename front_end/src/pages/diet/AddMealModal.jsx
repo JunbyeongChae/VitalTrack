@@ -80,7 +80,6 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
             }
         }
     };
-
     // Trigger search manually when the Search button is clicked
     const handleSearchClick = () => {
         if (searchQuery.trim()) {
