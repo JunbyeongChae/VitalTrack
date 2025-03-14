@@ -46,13 +46,24 @@ export const loginMember = async (formData) => {
     localStorage.setItem(
       'user',
       JSON.stringify({
-        memNo: userInfo.memNo,
+        memId: userInfo.memId,
         memNick: userInfo.memNick,
-        admin: userInfo.admin
+        admin: userInfo.admin,
       })
     );
 
     return userInfo;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+//구글 로그인 : 채준병
+export const getUserByEmail = async (email) => {
+  try {
+    const response = await fetch(`/api/auth/getUserByEmail?email=${email}`);
+    if (!response.ok) throw new Error('사용자 정보를 가져오는 데 실패했습니다.');
+    return await response.json();
   } catch (error) {
     throw new Error(error.message);
   }
@@ -74,5 +85,61 @@ export const checkUserExists = async (email) => {
   } catch (error) {
     console.error('사용자 존재 확인 실패:', error);
     return false;
+  }
+};
+
+// 비밀번호 확인 : 채준병
+export const checkPassword = async (memEmail, memPw) => {
+  try {
+    const response = await fetch('/api/auth/checkPassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memEmail, memPw }),
+    });
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// 회원 정보 업데이트 : 장원준 -> authLogic.js로 이동 : 채준병
+export const updateUser = async (formData) => {
+  try {
+    const payload = { ...formData };
+
+    // 비어있는 값은 제외
+    Object.keys(payload).forEach(key => {
+      if (payload[key] === '' || payload[key] === null) {
+        delete payload[key];
+      }
+    });
+
+    const response = await fetch('/api/auth/updateUser', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.text();
+    if (!response.ok) throw new Error(result);
+    return result;
+  } catch (error) {
+    throw new Error(`회원 정보 업데이트 실패: ${error.message}`);
+  }
+};
+
+// 회원 탈퇴 : 장원준 -> authLogic.js로 이동 : 채준병
+export const deleteUser = async (memEmail) => {
+  try {
+    const response = await fetch('/api/auth/deleteUser', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memEmail }),
+    });
+
+    if (!response.ok) throw new Error('회원탈퇴에 실패했습니다.');
+    return '회원탈퇴가 완료되었습니다.';
+  } catch (error) {
+    throw new Error(error.message);
   }
 };

@@ -29,6 +29,9 @@ CREATE TABLE `memberinfo` (
   `fatMin` int NOT NULL,
   `fatMax` int NOT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
+  `birthYear` varchar(4) DEFAULT NULL,
+  `birthMonth` varchar(2) DEFAULT NULL,
+  `birthDay` varchar(2) DEFAULT NULL,
   PRIMARY KEY (`memNo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -44,7 +47,7 @@ CREATE TABLE `counsel` (
   PRIMARY KEY (`counselNo`),
   KEY `fkCounselMember` (`memNo`),
   CONSTRAINT `fkCounselMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- 상담게시판 답변
@@ -60,7 +63,7 @@ CREATE TABLE `counselanswer` (
   KEY `fkAnswerCounsel` (`counselNo`),
   CONSTRAINT `fkAnswerCounsel` FOREIGN KEY (`counselNo`) REFERENCES `counsel` (`counselNo`),
   CONSTRAINT `fkAnswerMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- 식단관리
@@ -177,9 +180,5 @@ CREATE TABLE `diet_record` (
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정일
     FOREIGN KEY (`mem_no`) REFERENCES `memberinfo`(`memNo`) ON DELETE CASCADE
 );
-
-SELECT * FROM memberinfo WHERE memNo = 10;
-
-ALTER TABLE memberinfo ADD COLUMN admin BOOLEAN DEFAULT false;
 
 commit;
