@@ -33,7 +33,12 @@ const Login = ({ setUser }) => {
       toast.success(`${userData.memNick}님, 환영합니다!`);
       navigate('/');
     } catch (err) {
-      toast.error(`로그인 중 오류가 발생했습니다: ${err.message}`);
+      toast.error(
+        <div>
+          {err.message}<br />
+          아이디와 비밀번호를 확인하세요.
+        </div>
+      );
     }
   };
 
@@ -51,15 +56,24 @@ const Login = ({ setUser }) => {
         toast.success(`${userData.memNick}님, 환영합니다!`);
         navigate('/');
       } else {
-        toast.warn('회원정보를 찾을 수 없습니다. 회원가입을 진행해주세요.');
-        navigate('/signup', {
-          state: {
-            email: user.email,
-            name: user.displayName,
-            uid: user.uid,
-          },
-        });
-      }
+              // Toast가 닫힌 후에만 페이지 이동
+      toast.error(
+      <div>
+        회원정보를 찾을 수 없습니다.<br />
+        클릭하면 회원가입으로 넘어갑니다.
+      </div>, {
+        onClose: () => {
+          navigate('/signup', {
+            state: {
+              email: user.email,
+              name: user.displayName,
+              uid: user.uid,
+            },
+          });
+        },
+        autoClose: 3000, // 사용자가 닫지 않으면 3초 후 자동으로 닫힘
+      });
+    }
     } catch (error) {
       toast.error(`Google 로그인 실패: ${error.message}`);
     }

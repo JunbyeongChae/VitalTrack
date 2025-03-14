@@ -48,7 +48,7 @@ const Mypage = ({ user, setUser }) => {
       });
       calculateBmiStatus(data.memBmi);
     } catch (error) {
-      console.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
+      toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
     } finally {
       setLoading(false);
     }
@@ -118,7 +118,8 @@ const Mypage = ({ user, setUser }) => {
       await updateUser(formData);
       toast.success('회원 정보가 업데이트되었습니다.');
     } catch (error) {
-      toast.error('회원 정보 업데이트 실패: ' + error.message);
+      toast.error(error.message);
+      console.log(error.message);
     }
   };
 
@@ -131,29 +132,29 @@ const Mypage = ({ user, setUser }) => {
   const handleDeleteAccount = async () => {
     const password = prompt('비밀번호를 한 번 더 입력하세요:');
     if (!password) return;
-
+  
     try {
       const checkResult = await checkPassword(user.memEmail, password);
       if (!checkResult.success) {
-        toast.warn('비밀번호가 올바르지 않습니다.');
+        toast.warn('비밀번호가 일치하지 않습니다.');
         return;
       }
-
+  
       const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
       if (!confirmDelete) return;
-
-      const isDeleted = await deleteUser(user.memEmail);
-      if (isDeleted) {
+  
+      const result = await deleteUser(user.memEmail);
+      if (result.success) {
         toast.success('회원탈퇴가 완료되었습니다.');
         localStorage.removeItem('user');
         setUser(null);
         navigate('/');
       } else {
-        toast.warn('회원탈퇴에 실패했습니다.');
+        toast.warn(result.message);
       }
     } catch (error) {
       console.error('회원탈퇴 오류:', error);
-      toast.error('서버 오류가 발생했습니다.');
+      toast.error(error.message);
     }
   };
 
