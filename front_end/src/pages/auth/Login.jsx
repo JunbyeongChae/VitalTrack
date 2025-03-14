@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebaseConfig';
 import { toast, ToastContainer } from 'react-toastify';
+import { loginMember, getUserByEmail } from '../../services/authLogic';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 // mySQL사용으로 전체 수정 : 채준병
@@ -10,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 const Login = ({ setUser }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    memEmail: '',
+    memId: '',
     memPw: ''
   });
 
@@ -25,28 +26,12 @@ const Login = ({ setUser }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          memEmail: formData.memEmail,
-          memPw: formData.memPw
-        })
-      });
-
-      const userData = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('user', JSON.stringify(userData));
-        setUser(userData);
-        toast.success(`${userData.memNick}님, 환영합니다!`);
-        navigate('/');
-      } else {
-        toast.warn('로그인 실패');
-        throw new Error(userData.error || '로그인 실패');
-      }
+      const userData = await loginMember(formData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      toast.success(`${userData.memNick}님, 환영합니다!`);
+      navigate('/');
     } catch (err) {
       toast.error(`로그인 중 오류가 발생했습니다: ${err.message}`);
     }
@@ -57,11 +42,10 @@ const Login = ({ setUser }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // DB에서 사용자 존재 여부 확인
-      const response = await fetch(`/api/auth/getUserByEmail?email=${user.email}`);
-      const userData = await response.json();
+      // authLogic.js에서 사용자 정보 조회
+      const userData = await getUserByEmail(user.email);
 
-      if (response.ok) {
+      if (userData) {
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
         toast.success(`${userData.memNick}님, 환영합니다!`);
@@ -72,17 +56,15 @@ const Login = ({ setUser }) => {
           state: {
             email: user.email,
             name: user.displayName,
-            uid: user.uid
-          }
+            uid: user.uid,
+          },
         });
       }
     } catch (error) {
-      setError(`Google 로그인 실패: ${error.message}`);
+      toast.error(`Google 로그인 실패: ${error.message}`);
     }
   };
   
-  
-
   return (
     <div
       className="flex flex-col h-screen justify-center items-center bg-white font-[Inter]"
@@ -105,8 +87,8 @@ const Login = ({ setUser }) => {
 
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-gray-700">E-mail</label>
-              <input type="email" name="memEmail" placeholder="Insert your email" value={formData.memEmail} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+              <label className="block text-sm font-medium text-gray-700">ID</label>
+              <input type="id" name="memId" placeholder="ID를 입력하세요" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Password</label>

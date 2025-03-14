@@ -25,10 +25,10 @@ public class MemberController {
       int result = memberLogic.registerMember(member);
       if (result > 0) {
         // ✅ 반드시 200 OK로 명확히 반환
-        return ResponseEntity.ok(Map.of("status", "success", "message", "회원가입 성공"));
+        return ResponseEntity.ok(Map.of("status", "success", "message", "회원가입이 완료되었습니다."));
       } else {
         // ✅ 실패 시에는 400으로 반환
-        return ResponseEntity.status(400).body(Map.of("status", "error", "message", "회원가입 실패"));
+        return ResponseEntity.status(400).body(Map.of("status", "error", "message", "회원가입에 실패했습니다."));
       }
     } catch (IllegalArgumentException e) {
       // ✅ 예외가 발생하면 400으로 명확히 반환
@@ -40,7 +40,7 @@ public class MemberController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody MemberInfo loginRequest) {
     try {
-      MemberInfo member = memberLogic.login(loginRequest.getMemEmail(), loginRequest.getMemPw());
+      MemberInfo member = memberLogic.login(loginRequest.getMemId(), loginRequest.getMemPw());
 
       // 비밀번호는 반환하지 않도록 null로 처리
       member.setMemPw(null);
@@ -51,7 +51,6 @@ public class MemberController {
           .body(Map.of("error", e.getMessage()));
     }
   }
-
   @PutMapping("/updateUser")
   public ResponseEntity<?> updateUser(@RequestBody MemberInfo member) {
       try {

@@ -63,8 +63,7 @@ public class MemberLogic {
   public int updateUser(MemberInfo member) {
     // BMI 및 기초대사량 계산
     double bmi = calculateBMI(member.getMemHeight(), member.getMemWeight());
-    int calorie = calculateCalories(member.getMemGen(), member.getMemAge(), member.getMemWeight(),
-        member.getMemHeight());
+    int calorie = calculateCalories(member.getMemGen(), member.getMemAge(), member.getMemWeight(), member.getMemHeight());
 
     // 영양소 기준 설정
     calculateStandardNutrition(member, calorie);
@@ -78,10 +77,10 @@ public class MemberLogic {
   }
 
   // 로그인 검증
-  public MemberInfo login(String email, String password) {
-    MemberInfo member = memberDao.findByEmail(email);
+  public MemberInfo login(String memId, String password) {
+    MemberInfo member = memberDao.findById(memId);
     if (member == null) {
-      throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
+      throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
     }
     if (!member.getMemPw().equals(password)) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");

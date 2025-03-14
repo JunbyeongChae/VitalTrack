@@ -29,4 +29,8 @@ public class MemberInfo {
 
   @Transient
   private String confirmPassword; // DB 저장 제외 필드 추가
+
+  private String birthYear;
+  private String birthMonth;
+  private String birthDay;
 }
