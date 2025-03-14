@@ -183,3 +183,7 @@ SELECT * FROM memberinfo WHERE memNo = 10;
 ALTER TABLE memberinfo ADD COLUMN admin BOOLEAN DEFAULT false;
 
 commit;
+
+SELECT * FROM counselanswer WHERE counselNo = 1;
+
+SELECT * FROM counsel;

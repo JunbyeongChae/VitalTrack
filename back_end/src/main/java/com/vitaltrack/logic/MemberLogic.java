@@ -59,6 +59,24 @@ public class MemberLogic {
     return memberDao.insertMember(member);
   }
 
+  // 회원 정보 업데이트
+  public int updateUser(MemberInfo member) {
+    // BMI 및 기초대사량 계산
+    double bmi = calculateBMI(member.getMemHeight(), member.getMemWeight());
+    int calorie = calculateCalories(member.getMemGen(), member.getMemAge(), member.getMemWeight(),
+        member.getMemHeight());
+
+    // 영양소 기준 설정
+    calculateStandardNutrition(member, calorie);
+
+    // 업데이트할 데이터 설정
+    member.setMemBmi(bmi);
+    member.setMemKcal(calorie);
+
+    // 데이터베이스 업데이트
+    return memberDao.updateMember(member);
+  }
+
   // 로그인 검증
   public MemberInfo login(String email, String password) {
     MemberInfo member = memberDao.findByEmail(email);
@@ -104,5 +122,9 @@ public class MemberLogic {
   // 아이디로 회원 조회
   public MemberInfo findById(String memId) {
     return memberDao.findById(memId);
+  }
+
+  public int deleteUser(String email) {
+    return memberDao.deleteByEmail(email);
   }
 }

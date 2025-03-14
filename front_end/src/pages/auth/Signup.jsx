@@ -110,6 +110,8 @@ const Signup = () => {
       // 성공 메시지 처리
       if (result.status === 'success') {
         toast.success(result.message);
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
         navigate('/login');
       }
     } catch (err) {

@@ -7,6 +7,7 @@ import Dashboard from './pages/diet/Dashboard';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
+import Mypage from './pages/auth/Mypage';
 import CounselDBWrite from './pages/counsel/CounselDBWrite';
 import CounselDetail from './pages/counsel/CounselDetail';
 import CounselDBUpdate from './pages/counsel/CounselDBUpdate';
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/" element={<Home user={user} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
+          <Route path="/mypage" element={<Mypage user = {user} setUser={setUser} />} />
           <Route path="/counsel" element={<CounselList />} />
           <Route path="/counsel/write" element={<CounselDBWrite />} />
           <Route path="/counsel/:counselNo" element={<CounselDetail />} />

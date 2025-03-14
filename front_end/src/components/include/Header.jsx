@@ -14,6 +14,8 @@ const Header = ({ user, setUser }) => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
+    } else {
+      setCurrentUser(null);
     }
   }, [user]); // user 값이 변경될 때마다 실행
 
