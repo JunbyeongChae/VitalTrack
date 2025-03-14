@@ -4,7 +4,7 @@ import {useScheduleContext} from "./Context";
 import ScheduleModal from "./ScheduleModal";
 import {Button, Form, Modal} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faCirclePlus, faTrash, faXmark, faCircleCheck} from "@fortawesome/free-solid-svg-icons";
 
 const DateClick = () => {
     const { schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, selectedSchedule, setSelectedSchedule, modalMode,setModalMode } = useScheduleContext()
