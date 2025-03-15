@@ -92,7 +92,7 @@ export const uploadImageDB = (file) => {
     try {
       const response = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/imageUpload',
+        url: `${process.env.REACT_APP_SPRING_IP}api/counsel/imageUpload`,
         headers: {
           'Content-Type': 'multipart/form-data',
         },

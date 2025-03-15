@@ -32,58 +32,6 @@ import lombok.extern.log4j.Log4j2;
 public class CounselBoardController {
   @Autowired
   private CounselBoardLogic counselboardLogic = null;
-
-  @PostMapping("/imageUpload")
-  public String imageUpload(@RequestParam(value = "image") MultipartFile image) {
-    log.info("image : " + image);
-    String filename = counselboardLogic.imageUpload(image);
-    return filename;
-  }
-
-  @GetMapping("/imageGet")
-  public String imageGet(HttpServletRequest req, HttpServletResponse res) {
-    String imageName = req.getParameter("imageName");
-    log.info("imageGet 호출 성공===>" + imageName);
-    String filePath = "src\\main\\webapp\\image";
-    log.info("imageName : 8->euc" + imageName);
-    File file = new File(filePath, imageName.trim());
-    String mimeType = req.getServletContext().getMimeType(file.toString());
-    if (mimeType == null) {
-      res.setContentType("application/octet-stream");
-    }
-    String downName = null;
-    FileInputStream fis = null;
-    ServletOutputStream sos = null;
-    try {
-      if (req.getHeader("user-agent").indexOf("MSIE") == -1) {
-        downName = new String(imageName.getBytes("UTF-8"), "8859_1");
-      } else {
-        downName = new String(imageName.getBytes("EUC-KR"), "8859_1");
-      }
-      res.setHeader("Content-Disposition", "attachment;filename=" + downName);
-      fis = new FileInputStream(file);
-      sos = res.getOutputStream();
-      byte b[] = new byte[1024 * 10];
-      int data = 0;
-      while ((data = (fis.read(b, 0, b.length))) != -1) {
-        sos.write(b, 0, data);
-      }
-      sos.flush();
-    } catch (Exception e) {
-      log.info(e.toString());
-    } finally {
-      try {
-        if (sos != null)
-          sos.close();
-        if (fis != null)
-          fis.close();
-      } catch (Exception e2) {
-        log.info(e2.toString());
-      }
-    }
-    return null;
-  }// end of imageGet
-
   /**************************************************************
    * 게시글 목록 조회 구현하기 - search|select|where|GET
    * URL패핑 이름 : counselboardList
@@ -193,4 +141,55 @@ public class CounselBoardController {
     log.info("result : " + result);
     return "" + result;
   }
+  
+  @PostMapping("/imageUpload")
+  public String imageUpload(@RequestParam(value = "image") MultipartFile image) {
+    log.info("image : " + image);
+    String filename = counselboardLogic.imageUpload(image);
+    return filename;
+  }
+
+  @GetMapping("/imageGet")
+  public String imageGet(HttpServletRequest req, HttpServletResponse res) {
+    String imageName = req.getParameter("imageName");
+    log.info("imageGet 호출 성공===>" + imageName);
+    String filePath = "src\\main\\webapp\\image";
+    log.info("imageName : 8->euc" + imageName);
+    File file = new File(filePath, imageName.trim());
+    String mimeType = req.getServletContext().getMimeType(file.toString());
+    if (mimeType == null) {
+      res.setContentType("application/octet-stream");
+    }
+    String downName = null;
+    FileInputStream fis = null;
+    ServletOutputStream sos = null;
+    try {
+      if (req.getHeader("user-agent").indexOf("MSIE") == -1) {
+        downName = new String(imageName.getBytes("UTF-8"), "8859_1");
+      } else {
+        downName = new String(imageName.getBytes("EUC-KR"), "8859_1");
+      }
+      res.setHeader("Content-Disposition", "attachment;filename=" + downName);
+      fis = new FileInputStream(file);
+      sos = res.getOutputStream();
+      byte b[] = new byte[1024 * 10];
+      int data = 0;
+      while ((data = (fis.read(b, 0, b.length))) != -1) {
+        sos.write(b, 0, data);
+      }
+      sos.flush();
+    } catch (Exception e) {
+      log.info(e.toString());
+    } finally {
+      try {
+        if (sos != null)
+          sos.close();
+        if (fis != null)
+          fis.close();
+      } catch (Exception e2) {
+        log.info(e2.toString());
+      }
+    }
+    return null;
+  }// end of imageGet
 }

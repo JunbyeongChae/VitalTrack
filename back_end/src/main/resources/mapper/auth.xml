@@ -19,9 +19,14 @@
     )
 </insert>
 
-  <!-- 이메일로 회원 조회 (로그인용) -->
+  <!-- 이메일로 회원 조회 (로그인 외외) -->
   <select id="findByEmail" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
     SELECT * FROM memberinfo WHERE memEmail = #{memEmail}
+  </select>
+
+  <!-- 아이디디로 회원 조회 (로그인용) -->
+  <select id="findById" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
+    SELECT * FROM memberinfo WHERE memId = #{memId}
   </select>
 
   <!-- 회원정보 수정 -->

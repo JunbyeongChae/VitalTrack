@@ -83,7 +83,8 @@ const TiptapEditor = ({ value, handleContent }) => {
           toast.warn('이미지 업로드 실패');
         }
       } catch (error) {
-        toast.error('이미지 업로드 중 오류:', error);
+        toast.error('이미지 업로드 중 오류:'+error);
+        console.log(error)
       }
     };
     input.click();

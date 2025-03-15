@@ -101,8 +101,8 @@ public class MemberLogic {
   }
 
   // 로그인 검증
-  public MemberInfo login(String email, String password) {
-    MemberInfo member = memberDao.findByEmail(email);
+  public MemberInfo login(String memId, String password) {
+    MemberInfo member = memberDao.findById(memId);
     log.info("로그인 시도: " + member);
     if (member == null) {
       throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
@@ -144,6 +144,15 @@ public class MemberLogic {
     }
     log.info("이메일로 회원 조회 시도: " + email);
     return memberDao.findByEmail(email);
+  }
+
+  //아이디로 회원 조회
+  public MemberInfo findById(String memId) {
+    if (memId == null || memId.isEmpty()) {
+      throw new IllegalArgumentException("아이디가 null이거나 비어 있습니다.");
+    }
+    log.info("아이디로 회원 조회 시도: " + memId);
+    return memberDao.findById(memId);
   }
 
   // 회원 정보 삭제

@@ -25,4 +25,7 @@ public interface MemberDao {
 
   // 체중 변화 기록
   int insertOrUpdateWeightChange(@Param("memNo") Integer memNo, @Param("weightDate") String weightDate, @Param("weight") Double weight);
+
+  // 아이디로 회원 조회회
+  MemberInfo findById(String memId);
 }

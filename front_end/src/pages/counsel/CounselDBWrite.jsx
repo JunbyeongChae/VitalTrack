@@ -23,6 +23,7 @@ const CounselDBWrite = () => {
   const handleContent = useCallback((e) => setContent(e), []);
 
   const boardInsert = async () => {
+    console.log("boardInsert from CounselDBWrite");
     if (!title || !content) {
       toast.warn('제목과 내용을 모두 입력하세요.');
       return;

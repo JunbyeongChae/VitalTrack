@@ -32,6 +32,7 @@ public class CounselBoardLogic {
 
   // 이미지 업로드
   public String imageUpload(MultipartFile image) {
+    log.info("imageUpload 호출");
     String filename = null;
     if (image != null && !image.isEmpty()) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
