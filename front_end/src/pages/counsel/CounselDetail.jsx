@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { boardDetailDB, boardDeleteDB, reCommentInsertDB, reCommentUpdateDB } from '../../services/dbLogic';
-import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
-import { toast, ToastContainer } from 'react-toastify';
+import { boardDetailDB, boardDeleteDB, commentInsertDB, commentUpdateDB } from '../../services/counselLogic';
+import { toast } from 'react-toastify';
 
 const CounselDetail = () => {
   const { counselNo } = useParams();
@@ -84,7 +83,7 @@ const CounselDetail = () => {
     };
 
     try {
-      const res = await reCommentInsertDB(commentData);
+      const res = await commentInsertDB(commentData);
       if (res.data === 1) {
         toast.success('답변이 등록되었습니다.');
         // 입력 필드 초기화
@@ -118,7 +117,7 @@ const CounselDetail = () => {
     };
 
     try {
-      const res = await reCommentUpdateDB(updatedComment);
+      const res = await commentUpdateDB(updatedComment);
       if (res.data === 1) {
         toast.success('댓글이 수정되었습니다.');
         setEditingCommentId(null);
@@ -133,8 +132,6 @@ const CounselDetail = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-10">
-      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
-
       {/* 게시글 상세 정보 */}
       <section className="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">{board.counselTitle}</h1>

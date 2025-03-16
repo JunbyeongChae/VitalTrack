@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { registerMember } from '../../services/authLogic';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 // mySQL사용으로 전체 수정
@@ -121,7 +121,6 @@ const Signup = () => {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-white font-[Inter]">
-      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg space-y-4 border-4 border-gray-700">
         {/* 순서 변경 : 채준병 */}
         {/* 이메일 입력 */}

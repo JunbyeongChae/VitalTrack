@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserByEmail, updateUser, checkPassword, deleteUser } from '../../services/authLogic';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast} from 'react-toastify';
 
 const Mypage = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -72,12 +72,12 @@ const Mypage = ({ user, setUser }) => {
   }, [user, navigate]);
 
   const calculateBmiStatus = (memBmi) => {
-    if (memBmi < 18.5) setBmiStatus('저체중 🦴');
+    if (memBmi < 18.5) setBmiStatus('저체중 🟡');
     else if (memBmi < 23) setBmiStatus('정상 🟢');
-    else if (memBmi < 25) setBmiStatus('과체중 😢');
-    else if (memBmi < 30) setBmiStatus('경도비만 🟡');
-    else if (memBmi < 35) setBmiStatus('중등도비만 🟠');
-    else setBmiStatus('고도비만 🔴');
+    else if (memBmi < 25) setBmiStatus('과체중 🟡');
+    else if (memBmi < 30) setBmiStatus('경도비만 🟠');
+    else if (memBmi < 35) setBmiStatus('중등도비만 🔴');
+    else setBmiStatus('고도비만 ⚠️');
   };
 
   // 나이 계산 함수
@@ -162,7 +162,6 @@ const Mypage = ({ user, setUser }) => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
-      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <div className="relative mb-4">
         <h2 className="text-2xl font-bold text-center">{userData?.memNick}님의 회원 정보</h2>
         <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">{todayDate}</span>
