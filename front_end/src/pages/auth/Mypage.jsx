@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserByEmail, updateUser, checkPassword, deleteUser } from '../../services/authLogic';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast} from 'react-toastify';
 
 const Mypage = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -33,26 +33,30 @@ const Mypage = ({ user, setUser }) => {
 
   const fetchUserData = async () => {
     try {
-      const data = await getUserByEmail(user.memEmail);
-      setUserData(data);
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUserData(storedUser);
       setFormData({
-        memEmail: data.memEmail || '',
-        memNick: data.memNick || '',
-        memPhone: data.memPhone || '',
-        memHeight: data.memHeight || '',
-        memWeight: data.memWeight || '',
-        birthYear: data.birthYear || '',
-        birthMonth: data.birthMonth || '',
-        birthDay: data.birthDay || '',
-        memAge: data.memAge || ''
+        memEmail: storedUser.memEmail || '',
+        memNick: storedUser.memNick || '',
+        memPhone: storedUser.memPhone || '',
+        memHeight: storedUser.memHeight || '',
+        memWeight: storedUser.memWeight || '',
+        birthYear: storedUser.birthYear || '',
+        birthMonth: storedUser.birthMonth || '',
+        birthDay: storedUser.birthDay || '',
+        memAge: storedUser.memAge || ''
       });
-      calculateBmiStatus(data.memBmi);
-    } catch (error) {
-      console.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
-    } finally {
-      setLoading(false);
+      calculateBmiStatus(storedUser.memBmi);
+    } else {
+      toast.error('사용자 정보를 불러올 수 없습니다.');
     }
-  };
+  } catch (error) {
+    toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     // 새로고침 시 localStorage에서 user 정보 복구
@@ -72,12 +76,12 @@ const Mypage = ({ user, setUser }) => {
   }, [user, navigate]);
 
   const calculateBmiStatus = (memBmi) => {
-    if (memBmi < 18.5) setBmiStatus('저체중 🦴');
+    if (memBmi < 18.5) setBmiStatus('저체중 🟡');
     else if (memBmi < 23) setBmiStatus('정상 🟢');
-    else if (memBmi < 25) setBmiStatus('과체중 😢');
-    else if (memBmi < 30) setBmiStatus('경도비만 🟡');
-    else if (memBmi < 35) setBmiStatus('중등도비만 🟠');
-    else setBmiStatus('고도비만 🔴');
+    else if (memBmi < 25) setBmiStatus('과체중 🟡');
+    else if (memBmi < 30) setBmiStatus('경도비만 🟠');
+    else if (memBmi < 35) setBmiStatus('중등도비만 🔴');
+    else setBmiStatus('고도비만 ⚠️');
   };
 
   // 나이 계산 함수
@@ -118,7 +122,8 @@ const Mypage = ({ user, setUser }) => {
       await updateUser(formData);
       toast.success('회원 정보가 업데이트되었습니다.');
     } catch (error) {
-      toast.error('회원 정보 업데이트 실패: ' + error.message);
+      toast.error(error.message);
+      console.log(error.message);
     }
   };
 
@@ -131,29 +136,29 @@ const Mypage = ({ user, setUser }) => {
   const handleDeleteAccount = async () => {
     const password = prompt('비밀번호를 한 번 더 입력하세요:');
     if (!password) return;
-
+  
     try {
       const checkResult = await checkPassword(user.memEmail, password);
       if (!checkResult.success) {
-        toast.warn('비밀번호가 올바르지 않습니다.');
+        toast.warn('비밀번호가 일치하지 않습니다.');
         return;
       }
-
+  
       const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
       if (!confirmDelete) return;
-
-      const isDeleted = await deleteUser(user.memEmail);
-      if (isDeleted) {
+  
+      const result = await deleteUser(user.memEmail);
+      if (result.success) {
         toast.success('회원탈퇴가 완료되었습니다.');
         localStorage.removeItem('user');
         setUser(null);
         navigate('/');
       } else {
-        toast.warn('회원탈퇴에 실패했습니다.');
+        toast.warn(result.message);
       }
     } catch (error) {
       console.error('회원탈퇴 오류:', error);
-      toast.error('서버 오류가 발생했습니다.');
+      toast.error(error.message);
     }
   };
 
@@ -161,7 +166,6 @@ const Mypage = ({ user, setUser }) => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
-      <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss="false" pauseOnHover />
       <div className="relative mb-4">
         <h2 className="text-2xl font-bold text-center">{userData?.memNick}님의 회원 정보</h2>
         <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">{todayDate}</span>

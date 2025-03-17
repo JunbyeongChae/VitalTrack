@@ -48,7 +48,7 @@ export const loginMember = async (formData) => {
       JSON.stringify({
         memId: userInfo.memId,
         memNick: userInfo.memNick,
-        admin: userInfo.admin,
+        admin: userInfo.admin
       })
     );
 
@@ -61,9 +61,23 @@ export const loginMember = async (formData) => {
 //구글 로그인 : 채준병
 export const getUserByEmail = async (email) => {
   try {
-    const response = await fetch(`/api/auth/getUserByEmail?email=${email}`);
+    const response = await fetch(`/api/auth/getUserByEmail?email=${email}`, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 404) return null; // 회원 정보가 없을 경우 null 반환
+
     if (!response.ok) throw new Error('사용자 정보를 가져오는 데 실패했습니다.');
-    return await response.json();
+    
+    const result = await response.json();
+
+    // member 데이터만 반환하도록 수정
+    return result.member || null;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -94,7 +108,7 @@ export const checkPassword = async (memEmail, memPw) => {
     const response = await fetch('/api/auth/checkPassword', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memEmail, memPw }),
+      body: JSON.stringify({ memEmail, memPw })
     });
     return await response.json();
   } catch (error) {
@@ -108,7 +122,7 @@ export const updateUser = async (formData) => {
     const payload = { ...formData };
 
     // 비어있는 값은 제외
-    Object.keys(payload).forEach(key => {
+    Object.keys(payload).forEach((key) => {
       if (payload[key] === '' || payload[key] === null) {
         delete payload[key];
       }
@@ -117,14 +131,14 @@ export const updateUser = async (formData) => {
     const response = await fetch('/api/auth/updateUser', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
 
     const result = await response.text();
     if (!response.ok) throw new Error(result);
     return result;
   } catch (error) {
-    throw new Error(`회원 정보 업데이트 실패: ${error.message}`);
+    throw new Error(`${error.message}`);
   }
 };
 
@@ -134,11 +148,49 @@ export const deleteUser = async (memEmail) => {
     const response = await fetch('/api/auth/deleteUser', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memEmail }),
+      body: JSON.stringify({ memEmail })
     });
 
-    if (!response.ok) throw new Error('회원탈퇴에 실패했습니다.');
-    return '회원탈퇴가 완료되었습니다.';
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message);
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// 회원가입시 아이디 중복 체크
+export const checkIdExists = async (memId) => {
+  try {
+    const response = await fetch(`/api/auth/checkId?memId=${memId}`, {
+      method: 'GET'
+    });
+    if (!response.ok) {
+      throw new Error('아이디 중복 확인 중 오류가 발생했습니다.');
+    }
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 회원가입시 이메일 중복 체크
+export const checkEmailExists = async (email) => {
+  const user = await getUserByEmail(email);
+  return user !== null;
+};
+
+// 체중 변화 데이터 조회
+export const getWeightChanges = async (memNo) => {
+  try {
+    const response = await fetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+
+    if (!response.ok) throw new Error('체중 변화 데이터를 불러오는 데 실패했습니다.');
+    return await response.json();
   } catch (error) {
     throw new Error(error.message);
   }
