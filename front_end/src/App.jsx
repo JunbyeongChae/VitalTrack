@@ -16,6 +16,10 @@ import CounselWrite from './pages/counsel/CounselWrite';
 import CounselDetail from './pages/counsel/CounselDetail';
 import CounselUpdate from './pages/counsel/CounselUpdate';
 import CounselAdvisor from './pages/counsel/CounselAdvisor';
+import InfoBoardList from './pages/infoboard/InfoBoardList';
+import InfoBoardWrite from './pages/infoboard/InfoBoardWrite';
+import InfoBoardUpdate from './pages/infoboard/InfoBoardUpdate';
+import InfoBoardDetail from './pages/infoboard/InfoBoardDetail';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -43,6 +47,10 @@ const App = () => {
           <Route path="/counsel/write" element={<CounselWrite />} />
           <Route path="/counsel/:counselNo" element={<CounselDetail />} />
           <Route path="/counsel/update/:counselNo" element={<CounselUpdate />} />
+          <Route path="/healthInfo" element={<InfoBoardList />} />
+          <Route path="/healthInfo/write" element={<InfoBoardWrite />} />
+          <Route path="/healthInfo/:id" element={<InfoBoardDetail />} />
+          <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
           <Route path="/nutrition" element={<Dashboard />} />
           <Route path="/workout" exact={true} element={<WorkoutPage />} />
         </Routes>
