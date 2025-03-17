@@ -28,7 +28,7 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <div
-                            key={meal.id}
+                            key={meal.recordId}
                             onClick={() => handleMealClick(meal)} // Open delete confirmation modal
                             className="meal-item flex items-center justify-between p-3 bg-white shadow rounded mb-2 cursor-pointer hover:bg-gray-100 transition"
                         >
@@ -78,19 +78,20 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                             {/* Cancel Button */}
                             <button
                                 onClick={closeDeleteModal}
-                                className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 transition flex items-center gap-2"
+                                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition"
                             >
-                                <FontAwesomeIcon icon={faTimes} /> Cancel
+                                Cancel
                             </button>
                             {/* Delete Button */}
                             <button
                                 onClick={() => {
-                                    onDeleteMeal(selectedMeal.id); // Trigger deletion
-                                    closeDeleteModal(); // Close modal
+                                    onDeleteMeal(selectedMeal.recordId);
+                                    closeDeleteModal();
                                 }}
-                                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition flex items-center gap-2"
+                                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
                             >
-                                <FontAwesomeIcon icon={faTrash} /> Delete
+                                <FontAwesomeIcon icon={faTrash} className="mr-2" />
+                                Delete
                             </button>
                         </div>
                     </div>

@@ -8,10 +8,10 @@ import axios from "axios";
 const Meals = () => {
     const [foods, setFoods] = useState([]); // State for food data
     const [sections, setSections] = useState({
-        아침: [],
-        점심: [],
-        저녁: [],
-        간식: [],
+        Breakfast: [],
+        Lunch: [],
+        Dinner: [],
+        Snack: [],
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalSection, setModalSection] = useState(""); // Section name for the modal
@@ -46,13 +46,14 @@ const Meals = () => {
                 }
 
                 const mealsResponse = JSON.parse(rawResponse);
-                const groupedMeals = { 아침: [], 점심: [], 저녁: [], 간식: [] };
+                const groupedMeals = { Breakfast: [], Lunch: [], Dinner: [], Snack: [] };
 
                 mealsResponse.forEach((meal, index) => {
-                    const { mealType, name, calories, memo, id } = meal;
+                    const { mealType, name, calories, memo, recordId } = meal;
                     if (groupedMeals[mealType]) {
                         groupedMeals[mealType].push({
-                            id: id || `meal-${mealType}-${index}`,
+                            id: recordId,
+                            recordId: recordId,
                             name: name,
                             calories,
                             unit: "Serving",
@@ -101,7 +102,7 @@ const Meals = () => {
             const mealData = {
                 memNo: memNo, // Member number
                 dietDate: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
-                mealType: modalSection, // The meal section (e.g., "아침", "점심")
+                mealType: modalSection, // The meal section (e.g., "Breakfast", "Lunch")
                 name: meal.name, // Name of the food
                 calories: meal.calories, // Number of calories
                 memo: meal.memo || "", // Optional memo
@@ -137,11 +138,28 @@ const Meals = () => {
         await saveMeal(meal);
     };
 
-    const handleDeleteMeal = (sectionName, mealId) => {
-        setSections((prevSections) => ({
-            ...prevSections,
-            [sectionName]: prevSections[sectionName].filter((meal) => meal.id !== mealId),
-        }));
+// Add this deleteMeal function to your Meals component
+    const handleDeleteMeal = async (recordId) => {
+        try {
+            console.log("Deleting meal with ID:", recordId);
+            const response = await axios.delete(`http://localhost:8000/api/meals/${recordId}`);
+
+            if (response.status === 200) {
+                // On successful deletion, update the state to remove the meal
+                const updatedSections = {...sections};
+
+                // Find and remove the meal from the appropriate section
+                Object.keys(updatedSections).forEach(section => {
+                    updatedSections[section] = updatedSections[section].filter(meal => meal.recordId !== recordId);
+                });
+
+                setSections(updatedSections);
+                console.log("Meal deleted successfully");
+            }
+        } catch (error) {
+            console.error("Error deleting meal:", error);
+            alert("Failed to delete meal. Please try again.");
+        }
     };
 
     return (
@@ -149,39 +167,31 @@ const Meals = () => {
             <h1 className="text-xl font-bold mb-4">오늘의 식단</h1>
 
             <div className="meal-sections grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <MealSection
-                    title="아침"
-                    meals={sections.아침}
-                    onAddClick={() => openModal("아침")}
-                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
-                />
-                <MealSection
-                    title="점심"
-                    meals={sections.점심}
-                    onAddClick={() => openModal("점심")}
-                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
-                />
-                <MealSection
-                    title="저녁"
-                    meals={sections.저녁}
-                    onAddClick={() => openModal("저녁")}
-                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
-                />
-                <MealSection
-                    title="간식"
-                    meals={sections.간식}
-                    onAddClick={() => openModal("간식")}
-                    onDeleteMeal={(meal) => console.log("Delete meal:", meal)}
-                />
+                {/* Meal sections */}
+                {Object.entries(sections).map(([sectionName, sectionMeals]) => (
+                    <MealSection
+                        key={sectionName}
+                        title={sectionName}
+                        meals={sectionMeals}
+                        onAddClick={() => openModal(sectionName)}
+                        onDeleteMeal={handleDeleteMeal} // Pass the delete handler
+                    />
+                ))}
             </div>
-            <AddMealModal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                onAddMeal={addMealToSection}
-                foods={foods} // Pass food data to modal
-            />
+
+            {/* Add Meal Modal */}
+            {isModalOpen && (
+                <AddMealModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onAddMeal={addMealToSection}
+                    sectionName={modalSection}
+                    foodOptions={foods}
+                />
+            )}
         </div>
     );
 };
+
 
 export default Meals;
