@@ -9,14 +9,13 @@ import com.vitaltrack.dao.DietRecordDao;
 
 @Mapper
 public interface DietRecordMapper {
-
-    /**
-     * Insert a single diet record
-     */
+    // Existing methods
     void insertDietRecord(DietRecordDao dietRecord);
-
-    /**
-     * Fetch diet records by member number
-     */
     List<DietRecordDao> findDietRecordsByMemNo(int memNo);
+
+    // Find record method
+    DietRecordDao findDietRecordById(int recordId);
+
+    // Delete method - implementation will be in XML mapper
+    int deleteDietRecordByRecordId(@Param("recordId") int recordId);
 }

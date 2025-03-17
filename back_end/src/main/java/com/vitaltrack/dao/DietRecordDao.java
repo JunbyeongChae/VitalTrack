@@ -7,9 +7,10 @@ import lombok.Setter;
 @Getter
 public class DietRecordDao {
     // Getters and Setters
+    private int recordId; // Primary key from diet_record table
     private int memNo; // Member ID
     private String dietDate; // Must be in 'YYYY-MM-DD' format
-    private String mealType; // Meal type (e.g., "아침")
+    private String mealType; // Meal type (e.g., "Breakfast")
     private String name; // Food name
     private int calories; // Calories
     private String memo; // Optional memo

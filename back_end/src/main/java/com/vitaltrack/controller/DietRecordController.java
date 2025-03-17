@@ -30,9 +30,7 @@ public class DietRecordController {
             System.err.println("Error saving meal: " + e.getMessage());
             return ResponseEntity.internalServerError().build(); // 500 Internal Server Error
         }
-    }
-
-
+    } //end of PostMapping
 
     // GET: /api/meals/{memNo}
     @GetMapping("/{memNo}")
@@ -53,5 +51,31 @@ public class DietRecordController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch meals: " + e.getMessage());
         }
-    }
+    }//end of GetMapping
+
+    @DeleteMapping("/{recordId}")
+    public ResponseEntity<?> deleteMeal(@PathVariable int recordId) {
+        try {
+            // Check if the meal exists
+            boolean exists = dietRecordService.checkIfMealExists(recordId);
+            if (!exists) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Meal not found with ID: " + recordId);
+            }
+
+            // Delete the meal
+            boolean deleted = dietRecordService.deleteMeal(recordId);
+
+            if (deleted) {
+                return ResponseEntity.ok("Meal deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Failed to delete meal");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting meal: " + e.getMessage());
+        }
+    } //end of DeleteMapping
 }
