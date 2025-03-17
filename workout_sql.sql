@@ -1,20 +1,26 @@
-CREATE database final_proj_hn character set utf8 default collate utf8mb3_general_ci;
-
 #시작할때마다 이거 먼저 활성화!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-use final_proj_hn; #(데이터베이스 이름) 
+use vitaltrack; #(데이터베이스 이름) 
 
-select * from workout_types;
 
-ALTER TABLE workout_types ADD COLUMN workout_id INT AUTO_INCREMENT PRIMARY KEY;
-ALTER TABLE workout_types CHANGE workout_id workoutid int;
-ALTER TABLE workout_types CHANGE met_value met text;
-ALTER TABLE workout_types CHANGE workout_name name text;
+select * from workoutTypes;
 
-drop table member_info;
+CREATE TABLE workoutTypes (
+	workoutId INT AUTO_INCREMENT PRIMARY KEY,
+    workoutName varchar(150) NOT NULL,
+    metValue decimal(5,2) NOT NULL
+);
+
+ALTER TABLE workoutTypes ADD PRIMARY KEY (workoutId);
+ALTER TABLE workoutTypes CHANGE workoutid workoutId int;
+ALTER TABLE workoutTypes CHANGE metValue metValue decimal(5,2);
+ALTER TABLE workoutTypes CHANGE workoutName workoutName varchar(150);
+
+commit;
 
 -- 회원정보
 CREATE TABLE `memberinfo` (
   `memNo` int NOT NULL AUTO_INCREMENT,
+  `admin` TINYINT NOT NULL DEFAULT '0',
   `memId` varchar(50) NOT NULL,
   `memPw` varchar(100) NOT NULL,
   `memNick` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -43,10 +49,12 @@ CREATE TABLE workoutschedule (
     scheduleStart      DATETIME,
 	scheduleEnd      DATETIME,
     workoutId      INT NOT NULL,
-    durationMinutes      INT,
+    workoutTimeMin      INT,
     kcal      INT,
     isFinished    BOOLEAN DEFAULT FALSE,
     memNo         INT NOT NULL,
     CONSTRAINT fk_schedule_member FOREIGN KEY (memNo) REFERENCES memberinfo(memNo),
-    CONSTRAINT fk_schedule_workout FOREIGN KEY (workoutId) REFERENCES workout_types(workoutId)
+    CONSTRAINT fk_schedule_workout FOREIGN KEY (workoutId) REFERENCES workoutTypes(workoutId)
 ) ENGINE=InnoDB;
+
+commit;

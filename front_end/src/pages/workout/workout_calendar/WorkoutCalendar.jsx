@@ -7,6 +7,7 @@ import {Button, Form, Modal, Popover} from "react-bootstrap"; // needed for dayC
 import "./style/WorkoutCalendar.css"
 import DateClick from "./DateClick";
 import {useScheduleContext} from "./Context";
+import axios from "axios";
 
 const WorkoutCalendar = () => {
     const {schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, setDateSchedules} = useScheduleContext()
@@ -29,17 +30,29 @@ const WorkoutCalendar = () => {
                 setDateSchedules([]); // 선택한 날짜에 일정이 없으면 null로 설정
             }
     }
-    useEffect(() => {
+    useEffect(async () => {
         if (selectedDate) {
-            dateClick({ dateStr: selectedDate});
+            dateClick({ dateStr: selectedDate})
         }
+        fetchSchedules()
     }, [schedules]) // schedules가 변경될 때만 실행
+
+    // 일정 리스트 가져오기
+    const fetchSchedules = async () => {
+        try {
+            const response = await axios.get('workout/scheduleList')
+            const scheduleList = response.data
+            setSchedules(scheduleList)
+        } catch (error) {
+            console.error('Error fetching schedules:', error)
+        }
+    }
 
     const calHeight = ()=>{
         if(selectedDate){
-            return "calc(100vh - 400px)"
+            return "calc(100vh - 450px)"
         }else {
-            return "90vh"
+            return "90%"
         }
     }
 
@@ -79,6 +92,8 @@ const WorkoutCalendar = () => {
                                 maxWidth: '100%' // 칸 너비에 맞춤
                             }}>
                                 {/* 동그란 점 */}
+                                {eventInfo.event.extendedProps.isFinished ? "✅" : ""}
+                                {!eventInfo.event.allDay &&
                                 <div
                                     style={{
                                         backgroundColor: eventInfo.event.backgroundColor,
@@ -89,9 +104,9 @@ const WorkoutCalendar = () => {
                                         flexShrink: 0 // 점이 숨겨지지 않게 고정
                                     }}
                                 />
+                                }
                                 {/* 타이틀 */}
                                 <span>
-                                    {eventInfo.event.extendedProps.isFinished ? "✅" : ""}
                                     {eventInfo.event.title}
                                 </span>
                             </div>

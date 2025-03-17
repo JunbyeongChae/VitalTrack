@@ -4,7 +4,7 @@ import {useScheduleContext} from "./Context";
 import ScheduleModal from "./ScheduleModal";
 import {Button, Form, Modal} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faCircleCheck, faCirclePlus, faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 const DateClick = () => {
     const { schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, selectedSchedule, setSelectedSchedule, modalMode,setModalMode } = useScheduleContext()
@@ -87,7 +87,7 @@ const DateClick = () => {
                 animate={{opacity: 1}}
                 exit={{opacity: 0, y: 20}}
                 transition={{duration: 0.3, ease: 'easeInOut'}}
-                className="fixed bottom-0 left-0.5 right-0.5 bg-white pl-6 pr-6  shadow-lg rounded-t-2xl w-3/5 h-[400px] border border-gray-300 box-border flex flex-col justify-between" // 테두리 추가
+                className="fixed bottom-0 left-0.5 right-0.5 bg-white pl-6 pr-6  shadow-lg rounded-t-2xl w-3/5 h-[390px] border border-gray-300 box-border flex flex-col justify-between" // 테두리 추가
             >
                 <div className="flex mt-5">
                     <h2 className="text-center text-xl text-gray-900">
@@ -98,14 +98,14 @@ const DateClick = () => {
                         <FontAwesomeIcon icon={faXmark} className="text-gray-600" />
                     </button>
                 </div>
-                <div className="mt-6">
+                <div className="mt-6 ">
                     {dateSchedules && dateSchedules.length > 0 ? (
                         dateSchedules.map((schedule, index) => (
                             <div key={index}
-                                 className="flex items-center space-x-2 btn mt-2 cursor-default transition-transform duration-100 hover:bg-gray-200 p-2 rounded-lg group"
+                                 className="flex items-center space-x-2 btn mt-2 cursor-default transition-transform duration-100 hover:bg-gray-200 p-2 rounded-lg group border-0"
                             >
 
-                                <button className="cursor-pointer mr-2"
+                                <button className="cursor-pointer mr-2 border-none"
                                         onClick={() => checkClick(schedule)}
                                         aria-pressed={schedule.isFinished}
                                 >

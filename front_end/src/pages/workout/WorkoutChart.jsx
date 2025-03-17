@@ -54,7 +54,7 @@ const WorkoutChart = () => {
 
   return (
       <>
-        <div className="workout-box_title flex flex-col items-center justify-center mt-14">
+        <div className="workout-box_title flex flex-col items-center justify-center mt-4">
           <div className="workout-box items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-full">
             <h2 className="text-center text-xl text-gray-900">일주일 운동량</h2>
             <div className="text-right text-sm mt-5 mr-5">{lastWeekTerm[0]} ~ {lastWeekTerm[1]}</div>

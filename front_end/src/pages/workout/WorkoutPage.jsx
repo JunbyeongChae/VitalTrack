@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import WorkoutCalendar from "../components/workout/workout_calendar/WorkoutCalendar";
-import WorkoutChart from "../components/workout/WorkoutChart";
-import WorkoutSummary from "../components/workout/WorkoutSummary";
-import {ScheduleProvider} from "../components/workout/workout_calendar/Context";
+import WorkoutCalendar from "./workout_calendar/WorkoutCalendar";
+import WorkoutChart from "./WorkoutChart";
+import WorkoutSummary from "./WorkoutSummary";
+import {ScheduleProvider} from "./workout_calendar/Context";
 
 const WorkoutPage = () => {
 
@@ -17,9 +17,9 @@ const WorkoutPage = () => {
                 <WorkoutCalendar/>
                 </ScheduleProvider>
             </div>
-            <div className="w-2/5 p-5 mr-5">
+            <div className="w-2/5 h-[90%] p-5 mr-5">
                 <WorkoutSummary/>
-                <WorkoutChart/>
+                <WorkoutChart />
             </div>
         </div>
     )

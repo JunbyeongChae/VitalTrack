@@ -9,7 +9,7 @@ const WorkoutSummary = () => {
 
   return (
       <>
-          <div className="workout-box_title  flex flex-col items-center justify-center mt-10">
+          <div className="workout-box_title  flex flex-col items-center justify-center">
               <h3 className="text-center text-lg">{todayString}, 오늘</h3>
               <div className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-full">
                   {1 ? (
@@ -30,7 +30,7 @@ const WorkoutSummary = () => {
                   )}
               </div>
           </div>
-          <div className="workout-box_title flex flex-col items-center justify-center mt-10">
+          <div className="workout-box_title flex flex-col items-center justify-center mt-3">
               <h3 className="text-center text-lg">최근 운동</h3>
               <div
                   className="workout-box  items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-full">

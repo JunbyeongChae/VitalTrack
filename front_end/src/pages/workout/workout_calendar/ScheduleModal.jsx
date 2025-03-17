@@ -90,6 +90,7 @@ const ScheduleModal = () => {
         // 날짜는 toISOString()으로 형식화하여 설정
         setStartDate(start.toISOString().split('T')[0])
         setEndDate(end.toISOString().split('T')[0])
+        setAllDay(schedule.allDay)
         // 색상 및 모달 표시 상태 설정
         setScheduleColor(schedule.color)
         setShowModal(true)
@@ -98,6 +99,10 @@ const ScheduleModal = () => {
 
 
     const handleSave = () => {
+        if(!selectedWorkoutType) {
+            alert('운동 종목을 선택하세요!')
+            return
+        }
         let newSchedule
         //console.log(selectedWorkoutType)
         if(modalMode === 'insert') {
@@ -153,12 +158,26 @@ const ScheduleModal = () => {
         <Modal show={showModal} onHide={handleClose} centered>
 
             <Modal.Header closeButton className="custom-header">
-                <Button variant="primary" onClick={handleClose}>
-                    <FontAwesomeIcon icon={faXmark} />
+                <Button
+                    variant="primary"
+                    onClick={handleClose}
+                    className="border-0 p-0"
+                >
+                    <FontAwesomeIcon
+                        icon={faXmark}
+                        className="border-0"
+                    />
                 </Button>
                 <Modal.Title>운동 일정</Modal.Title>
-                <Button variant="primary" onClick={handleSave}>
-                    <FontAwesomeIcon icon={faCheck} />
+                <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    className="border-0 p-0"
+                >
+                    <FontAwesomeIcon
+                        icon={faCheck}
+                        className="border-0"
+                    />
                 </Button>
             </Modal.Header>
 
@@ -192,7 +211,7 @@ const ScheduleModal = () => {
                                 />
                             }
                         </div>
-                        <FontAwesomeIcon icon={faAngleRight} />
+                        <FontAwesomeIcon icon={faAngleRight}/>
                         <div className="date-time-box right-box">
                             <Form.Control
                                 type="date"
@@ -209,21 +228,20 @@ const ScheduleModal = () => {
                             }
                         </div>
                         <div>
-                            <Button
-                                variant={allDay ? "success" : "outline-secondary"}
+                            <button
+                                type="button"
                                 onClick={() => {
                                     setAllDay(!allDay);
                                     setEndTime("");
                                     setStartTime("");
                                 }}
                                 className={`${allDay ?
-                                    "bg-teal-400 text-white border-teal-400"
-                                    :
-                                    "bg-transparent text-gray-600 border-teal-300"}
-                                border-2 font-bold rounded-full text-sm w-20 h-9 text-center
-                            `}>
+                                    "bg-teal-400 text-white border-teal-400" :
+                                    "bg-transparent text-gray-600 border-teal-300"
+                                } border-2 font-bold rounded-full text-sm w-20 h-9 text-center`}
+                            >
                                 종일
-                            </Button>
+                            </button>
                         </div>
                     </Form.Group>
 
