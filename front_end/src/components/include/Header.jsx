@@ -83,10 +83,10 @@ const Header = ({ user, setUser }) => {
           <div className="flex items-center space-x-3">
             {!currentUser ? (
               <>
-                <button onClick={() => handleNavClick('/login')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition">
+                <button onClick={() => navigate('/login')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition">
                   로그인
                 </button>
-                <button onClick={() => handleNavClick('/signup')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition">
+                <button onClick={() => navigate('/signup')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition">
                   회원가입
                 </button>
               </>
