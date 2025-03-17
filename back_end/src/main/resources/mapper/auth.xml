@@ -2,39 +2,75 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vitaltrack.dao.MemberDao">
 
-<!-- 회원가입 -->
-<insert id="insertMember" parameterType="com.vitaltrack.model.MemberInfo">
-  INSERT INTO memberinfo(
-    memId, memPw, memNick, memPhone, memEmail, 
-    memHeight, memWeight, memBmi, memKcal, 
-    memGen, memAge, carbMin, carbMax, 
-    proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
-  ) VALUES (
-    #{memId}, #{memPw}, #{memNick}, #{memPhone}, #{memEmail}, 
-    #{memHeight}, #{memWeight}, #{memBmi}, #{memKcal}, 
-    #{memGen}, #{memAge}, #{carbMin}, #{carbMax}, 
-    #{proteinMin}, #{proteinMax}, #{fatMin}, #{fatMax}, #{activityLevel},
-    0 <!-- admin을 무조건 0으로 저장 -->
-  )
+  <!-- 회원가입 -->
+<insert id="insertMember" parameterType="com.vitaltrack.model.MemberInfo" useGeneratedKeys="true" keyProperty="memNo" keyColumn="memNo">
+    INSERT INTO memberinfo (
+        memId, memPw, memNick, memPhone, memEmail, 
+        memHeight, memWeight, memBmi, memKcal, 
+        memGen, memAge, carbMin, carbMax, 
+        proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin,
+        birthYear, birthMonth, birthDay
+    ) VALUES (
+        #{memId}, #{memPw}, #{memNick}, #{memPhone}, #{memEmail}, 
+        #{memHeight}, #{memWeight}, #{memBmi}, #{memKcal}, 
+        #{memGen}, #{memAge}, #{carbMin}, #{carbMax}, 
+        #{proteinMin}, #{proteinMax}, #{fatMin}, #{fatMax}, #{activityLevel}, 
+        0, #{birthYear}, #{birthMonth}, #{birthDay}
+    )
 </insert>
 
+  <!-- 이메일로 회원 조회 (로그인 외외) -->
+  <select id="findByEmail" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
+    SELECT * FROM memberinfo WHERE memEmail = #{memEmail}
+  </select>
 
-<!-- 이메일로 회원 조회 -->
-<select id="findByEmail" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
-  SELECT memNo, memId, memPw, memNick, memPhone, memEmail, 
-         memHeight, memWeight, memBmi, memKcal, 
-         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
-  FROM memberinfo 
-  WHERE memEmail = #{memEmail}
-</select>
+  <!-- 아이디디로 회원 조회 (로그인용) -->
+  <select id="findById" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
+    SELECT * FROM memberinfo WHERE memId = #{memId}
+  </select>
 
-<!-- 아이디로 회원 조회 -->
-<select id="findById" parameterType="String" resultType="com.vitaltrack.model.MemberInfo">
-  SELECT memNo, memId, memPw, memNick, memPhone, memEmail, 
-         memHeight, memWeight, memBmi, memKcal, 
-         memGen, memAge, carbMin, carbMax, proteinMin, proteinMax, fatMin, fatMax, activityLevel, admin
-  FROM memberinfo 
-  WHERE memId = #{memId}
-</select>
+  <!-- 회원정보 수정 -->
+<update id="updateMember" parameterType="com.vitaltrack.model.MemberInfo">
+    UPDATE memberinfo
+    SET memNick = #{memNick},
+        memPhone = #{memPhone},
+        memHeight = #{memHeight},
+        memWeight = #{memWeight},
+        memBmi = #{memBmi},
+        memKcal = #{memKcal},
+        memAge = #{memAge},
+        birthYear = #{birthYear},
+        birthMonth = #{birthMonth},
+        birthDay = #{birthDay}
+    WHERE memEmail = #{memEmail}
+</update>
 
+  <!-- 회원 정보 삭제 -->
+    <delete id="deleteWeightChangeByMemNo" parameterType="Integer">
+      DELETE FROM weightchange WHERE memNo = #{memNo}
+    </delete>
+
+    <delete id="deleteByEmail" parameterType="String">
+      DELETE FROM memberinfo WHERE memEmail = #{memEmail}
+    </delete>
+
+  <!--체중 변화 저장-->
+<insert id="insertOrUpdateWeightChange">
+    INSERT INTO weightchange (memNo, weightDate, weight)
+    VALUES (#{memNo}, #{weightDate}, #{weight})
+    ON DUPLICATE KEY UPDATE weight = #{weight}
+</insert>
+  
+  <!-- 아이디 중복 검사 -->
+  <select id="existsById" parameterType="String" resultType="int">
+    SELECT COUNT(*) FROM memberinfo WHERE memId = #{memId}
+  </select>
+
+  <!-- 체중 변화 데이터 가져오기 -->
+  <select id="getWeightChanges" parameterType="Integer" resultType="map">
+      SELECT weightDate, weight
+      FROM weightchange
+      WHERE memNo = #{memNo}
+      ORDER BY weightDate ASC
+  </select>
 </mapper>

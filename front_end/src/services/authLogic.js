@@ -46,13 +46,38 @@ export const loginMember = async (formData) => {
     localStorage.setItem(
       'user',
       JSON.stringify({
-        memNo: userInfo.memNo,
+        memId: userInfo.memId,
         memNick: userInfo.memNick,
         admin: userInfo.admin
       })
     );
 
     return userInfo;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+//구글 로그인 : 채준병
+export const getUserByEmail = async (email) => {
+  try {
+    const response = await fetch(`/api/auth/getUserByEmail?email=${email}`, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 404) return null; // 회원 정보가 없을 경우 null 반환
+
+    if (!response.ok) throw new Error('사용자 정보를 가져오는 데 실패했습니다.');
+    
+    const result = await response.json();
+
+    // member 데이터만 반환하도록 수정
+    return result.member || null;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -74,5 +99,99 @@ export const checkUserExists = async (email) => {
   } catch (error) {
     console.error('사용자 존재 확인 실패:', error);
     return false;
+  }
+};
+
+// 비밀번호 확인 : 채준병
+export const checkPassword = async (memEmail, memPw) => {
+  try {
+    const response = await fetch('/api/auth/checkPassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memEmail, memPw })
+    });
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// 회원 정보 업데이트 : 장원준 -> authLogic.js로 이동 : 채준병
+export const updateUser = async (formData) => {
+  try {
+    const payload = { ...formData };
+
+    // 비어있는 값은 제외
+    Object.keys(payload).forEach((key) => {
+      if (payload[key] === '' || payload[key] === null) {
+        delete payload[key];
+      }
+    });
+
+    const response = await fetch('/api/auth/updateUser', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.text();
+    if (!response.ok) throw new Error(result);
+    return result;
+  } catch (error) {
+    throw new Error(`${error.message}`);
+  }
+};
+
+// 회원 탈퇴 : 장원준 -> authLogic.js로 이동 : 채준병
+export const deleteUser = async (memEmail) => {
+  try {
+    const response = await fetch('/api/auth/deleteUser', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memEmail })
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message);
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// 회원가입시 아이디 중복 체크
+export const checkIdExists = async (memId) => {
+  try {
+    const response = await fetch(`/api/auth/checkId?memId=${memId}`, {
+      method: 'GET'
+    });
+    if (!response.ok) {
+      throw new Error('아이디 중복 확인 중 오류가 발생했습니다.');
+    }
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 회원가입시 이메일 중복 체크
+export const checkEmailExists = async (email) => {
+  const user = await getUserByEmail(email);
+  return user !== null;
+};
+
+// 체중 변화 데이터 조회
+export const getWeightChanges = async (memNo) => {
+  try {
+    const response = await fetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+
+    if (!response.ok) throw new Error('체중 변화 데이터를 불러오는 데 실패했습니다.');
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
   }
 };

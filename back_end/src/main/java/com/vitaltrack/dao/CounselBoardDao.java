@@ -18,6 +18,7 @@ public class CounselBoardDao {
   @Autowired
   private SqlSessionTemplate sessionTemplate;
 
+  // 상담게시판 글 목록 조회하기
   public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
     log.info("boardList 호출");
     log.info("검색 조건: " + pmap.get("gubun") + ", " + pmap.get("keyword"));
@@ -35,20 +36,25 @@ public class CounselBoardDao {
     return bList;
   }
 
+  // 상담게시판 글 상세 조회하기
+  public List<Map<String, Object>> boardDetail(int counselNo) {
+    log.info("boardDetail 호출");
+    List<Map<String, Object>> bDetail = new ArrayList<>(); // null 방지
+    try {
+        bDetail = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.boardDetail", counselNo);
+        log.info("boardDetail 결과: " + bDetail);
+    } catch (Exception e) {
+        log.error("boardDetail 실행 중 오류 발생: ", e);
+    }
+    return bDetail;
+}
+
+  // 상담게시판 글 등록하기
   public int boardInsert(CounselBoard board) {
     log.info("boardInsert 호출");
     int result = -1;
     result = sessionTemplate.insert("com.vitaltrack.dao.CounselBoardDao.boardInsert", board);
     return result;
-  }
-
-  // 원글에 대한 댓글을 조회하기
-  public List<Map<String, Object>> commentList(Map<String, Object> pmap) {
-    log.info("commentList 호출 성공");
-    List<Map<String, Object>> commList = null;
-    commList = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.commentList", pmap);
-    log.info(commList);
-    return commList;
   }
 
   public int boardDelete(int counselNo) {
@@ -66,6 +72,20 @@ public class CounselBoardDao {
     return result;
   }
 
+  // 답변 조회하기
+  public List<Map<String, Object>> commentList(int counselNo) {
+    log.info("commentList 호출 성공, 파라미터: " + counselNo);
+    List<Map<String, Object>> commList = new ArrayList<>(); // null 방지
+    try {
+      commList = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.commentList", counselNo);
+      log.info("commentList 결과: " + commList);
+    } catch (Exception e) {
+      log.error("commentList 실행 중 오류 발생:", e);
+    }
+    return commList;
+  }
+
+  // 답변 등록하기
   public int commentInsert(Map<String, Object> pmap) {
     log.info("commentInsert 호출");
     int result = -1;
@@ -74,6 +94,7 @@ public class CounselBoardDao {
     return result;
   }
 
+  // 답변 수정하기
   public int commentUpdate(Map<String, Object> pmap) {
     log.info("commentUpdate 호출");
     int result = -1;
@@ -82,6 +103,7 @@ public class CounselBoardDao {
     return result;
   }
 
+  // 답변 삭제하기
   public int commentDelete(int answerNo) {
     log.info("commentDelete 호출");
     int result = -1;

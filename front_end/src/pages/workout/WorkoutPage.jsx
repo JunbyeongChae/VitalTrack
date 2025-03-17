@@ -5,8 +5,7 @@ import WorkoutSummary from "./WorkoutSummary";
 import {ScheduleProvider} from "./workout_calendar/Context";
 
 const WorkoutPage = () => {
-
-    //일자별 운동칼로리 - 막대 그래프 -> WorkoutChart.jsx
+  //일자별 운동칼로리 - 막대 그래프 -> WorkoutChart.jsx
   //달력 - 계획 입력, 클릭-모달로 상세보기or하단에 상세보기, 체크 기능 -> WorkoutCalendar.jsx
   //오늘 한 운동 - 운동명 및 칼로리
   //최근 한 운동 - 운동명 및 칼로리
@@ -25,4 +24,4 @@ const WorkoutPage = () => {
     )
 }
 
-export default WorkoutPage
+export default WorkoutPage;

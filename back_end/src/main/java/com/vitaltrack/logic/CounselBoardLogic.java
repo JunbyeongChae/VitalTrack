@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,26 +26,22 @@ public class CounselBoardLogic {
   @Autowired
   private CounselBoardDao counselBoardDao;// 절대로 new하지 않음.-빈관리를 받지않음.
 
-  public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
-    log.info("boardList 호출 성공.");
-    List<Map<String, Object>> bList = null;
-    try {
-      bList = counselBoardDao.boardList(pmap);
-    } catch (Exception e) {
-      log.error("boardList 호출 중 오류 발생: ", e);
-    }
-    return bList;
-  }
+  // application.yml에서 spring.file.upload-dir 키의 값을 주입받음
+  @Value("${spring.file.upload-dir}")
+  private String uploadDir;
 
+  // 이미지 업로드
   public String imageUpload(MultipartFile image) {
-    String savePath = "src\\main\\webapp\\image";
+    log.info("imageUpload 호출");
     String filename = null;
-    String fullPath = null;
     if (image != null && !image.isEmpty()) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
       Calendar time = Calendar.getInstance();
       filename = sdf.format(time.getTime()) + "-" + image.getOriginalFilename().replaceAll(" ", "-");
-      fullPath = savePath + "\\" + filename;
+
+      // [수정] application.yml에서 주입받은 경로 사용
+      String fullPath = uploadDir + File.separator + filename;
+
       try {
         File file = new File(fullPath);
         if (!file.getParentFile().exists()) {
@@ -63,7 +60,7 @@ public class CounselBoardLogic {
 
       } catch (Exception e) {
         log.error("imageUpload Exception: " + e.toString());
-        filename = null; // 예외 발생 시 null 반환
+        filename = null;
       }
     } else {
       log.warn("업로드된 파일이 없습니다.");
@@ -71,6 +68,7 @@ public class CounselBoardLogic {
     return filename;
   }
 
+  // 이미지 가져오기
   public byte[] imageGet(String imageName) {
     log.info("imageGet 호출");
     String fname = null;
@@ -85,6 +83,20 @@ public class CounselBoardLogic {
     return fileArray;
   }
 
+  
+  // 상담게시판 글 목록 조회하기
+  public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
+    log.info("boardList 호출 성공.");
+    List<Map<String, Object>> bList = null;
+    try {
+      bList = counselBoardDao.boardList(pmap);
+    } catch (Exception e) {
+      log.error("boardList 호출 중 오류 발생: ", e);
+    }
+    return bList;
+  }
+
+  // 상담게시판 글 등록하기
   public int boardInsert(CounselBoard board) {
     log.info("boardInsert 호출");
     int result = -1;
@@ -92,26 +104,26 @@ public class CounselBoardLogic {
     return result;
   }
 
-  public List<Map<String, Object>> boardDetail(Map<String, Object> pmap) {
-    List<Map<String, Object>> bList = null;
-    bList = counselBoardDao.boardList(pmap);
-    // 댓글가져오기
-    List<Map<String, Object>> commList = counselBoardDao.commentList(pmap);
-    if (commList != null && commList.size() > 0) {
+  // 상담게시판 글 상세 조회하기
+  public List<Map<String, Object>> boardDetail(int counselNo) {
+    log.info("boardDetail 호출, 파라미터: " + counselNo);
+    List<Map<String, Object>> bList = counselBoardDao.boardDetail(counselNo);
+
+    // 댓글 가져오기
+    List<Map<String, Object>> commList = counselBoardDao.commentList(counselNo);
+
+    // 댓글이 존재할 때만 추가
+    if (commList != null && !commList.isEmpty()) {
       Map<String, Object> cmap = new HashMap<>();
       cmap.put("comments", commList);
       bList.add(1, cmap);
     }
+
+    log.info("boardDetail 결과: " + bList);
     return bList;
   }
 
-  public int boardDelete(int counselNo) {
-    int result = -1;
-    result = counselBoardDao.boardDelete(counselNo);
-    log.info("Delete result:" + result);
-    return result;
-  }
-
+  // 상담게시판 글 수정하기
   public int boardUpdate(Map<String, Object> pmap) {
     int result = -1;
     result = counselBoardDao.boardUpdate(pmap);
@@ -119,6 +131,16 @@ public class CounselBoardLogic {
     return result;
   }
 
+  
+  // 상담게시판 글 삭제하기
+  public int boardDelete(int counselNo) {
+    int result = -1;
+    result = counselBoardDao.boardDelete(counselNo);
+    log.info("Delete result:" + result);
+    return result;
+  }
+
+  // 답변 등록하기
   public int commentInsert(Map<String, Object> pmap) {
     int result = -1;
     result = counselBoardDao.commentInsert(pmap);
@@ -126,6 +148,7 @@ public class CounselBoardLogic {
     return result;
   }
 
+  // 답변 수정하기
   public int commentUpdate(Map<String, Object> pmap) {
     int result = -1;
     result = counselBoardDao.commentUpdate(pmap);
@@ -133,9 +156,10 @@ public class CounselBoardLogic {
     return result;
   }
 
-  public int commentDelete(int answerNo) {
+  // 답변 삭제하기
+  public int commentDelete(int answerId) {
     int result = -1;
-    result = counselBoardDao.commentDelete(answerNo);
+    result = counselBoardDao.commentDelete(answerId);
     log.info("commentDelete result:" + result);
     return result;
   }
