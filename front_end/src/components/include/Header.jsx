@@ -9,6 +9,16 @@ const Header = ({ user, setUser }) => {
   const [currentUser, setCurrentUser] = useState(user); // 즉시 UI 반영을 위해 별도 상태 관리
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 상태
 
+  // 네비게이션 클릭 핸들러
+  const handleNavClick = (path) => {
+    if (!user) {
+      toast.error('로그인이 필요합니다.', { position: 'top-center' });
+      navigate('/login');
+    } else {
+      navigate(path);
+    }
+  };
+
   // 새로고침해도 로그인 상태 유지
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -39,46 +49,24 @@ const Header = ({ user, setUser }) => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             {/* 로고 클릭 시 홈으로 이동 */}
-            <div
-              className="flex-shrink-0 cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              <img
-                className="h-14 w-auto sm:h-16"
-                src="/images/logo_title.png"
-                alt="Logo"
-              />
+            <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate('/')}>
+              <img className="h-14 w-auto sm:h-16" src="/images/logo_title.png" alt="Logo" />
             </div>
             {/* 네비게이션 메뉴 */}
             <div className="hidden md:flex md:space-x-8 ml-10">
-              <button
-                onClick={() => navigate('/')}
-                className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <button onClick={() => navigate('/')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 Home
               </button>
-              <button
-                onClick={() => navigate('/healthInfo')}
-                className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <button onClick={() => handleNavClick('/healthInfo')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 건강정보
               </button>
-              <button
-                onClick={() => navigate('/workout')}
-                className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <button onClick={() => handleNavClick('/workout')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 운동관리
               </button>
-              <button
-                onClick={() => navigate('/diet')}
-                className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <button onClick={() => handleNavClick('/diet')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 식단관리
               </button>
-              <button
-                onClick={() => navigate('/counseladivsor')}
-                className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <button onClick={() => handleNavClick('/counseladivsor')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 영양상담
               </button>
             </div>
@@ -86,43 +74,28 @@ const Header = ({ user, setUser }) => {
 
           {/* 모바일 햄버거 메뉴 버튼 */}
           <div className="md:hidden">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 focus:outline-none text-3xl"
-            >
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700 focus:outline-none text-3xl">
               {isMobileMenuOpen ? <>&times;</> : <>&#9776;</>}
             </button>
           </div>
 
           {/* 로그인 상태에 따른 버튼 UI 변경 */}
           <div className="flex items-center space-x-3">
-          {!currentUser ? (
+            {!currentUser ? (
               <>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition"
-                >
+                <button onClick={() => handleNavClick('/login')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition">
                   로그인
                 </button>
-                <button
-                  onClick={() => navigate('/signup')}
-                  className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition"
-                >
+                <button onClick={() => handleNavClick('/signup')} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition">
                   회원가입
                 </button>
               </>
             ) : (
               <>
-                                <button
-                  onClick={() => navigate('/mypage')}
-                  className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition"
-                >
+                <button onClick={() => handleNavClick('/mypage')} className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition">
                   {currentUser.memNick}님
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition"
-                >
+                <button onClick={handleLogout} className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition">
                   로그아웃
                 </button>
               </>
@@ -137,11 +110,10 @@ const Header = ({ user, setUser }) => {
                 <button
                   key={idx}
                   onClick={() => {
-                    navigate(path);
+                    handleNavClick(path);
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full text-left text-base sm:text-lg font-semibold text-gray-600 hover:text-indigo-600 transition"
-                >
+                  className="w-full text-left text-base sm:text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                   {['Home', '건강정보', '운동관리', '식단관리', '영양상담'][idx]}
                 </button>
               ))}
@@ -149,20 +121,18 @@ const Header = ({ user, setUser }) => {
                 <>
                   <button
                     onClick={() => {
-                      navigate('/login');
+                      handleNavClick('/login');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left text-sm sm:text-base text-gray-700 border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-700 hover:text-white transition"
-                  >
+                    className="w-full text-left text-sm sm:text-base text-gray-700 border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-700 hover:text-white transition">
                     로그인
                   </button>
                   <button
                     onClick={() => {
-                      navigate('/signup');
+                      handleNavClick('/signup');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-700 rounded-md px-4 py-2 transition"
-                  >
+                    className="w-full text-left text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-700 rounded-md px-4 py-2 transition">
                     회원가입
                   </button>
                 </>
@@ -170,11 +140,10 @@ const Header = ({ user, setUser }) => {
                 <>
                   <button
                     onClick={() => {
-                      navigate('/mypage');
+                      handleNavClick('/mypage');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left text-sm sm:text-base text-gray-700 hover:text-indigo-600 transition"
-                  >
+                    className="w-full text-left text-sm sm:text-base text-gray-700 hover:text-indigo-600 transition">
                     {currentUser.memNick}님
                   </button>
                   <button
@@ -182,8 +151,7 @@ const Header = ({ user, setUser }) => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-700 rounded-md px-4 py-2 transition"
-                  >
+                    className="w-full text-left text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-700 rounded-md px-4 py-2 transition">
                     로그아웃
                   </button>
                 </>

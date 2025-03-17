@@ -6,6 +6,8 @@ import com.vitaltrack.model.MemberInfo;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +83,8 @@ public class MemberLogic {
 
     // BMI 및 기초대사량 계산
     double bmi = calculateBMI(member.getMemHeight(), member.getMemWeight());
-    int calorie = calculateCalories(member.getMemGen(), member.getMemAge(), member.getMemWeight(), member.getMemHeight());
+    int calorie = calculateCalories(member.getMemGen(), member.getMemAge(), member.getMemWeight(),
+        member.getMemHeight());
 
     // 영양소 기준 설정
     calculateStandardNutrition(member, calorie);
@@ -95,7 +98,8 @@ public class MemberLogic {
 
     // 체중이 변경된 경우에만 weightchange 테이블에 기록
     if (!existingMember.getMemWeight().equals(member.getMemWeight())) {
-      memberDao.insertOrUpdateWeightChange(existingMember.getMemNo(), LocalDate.now().toString(), member.getMemWeight());
+      memberDao.insertOrUpdateWeightChange(existingMember.getMemNo(), LocalDate.now().toString(),
+          member.getMemWeight());
     }
 
     // 데이터베이스 업데이트
@@ -148,7 +152,7 @@ public class MemberLogic {
     return memberDao.findByEmail(email);
   }
 
-  //아이디로 회원 조회
+  // 아이디로 회원 조회
   public MemberInfo findById(String memId) {
     if (memId == null || memId.isEmpty()) {
       throw new IllegalArgumentException("아이디가 null이거나 비어 있습니다.");
@@ -179,5 +183,10 @@ public class MemberLogic {
     }
 
     return memberDeleted;
+  }
+
+  // 체중 변화 데이터 가져오기
+  public List<Map<String, Object>> getWeightChanges(Integer memNo) {
+    return memberDao.getWeightChanges(memNo);
   }
 }

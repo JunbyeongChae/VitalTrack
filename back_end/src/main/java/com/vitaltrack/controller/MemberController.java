@@ -5,6 +5,7 @@ import com.vitaltrack.model.MemberInfo;
 
 import lombok.extern.log4j.Log4j2;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,13 +118,15 @@ public class MemberController {
       MemberInfo member = memberLogic.findByEmail(email);
       if (member == null) {
         log.error("회원 정보를 찾을 수 없습니다. 이메일: " + email);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("exists", false, "message", "회원 정보를 찾을 수 없습니다."));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of("exists", false, "message", "회원 정보를 찾을 수 없습니다."));
       }
       log.info("회원 정보 조회 성공: " + member);
       return ResponseEntity.ok(Map.of("exists", true, "member", member));
     } catch (Exception e) {
       log.error("서버 오류 발생: " + e.getMessage(), e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("exists", false, "message", "서버 오류 발생: " + e.getMessage()));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("exists", false, "message", "서버 오류 발생: " + e.getMessage()));
     }
   }
 
@@ -132,5 +135,17 @@ public class MemberController {
   public ResponseEntity<?> checkId(@RequestParam("memId") String memId) {
     boolean exists = memberLogic.findById(memId) != null;
     return ResponseEntity.ok(Map.of("exists", exists));
+  }
+
+  // 체중 변화 데이터 조회 API
+  @GetMapping("/getWeightChanges")
+  public ResponseEntity<?> getWeightChanges(@RequestParam("memNo") Integer memNo) {
+    try {
+      List<Map<String, Object>> weightChanges = memberLogic.getWeightChanges(memNo);
+      return ResponseEntity.ok(weightChanges);
+    } catch (Exception e) {
+      log.error("체중 변화 데이터 조회 실패: ", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 조회 실패");
+    }
   }
 }

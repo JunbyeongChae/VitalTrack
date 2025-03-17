@@ -65,4 +65,12 @@
   <select id="existsById" parameterType="String" resultType="int">
     SELECT COUNT(*) FROM memberinfo WHERE memId = #{memId}
   </select>
+
+  <!-- 체중 변화 데이터 가져오기 -->
+  <select id="getWeightChanges" parameterType="Integer" resultType="map">
+      SELECT weightDate, weight
+      FROM weightchange
+      WHERE memNo = #{memNo}
+      ORDER BY weightDate ASC
+  </select>
 </mapper>

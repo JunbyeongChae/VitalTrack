@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import { Link } from 'react-router';
+import { getWeightChanges } from '../services/authLogic';
 
 const UserHome = () => {
   const [bmiStatus, setBmiStatus] = useState('');
@@ -25,25 +26,30 @@ const UserHome = () => {
   };
 
   useEffect(() => {
-    calculateBmiStatus();
-    const weightChart = echarts.init(document.getElementById('weightChart'));
-    const activityChart = echarts.init(document.getElementById('activityChart'));
+    const fetchWeightData = async () => {
+    try {
+      const data = await getWeightChanges(user.memNo);
+      const dates = data.map(item => item.weightDate);
+      const weights = data.map(item => item.weight);
 
-    const weightOption = {
-      animation: false,
-      tooltip: { trigger: 'axis' },
-      xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-      yAxis: { type: 'value' },
-      series: [
-        {
-          data: [75.2, 75.4, 75.1, 75.5, 75.3, 75.6, 75.5],
-          type: 'line',
-          smooth: true,
-          lineStyle: { color: '#3B82F6' },
-          itemStyle: { color: '#3B82F6' }
-        }
-      ]
-    };
+      const weightChart = echarts.init(document.getElementById('weightChart'));
+      const activityChart = echarts.init(document.getElementById('activityChart'));
+
+      const weightOption = {
+        animation: false,
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: dates },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            data: weights,
+            type: 'line',
+            smooth: true,
+            lineStyle: { color: '#3B82F6' },
+            itemStyle: { color: '#3B82F6' },
+          },
+        ],
+      };
 
     const activityOption = {
       animation: false,
@@ -67,12 +73,16 @@ const UserHome = () => {
       weightChart.resize();
       activityChart.resize();
     });
+  } catch (error) {
+    console.error('체중 데이터 가져오기 실패:', error.message);
+  }
+};
+
+    fetchWeightData();
+    calculateBmiStatus();
 
     return () => {
-      window.removeEventListener('resize', () => {
-        weightChart.resize();
-        activityChart.resize();
-      });
+      window.removeEventListener('resize', () => {});
     };
   }, []);
 

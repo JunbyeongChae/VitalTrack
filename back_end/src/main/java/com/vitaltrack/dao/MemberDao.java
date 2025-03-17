@@ -2,6 +2,9 @@ package com.vitaltrack.dao;
 
 import com.vitaltrack.model.MemberInfo;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,4 +33,7 @@ public interface MemberDao {
 
   // 아이디로 회원 조회
   MemberInfo findById(String memId);
+
+  // 체중 변화 데이터 가져오기
+List<Map<String, Object>> getWeightChanges(@Param("memNo") Integer memNo);
 }

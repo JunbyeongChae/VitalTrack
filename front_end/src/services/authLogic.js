@@ -179,3 +179,19 @@ export const checkEmailExists = async (email) => {
   const user = await getUserByEmail(email);
   return user !== null;
 };
+
+// 체중 변화 데이터 조회
+export const getWeightChanges = async (memNo) => {
+  try {
+    const response = await fetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+
+    if (!response.ok) throw new Error('체중 변화 데이터를 불러오는 데 실패했습니다.');
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
