@@ -21,11 +21,13 @@ public interface MemberDao {
 
   // 회원 정보 삭제
   int deleteByEmail(@Param("memEmail") String memEmail);
+
   int deleteWeightChangeByMemNo(@Param("memNo") Integer memNo);
 
   // 체중 변화 기록
-  int insertOrUpdateWeightChange(@Param("memNo") Integer memNo, @Param("weightDate") String weightDate, @Param("weight") Double weight);
+  int insertOrUpdateWeightChange(@Param("memNo") Integer memNo, @Param("weightDate") String weightDate,
+      @Param("weight") Double weight);
 
-  // 아이디로 회원 조회회
+  // 아이디로 회원 조회
   MemberInfo findById(String memId);
 }

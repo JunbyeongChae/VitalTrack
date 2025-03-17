@@ -109,29 +109,28 @@ public class MemberController {
     }
   }
 
-  @GetMapping("/checkUser")
-  public ResponseEntity<Boolean> checkUserExists(@RequestParam String email) {
-    log.info("구글 로그인 이메일: " + email);
-    MemberInfo member = memberLogic.findByEmail(email);
-
-    if (member != null) {
-      return ResponseEntity.ok(true);
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
-    }
-  }
-
-  // 이메일로 회원 조회 (로그인용)
+  // 이메일로 회원 조회 및 중복 확인 (로그인용)
   @GetMapping("/getUserByEmail")
   public ResponseEntity<?> getUserByEmail(@RequestParam("email") String email) {
     try {
+      log.info("이메일로 회원 조회 시도: " + email);
       MemberInfo member = memberLogic.findByEmail(email);
       if (member == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+        log.error("회원 정보를 찾을 수 없습니다. 이메일: " + email);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("exists", false, "message", "회원 정보를 찾을 수 없습니다."));
       }
-      return ResponseEntity.ok(member);
+      log.info("회원 정보 조회 성공: " + member);
+      return ResponseEntity.ok(Map.of("exists", true, "member", member));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생: " + e.getMessage());
+      log.error("서버 오류 발생: " + e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("exists", false, "message", "서버 오류 발생: " + e.getMessage()));
     }
+  }
+
+  // 아이디 중복 확인 API
+  @GetMapping("/checkId")
+  public ResponseEntity<?> checkId(@RequestParam("memId") String memId) {
+    boolean exists = memberLogic.findById(memId) != null;
+    return ResponseEntity.ok(Map.of("exists", exists));
   }
 }

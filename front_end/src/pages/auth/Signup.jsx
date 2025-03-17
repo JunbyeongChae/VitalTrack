@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { registerMember } from '../../services/authLogic';
+import { checkEmailExists, checkIdExists, registerMember } from '../../services/authLogic';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
@@ -30,48 +30,66 @@ const Signup = () => {
     activityLevel: ''
   });
 
-  const [agreed, setAgreed] = useState(false);
+  const [errors, setErrors] = useState({}); // 오류 메시지 상태 추가
+  const [agreed, setAgreed] = useState(false); // 개인정보 동의 체크 상태
 
-  // 입력조건식
-  const validateForm = () => {
-    const idRegex = /^[a-zA-Z0-9]{5,15}$/;
-    const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/;
-    const phoneRegex = /^010\d{7,8}$/;
-    const heightRegex = /^(5[0-9]|[6-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)$/;
-    const weightRegex = /^([1-9][0-9]|[1-9][0-9]{1,2}|300)$/;
-
-    if (!idRegex.test(formData.memId)) {
-      toast.warn('아이디는 5~15자의 영문과 숫자로 입력해 주세요.');
-      return false;
+  // 입력값 검증
+  const validateField = async(name, value) => {
+    let message = '';
+    switch (name) {
+      case 'memEmail':
+        if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)) {
+            message = '올바른 이메일 형식으로 입력해 주세요.';
+        } else {
+          const emailExists = await checkEmailExists(value);
+          message = emailExists ? '이미 사용 중인 이메일입니다.' : '사용 가능한 이메일입니다.';
+        }
+        break;
+      case 'memId':
+        if (!/^[a-zA-Z0-9]{5,15}$/.test(value)) {
+          message = '아이디는 5~15자의 영문과 숫자로 입력해 주세요.';
+        } else {
+          const result = await checkIdExists(value);
+          message = result.exists ? '이미 사용 중인 아이디입니다.' : '사용 가능한 아이디입니다.';
+        }
+        break;
+      case 'memPw':
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(value)) {
+          message = '비밀번호는 8~20자의 영문, 숫자를 포함해야 합니다.';
+        }
+        break;
+      case 'confirmPassword':
+        if (value !== formData.memPw) {
+          message = '비밀번호와 비밀번호 확인이 일치하지 않습니다.';
+        } else if (value === formData.memPw && value !== '') {
+          message = '비밀번호가 일치합니다.';
+        }
+        break;
+      case 'memPhone':
+        if (!/^010\d{7,8}$/.test(value)) {
+          message = "전화번호는 '010'으로 시작하고, 10~11자리 숫자만 입력해 주세요.";
+        }
+        break;
+      case 'memHeight':
+        if (!/^(5[0-9]|[6-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)$/.test(value)) {
+          message = '신장은 50cm에서 250cm 사이 소수점 제외한 정수로 입력해 주세요.';
+        }
+        break;
+      case 'memWeight':
+        if (!/^([1-9][0-9]|[1-9][0-9]{1,2}|300)$/.test(value)) {
+          message = '체중은 10kg에서 300kg 사이 소수점 제외한 정수로 입력해 주세요.';
+        }
+        break;
+      default:
+        break;
     }
-
-    if (!pwRegex.test(formData.memPw)) {
-      toast.warn('비밀번호는 8~20자의 영문, 숫자를 포함해야 합니다.');
-      return false;
-    }
-
-    if (formData.memPw !== formData.confirmPassword) {
-      toast.warn('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-      return false;
-    }
-
-    if (!phoneRegex.test(formData.memPhone)) {
-      toast.warn("전화번호는 '010'으로 시작하고, 10~11자리 숫자만 입력해 주세요.");
-      return false;
-    }
-
-    if (!heightRegex.test(formData.memHeight)) {
-      toast.warn('신장은 50cm에서 250cm 사이 소수점 제외한 정수로 입력해 주세요.');
-      return false;
-    }
-
-    if (!weightRegex.test(formData.memWeight)) {
-      toast.warn('체중은 10kg에서 300kg 사이 소수점 제외한 정수로 입력해 주세요.');
-      return false;
-    }
-
-    return true;
+    setErrors((prev) => ({ ...prev, [name]: message }));
   };
+
+  const handleBlur = (e) => {
+    validateField(e.target.name, e.target.value); // onBlur 시 검증 함수 호출
+  };
+
   // 생년월일 입력 시 memAge 자동 계산
   const calculateAge = (year, month, day) => {
     const today = new Date();
@@ -99,19 +117,14 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    console.log(errors); // errors 객체 출력
+    if (Object.values(errors).some((msg) => msg && !msg.includes('사용 가능') && !msg.includes('비밀번호가 일치합니다.'))) return; // 오류가 있으면 제출 방지
     try {
       const result = await registerMember(formData);
-
       // 성공 메시지 처리
       if (result.status === 'success') {
         toast.success(result.message);
-
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         navigate('/login');
       }
     } catch (err) {
@@ -126,25 +139,29 @@ const Signup = () => {
         {/* 이메일 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">이메일</label>
-          <input type="email" name="memEmail" placeholder="이메일을 입력하세요" value={formData.memEmail} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="email" name="memEmail" placeholder="이메일을 입력하세요" value={formData.memEmail} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" onBlur={handleBlur} required />
+          {errors.memEmail && <div style={{ color: errors.memEmail.includes('가능') ? 'green' : 'red' }}>{errors.memEmail}</div>}
         </div>
 
         {/* 아이디 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">아이디</label>
-          <input type="text" name="memId" placeholder="아이디를 입력하세요.(5~15자, 영문+숫자)" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="text" name="memId" placeholder="아이디를 입력하세요.(5~15자, 영문+숫자)" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" onBlur={handleBlur} required />
+          {errors.memId && <div style={{ color: errors.memId.includes('가능') ? 'green' : 'red' }}>{errors.memId}</div>}
         </div>
 
         {/* 비밀번호 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">비밀번호</label>
-          <input type="password" name="memPw" placeholder="비밀번호를 입력하세요(8~20자, 영문+숫자+특수문자)" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="password" name="memPw" placeholder="비밀번호를 입력하세요(8~20자, 영문+숫자+특수문자)" value={formData.memPw} onChange={handleChange} onBlur={handleBlur} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          {errors.memPw && <div style={{ color: 'red' }}>{errors.memPw}</div>}
         </div>
 
         {/* 비밀번호 확인 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">비밀번호 확인</label>
-          <input type="password" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요" value={formData.confirmPassword} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="password" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          {errors.confirmPassword && <div style={{ color: errors.confirmPassword === '비밀번호가 일치합니다.' ? 'green' : 'red' }}>{errors.confirmPassword}</div>}
         </div>
 
         {/* 닉네임 입력 */}
@@ -188,7 +205,8 @@ const Signup = () => {
         {/* 전화번호 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">전화번호</label>
-          <input type="tel" name="memPhone" placeholder="전화번호를 입력하세요. (-제외)" value={formData.memPhone} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          <input type="tel" name="memPhone" placeholder="전화번호를 입력하세요. (-제외)" value={formData.memPhone} onChange={handleChange} onBlur={handleBlur} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          {errors.memPhone && <div style={{ color: 'red' }}>{errors.memPhone}</div>}
         </div>
 
         {/* 성별 선택 */}
@@ -216,12 +234,14 @@ const Signup = () => {
         {/* 신장 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">신장 (cm)</label>
-          <input type="number" name="memHeight" placeholder="신장을 입력하세요" value={formData.memHeight || ''} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          <input type="number" name="memHeight" placeholder="신장을 입력하세요" value={formData.memHeight || ''} onChange={handleChange} onBlur={handleBlur} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          {errors.memHeight && <div style={{ color: 'red' }}>{errors.memHeight}</div>}
         </div>
         {/* 체중 입력 */}
         <div>
           <label className="block text-sm font-medium text-gray-700">체중 (kg)</label>
-          <input type="number" name="memWeight" placeholder="체중을 입력하세요" value={formData.memWeight} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          <input type="number" name="memWeight" placeholder="체중을 입력하세요" value={formData.memWeight} onChange={handleChange} onBlur={handleBlur} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" step="1" required />
+          {errors.memWeight && <div style={{ color: 'red' }}>{errors.memWeight}</div>}
         </div>
 
         {/* 일상 활동량 선택 */}

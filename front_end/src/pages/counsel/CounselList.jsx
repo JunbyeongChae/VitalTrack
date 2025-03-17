@@ -61,17 +61,17 @@ const CounselList = () => {
             <hr className="my-2" />
 
             <div className="flex mb-4 flex-wrap gap-2">
-              <div className="basis-[14%] min-w-[120px] pr-2">
+              <div className="basis-[15%] min-w-[120px] pr-2">
                 <select className="form-select w-full p-2 border border-gray-300 rounded-lg" id="gubun">
                   <option value="">분류선택</option>
                   <option value="counselTitle">제목</option>
                   <option value="counselContent">내용</option>
                 </select>
               </div>
-              <div className="basis-[43%] min-w-[200px] px-2">
+              <div className="basis-[50%] min-w-[200px] px-2">
                 <input type="text" className="form-control w-full p-2 border border-gray-300 rounded-lg" placeholder="검색어를 입력하세요" id="keyword" />
               </div>
-              <div className="basis-[26%] min-w-[200px] pl-2 flex gap-2">
+              <div className="basis-[30%] min-w-[200px] pl-2 flex gap-2">
                 <button type="button" className="w-1/2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={boardSearch}>
                   검색
                 </button>

@@ -18,6 +18,7 @@ public class MemberLogic {
   private MemberDao memberDao;
 
   // 회원가입 처리
+  @Transactional
   public int registerMember(MemberInfo member) {
     // 비밀번호 null 및 공백 체크
     if (member.getMemPw() == null || member.getMemPw().trim().isEmpty()) {
@@ -73,6 +74,7 @@ public class MemberLogic {
   }
 
   // 회원 정보 업데이트
+  @Transactional
   public int updateUser(MemberInfo member) {
     // 기존 사용자 정보를 가져옴
     MemberInfo existingMember = memberDao.findByEmail(member.getMemEmail());

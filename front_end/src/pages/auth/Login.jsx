@@ -14,8 +14,6 @@ const Login = ({ setUser }) => {
     memPw: ''
   });
 
-  const [error, setError] = useState('');
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -93,7 +91,7 @@ const Login = ({ setUser }) => {
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xl font-medium text-gray-700">아이디</label>
-              <input type="id" name="memId" placeholder="아이디디를 입력하세요" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
+              <input type="id" name="memId" placeholder="아이디를 입력하세요" value={formData.memId} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
             </div>
             <div>
               <label className="block text-xl font-medium text-gray-700">비밀번호</label>

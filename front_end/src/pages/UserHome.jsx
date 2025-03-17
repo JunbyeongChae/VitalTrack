@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import { Link } from 'react-router';
 
-const Home = () => {
+const UserHome = () => {
   const [bmiStatus, setBmiStatus] = useState('');
+  const user = JSON.parse(localStorage.getItem('user'));
 
   // BMI 판정을 계산하는 함수
   const calculateBmiStatus = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
     const memBmi = parseFloat(user.memBmi);
     if (memBmi < 18.5) {
       setBmiStatus('저체중 🟡');
@@ -179,4 +179,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default UserHome;

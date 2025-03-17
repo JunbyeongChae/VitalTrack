@@ -67,15 +67,17 @@ export const getUserByEmail = async (email) => {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
-      },
+      }
     });
 
-    if (response.status === 404) {
-      return null; // 회원 정보가 없을 경우 null 반환
-    }
+    if (response.status === 404) return null; // 회원 정보가 없을 경우 null 반환
 
     if (!response.ok) throw new Error('사용자 정보를 가져오는 데 실패했습니다.');
-    return await response.json();
+    
+    const result = await response.json();
+
+    // member 데이터만 반환하도록 수정
+    return result.member || null;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -155,4 +157,25 @@ export const deleteUser = async (memEmail) => {
   } catch (error) {
     throw new Error(error.message);
   }
+};
+
+// 회원가입시 아이디 중복 체크
+export const checkIdExists = async (memId) => {
+  try {
+    const response = await fetch(`/api/auth/checkId?memId=${memId}`, {
+      method: 'GET'
+    });
+    if (!response.ok) {
+      throw new Error('아이디 중복 확인 중 오류가 발생했습니다.');
+    }
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 회원가입시 이메일 중복 체크
+export const checkEmailExists = async (email) => {
+  const user = await getUserByEmail(email);
+  return user !== null;
 };

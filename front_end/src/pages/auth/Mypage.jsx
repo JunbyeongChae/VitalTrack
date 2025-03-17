@@ -33,26 +33,30 @@ const Mypage = ({ user, setUser }) => {
 
   const fetchUserData = async () => {
     try {
-      const data = await getUserByEmail(user.memEmail);
-      setUserData(data);
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUserData(storedUser);
       setFormData({
-        memEmail: data.memEmail || '',
-        memNick: data.memNick || '',
-        memPhone: data.memPhone || '',
-        memHeight: data.memHeight || '',
-        memWeight: data.memWeight || '',
-        birthYear: data.birthYear || '',
-        birthMonth: data.birthMonth || '',
-        birthDay: data.birthDay || '',
-        memAge: data.memAge || ''
+        memEmail: storedUser.memEmail || '',
+        memNick: storedUser.memNick || '',
+        memPhone: storedUser.memPhone || '',
+        memHeight: storedUser.memHeight || '',
+        memWeight: storedUser.memWeight || '',
+        birthYear: storedUser.birthYear || '',
+        birthMonth: storedUser.birthMonth || '',
+        birthDay: storedUser.birthDay || '',
+        memAge: storedUser.memAge || ''
       });
-      calculateBmiStatus(data.memBmi);
-    } catch (error) {
-      toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
-    } finally {
-      setLoading(false);
+      calculateBmiStatus(storedUser.memBmi);
+    } else {
+      toast.error('사용자 정보를 불러올 수 없습니다.');
     }
-  };
+  } catch (error) {
+    toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     // 새로고침 시 localStorage에서 user 정보 복구
