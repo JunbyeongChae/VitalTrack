@@ -34,13 +34,21 @@ export const infoBoardDetailDB = (infoNo) => {
 };
 
 // 게시판 등록
+// 게시판 등록 (infoCategory 포함)
 export const infoBoardInsertDB = (board) => {
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'post',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardInsert`,
-        data: board,
+        data: {
+          infoTitle: board.infoTitle,
+          infoContent: board.infoContent,
+          infoCategory: board.infoCategory,  // infoCategory 추가
+          infoDate: board.infoDate,
+          memNo: board.memNo,
+          infoFile: board.infoFile || null  // 파일이 없을 경우 null로 처리
+        },
       });
       resolve(res);
     } catch (error) {

@@ -3,60 +3,76 @@ package com.vitaltrack.logic;
 import com.vitaltrack.dao.InfoBoardDao;
 import com.vitaltrack.model.InfoBoard;
 import com.vitaltrack.model.InfoBoardComment;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class InfoBoardLogic {
-  @Autowired
-  private InfoBoardDao infoBoardDao;
 
-  // 게시글 목록 조회
-  public List<InfoBoard> getInfoBoardList(Map<String, Object> params) {
-    return infoBoardDao.getInfoBoardList(params);
-  }
-  
-  // 게시글 상세 조회
-  public InfoBoard getInfoBoardDetail(int infoNo) {
-    return infoBoardDao.getInfoBoardDetail(infoNo);
-  }
+    @Autowired
+    private InfoBoardDao infoBoardDao;
 
-  // 게시글 등록
-  public int insertInfoBoard(InfoBoard infoBoard) {
-    return infoBoardDao.insertInfoBoard(infoBoard);
-  }
+    public List<InfoBoard> getInfoBoardList(Map<String, Object> params) {
+        return infoBoardDao.getInfoBoardList(params);
+    }
 
-  // 게시글 수정
-  public int updateInfoBoard(InfoBoard infoBoard) {
-    return infoBoardDao.updateInfoBoard(infoBoard);
-  }
+    public InfoBoard getInfoBoardDetail(int infoNo) {
+        infoBoardDao.incrementInfoBoardView(infoNo);
+        return infoBoardDao.getInfoBoardDetail(infoNo);
+    }
 
-  // 게시글 삭제
-  public int deleteInfoBoard(int infoNo) {
-    return infoBoardDao.deleteInfoBoard(infoNo);
-  }
+    public int insertInfoBoard(InfoBoard infoBoard) {
+        return infoBoardDao.insertInfoBoard(infoBoard);
+    }
 
-  // 댓글 목록 조회
-  public List<InfoBoardComment> getInfoBoardComments(int infoNo) {
-    return infoBoardDao.getInfoBoardComments(infoNo);
-  }
+    public int updateInfoBoard(InfoBoard infoBoard) {
+        return infoBoardDao.updateInfoBoard(infoBoard);
+    }
 
-  // 댓글 등록
-  public int insertInfoBoardComment(InfoBoardComment comment) {
-    return infoBoardDao.insertInfoBoardComment(comment);
-  }
+    public int deleteInfoBoard(int infoNo) {
+        return infoBoardDao.deleteInfoBoard(infoNo);
+    }
 
-  // 댓글 수정
-  public int updateInfoBoardComment(InfoBoardComment comment) {
-    return infoBoardDao.updateInfoBoardComment(comment);
-  }
+    public String imageUpload(MultipartFile image) {
+        String filename = null;
+        try {
+            if (image != null && !image.isEmpty()) {
+                String originalFilename = image.getOriginalFilename().replaceAll(" ", "_");
+                String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+                filename = timestamp + "_" + originalFilename;
 
-  // 댓글 삭제
-  public int deleteInfoBoardComment(int commentId) {
-    return infoBoardDao.deleteInfoBoardComment(commentId);
-  }
+                File uploadDir = new File("src/main/webapp/image");
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                File file = new File(uploadDir, filename);
+                image.transferTo(file);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return filename;
+    }
+
+    public List<InfoBoardComment> getInfoBoardComments(int infoNo) {
+        return infoBoardDao.getInfoBoardComments(infoNo);
+    }
+
+    public int insertInfoBoardComment(InfoBoardComment comment) {
+        return infoBoardDao.insertInfoBoardComment(comment);
+    }
+
+    public int updateInfoBoardComment(InfoBoardComment comment) {
+        return infoBoardDao.updateInfoBoardComment(comment);
+    }
+
+    public int deleteInfoBoardComment(int commentId) {
+        return infoBoardDao.deleteInfoBoardComment(commentId);
+    }
 }

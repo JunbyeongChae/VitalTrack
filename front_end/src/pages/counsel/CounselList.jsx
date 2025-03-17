@@ -106,30 +106,30 @@ const CounselList = () => {
             <div className="flex justify-center mt-4">
               <nav className="flex items-center space-x-1">
                 {/* First 버튼 */}
-                <button onClick={() => handlePageChange(1)} disabled={currentPage === 1} className="px-3 py-1 rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
-                  <FontAwesomeIcon icon={faAngleDoubleLeft} />
+                <button onClick={() => handlePageChange(1)} disabled={currentPage === 1} className="w-10 h-10 flex items-center justify-center rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
+                  <FontAwesomeIcon icon={faAngleDoubleLeft} size="lg" />
                 </button>
 
                 {/* Prev 버튼 */}
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1} className="px-3 py-1 rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
-                  <FontAwesomeIcon icon={faAngleLeft} />
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1} className="w-10 h-10 flex items-center justify-center rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
+                  <FontAwesomeIcon icon={faAngleLeft} size="lg" />
                 </button>
 
                 {/* 페이지 번호 버튼 */}
                 {Array.from({ length: Math.ceil(boards.length / itemsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
-                  <button key={pageNumber} onClick={() => handlePageChange(pageNumber)} className={`px-3 py-1 rounded-lg border ${currentPage === pageNumber ? 'bg-blue-500 text-white' : 'bg-white text-black hover:bg-gray-200 focus:ring-2 focus:ring-gray-400'}`}>
+                  <button key={pageNumber} onClick={() => handlePageChange(pageNumber)} className={`w-10 h-10 flex items-center justify-center rounded-lg border ${currentPage === pageNumber ? 'bg-blue-500 text-white' : 'bg-white text-black hover:bg-gray-200 focus:ring-2 focus:ring-gray-400'}`}>
                     {pageNumber}
                   </button>
                 ))}
 
                 {/* Next 버튼 */}
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= Math.ceil(boards.length / itemsPerPage)} className="px-3 py-1 rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
-                  <FontAwesomeIcon icon={faAngleRight} />
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= Math.ceil(boards.length / itemsPerPage)} className="w-10 h-10 flex items-center justify-center rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
+                  <FontAwesomeIcon icon={faAngleRight} color="#5f7a60" />
                 </button>
 
                 {/* Last 버튼 */}
-                <button onClick={() => handlePageChange(Math.ceil(boards.length / itemsPerPage))} disabled={currentPage >= Math.ceil(boards.length / itemsPerPage)} className="px-3 py-1 rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
-                  <FontAwesomeIcon icon={faAngleDoubleRight} />
+                <button onClick={() => handlePageChange(Math.ceil(boards.length / itemsPerPage))} disabled={currentPage >= Math.ceil(boards.length / itemsPerPage)} className="w-10 h-10 flex items-center justify-center rounded-lg border bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400">
+                  <FontAwesomeIcon icon={faAngleDoubleRight} size="lg" />
                 </button>
               </nav>
             </div>
