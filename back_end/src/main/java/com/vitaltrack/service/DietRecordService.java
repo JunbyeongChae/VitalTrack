@@ -1,6 +1,9 @@
 package com.vitaltrack.service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,41 @@ public class DietRecordService {
     public List<DietRecordDao> getMealsByMemberNumber(int memNo) {
         // Call the MyBatis mapper to fetch records by memNo
         return dietRecordMapper.findDietRecordsByMemNo(memNo);
+    }
+
+    // In DietRecordService.java
+    public List<DietRecordDao> getMealsByMemberAndDate(int memNo, LocalDate date) {
+        // Implement or call mapper method to get meals for specific date
+        // You'll need to add this method to your mapper
+        return dietRecordMapper.findDietRecordsByMemNoAndDate(memNo, date);
+    }
+
+    public Map<String, Object> getMacronutrientsByMemberAndDate(int memNo, LocalDate date) {
+        // Get meals for the specific date
+        List<DietRecordDao> meals = getMealsByMemberAndDate(memNo, date);
+
+        // Calculate totals
+        double totalProtein = 0.0;
+        double totalCarbs = 0.0;
+        double totalFat = 0.0;
+
+        for (DietRecordDao meal : meals) {
+            if (meal.getProtein() != null) totalProtein += meal.getProtein();
+            if (meal.getCarbs() != null) totalCarbs += meal.getCarbs();
+            if (meal.getFat() != null) totalFat += meal.getFat();
+        }
+
+        // Create response
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Double> consumed = new HashMap<>();
+        consumed.put("protein", totalProtein);
+        consumed.put("carbs", totalCarbs);
+        consumed.put("fat", totalFat);
+
+        result.put("consumed", consumed);
+        // Add target values (from user settings or calculated)
+
+        return result;
     }
 
     /**

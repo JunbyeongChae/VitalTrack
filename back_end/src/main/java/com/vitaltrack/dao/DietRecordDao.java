@@ -14,4 +14,7 @@ public class DietRecordDao {
     private String name; // Food name
     private int calories; // Calories
     private String memo; // Optional memo
+    private Double protein;
+    private Double carbs;
+    private Double fat;
 }

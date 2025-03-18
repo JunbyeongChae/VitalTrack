@@ -7,8 +7,8 @@
     <!-- Insert statement for inserting a record into the diet_records table -->
     <!-- Make sure your mapper XML has this configuration -->
     <insert id="insertDietRecord" useGeneratedKeys="true" keyProperty="recordId" keyColumn="record_id">
-        INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo)
-        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{name}, #{calories}, #{memo})
+        INSERT INTO diet_record (mem_no, diet_date, meal_type, food_name, calories, memo, protein, carbs, fat)
+        VALUES (#{memNo}, #{dietDate}, #{mealType}, #{name}, #{calories}, #{memo}, #{protein}, #{carbs}, #{fat})
     </insert>
 
     <!-- Fetch diet records by member number -->
@@ -20,7 +20,10 @@
             meal_type AS mealType,
             food_name AS name,
             calories,
-            memo
+            memo,
+            protein,
+            carbs,
+            fat
         FROM
             diet_record
         WHERE
@@ -36,7 +39,10 @@
             meal_type AS mealType,
             food_name AS name,
             calories,
-            memo
+            memo,
+            protein,
+            carbs,
+            fat
         FROM diet_record
         WHERE record_id = #{recordId}
     </select>

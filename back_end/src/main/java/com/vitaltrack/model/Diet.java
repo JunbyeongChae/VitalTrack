@@ -9,4 +9,7 @@ public class Diet {
     private String date;
     private Double dietKcal;
     private String dietMenu;
+    private Double protein;
+    private Double carbs;
+    private Double fat;
 }

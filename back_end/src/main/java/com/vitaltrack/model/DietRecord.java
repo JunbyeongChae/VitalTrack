@@ -12,6 +12,9 @@ public class DietRecord {
     private String name;             // Name of the food
     private int calories;              // Calories consumed
     private String memo;               // Optional memo
+    private Double protein;
+    private Double carbs;
+    private Double fat;
 
     // Timestamps (managed automatically by the database)
     private String createdAt;          // Creation timestamp

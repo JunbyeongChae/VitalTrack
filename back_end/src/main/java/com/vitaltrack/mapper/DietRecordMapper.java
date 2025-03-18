@@ -1,5 +1,6 @@
 package com.vitaltrack.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -18,4 +19,6 @@ public interface DietRecordMapper {
 
     // Delete method - implementation will be in XML mapper
     int deleteDietRecordByRecordId(@Param("recordId") int recordId);
+
+    List<DietRecordDao> findDietRecordsByMemNoAndDate( int memNo, LocalDate date);
 }
