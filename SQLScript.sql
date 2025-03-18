@@ -32,9 +32,11 @@ CREATE TABLE `memberinfo` (
   `birthYear` varchar(4) DEFAULT NULL,
   `birthMonth` varchar(2) DEFAULT NULL,
   `birthDay` varchar(2) DEFAULT NULL,
+  `birthYear` varchar(4) DEFAULT NULL,
+  `birthMonth` varchar(2) DEFAULT NULL,
+  `birthDay` varchar(2) DEFAULT NULL,
   PRIMARY KEY (`memNo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 상담게시판
 CREATE TABLE `counsel` (
@@ -46,9 +48,8 @@ CREATE TABLE `counsel` (
   `memNo` int NOT NULL,
   PRIMARY KEY (`counselNo`),
   KEY `fkCounselMember` (`memNo`),
-  CONSTRAINT `fkCounselMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkCounselMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 상담게시판 답변
 CREATE TABLE `counselanswer` (
@@ -61,10 +62,9 @@ CREATE TABLE `counselanswer` (
   PRIMARY KEY (`answerId`),
   KEY `fkAnswerMember` (`memNo`),
   KEY `fkAnswerCounsel` (`counselNo`),
-  CONSTRAINT `fkAnswerCounsel` FOREIGN KEY (`counselNo`) REFERENCES `counsel` (`counselNo`),
-  CONSTRAINT `fkAnswerMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkAnswerCounsel` FOREIGN KEY (`counselNo`) REFERENCES `counsel` (`counselNo`) ON DELETE CASCADE,
+  CONSTRAINT `fkAnswerMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 식단관리
 CREATE TABLE `diet` (
@@ -79,9 +79,8 @@ CREATE TABLE `diet` (
   `dietNa` varchar(50) DEFAULT NULL,
   `memNo` int NOT NULL,
   PRIMARY KEY (`memNo`,`dietDate`),
-  CONSTRAINT `fkDietMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkDietMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 건강정보 게시판
 CREATE TABLE `information` (
@@ -95,9 +94,8 @@ CREATE TABLE `information` (
   `memNo` int NOT NULL,
   PRIMARY KEY (`infoNo`),
   KEY `fkInformationMember` (`memNo`),
-  CONSTRAINT `fkInformationMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkInformationMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 체중변화
 CREATE TABLE `weightchange` (
@@ -105,9 +103,8 @@ CREATE TABLE `weightchange` (
   `weight` decimal(5,2) NOT NULL,
   `memNo` int NOT NULL,
   PRIMARY KEY (`memNo`,`weightDate`),
-  CONSTRAINT `fkWeightMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkWeightMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 운동관리
 CREATE TABLE `workoutschedule` (
@@ -120,9 +117,8 @@ CREATE TABLE `workoutschedule` (
   `memNo` int NOT NULL,
   PRIMARY KEY (`scheduleId`),
   KEY `fkScheduleMember` (`memNo`),
-  CONSTRAINT `fkScheduleMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkScheduleMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- 건강정보 게시판 댓글
 CREATE TABLE `comment` (
@@ -135,50 +131,13 @@ CREATE TABLE `comment` (
   PRIMARY KEY (`commentId`),
   KEY `fkCommentMember` (`memNo`),
   KEY `fkCommentInformation` (`infoNo`),
-  CONSTRAINT `fkCommentInformation` FOREIGN KEY (`infoNo`) REFERENCES `information` (`infoNo`),
-  CONSTRAINT `fkCommentMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
+  CONSTRAINT `fkCommentInformation` FOREIGN KEY (`infoNo`) REFERENCES `information` (`infoNo`) ON DELETE CASCADE,
+  CONSTRAINT `fkCommentMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
--- 메인화면
-CREATE TABLE `homescreen` (
-  `homeId` int NOT NULL AUTO_INCREMENT,
-  `memNo` int NOT NULL,
-  `scheduleId` int NOT NULL,
-  `homeDate` date NOT NULL,
-  PRIMARY KEY (`homeId`),
-  KEY `fkHomeMember` (`memNo`),
-  KEY `fkHomeSchedule` (`scheduleId`),
-  CONSTRAINT `fkHomeMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`),
-  CONSTRAINT `fkHomeSchedule` FOREIGN KEY (`scheduleId`) REFERENCES `workoutschedule` (`scheduleId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 운동 기록 테이블 (홈화면용)
-CREATE TABLE `exercise_record` (
-    `record_id` INT AUTO_INCREMENT PRIMARY KEY,          -- 운동 기록 ID
-    `mem_no` INT NOT NULL,                               -- 회원 번호 (외래키)
-    `exercise_date` DATE NOT NULL,                       -- 운동 날짜
-    `exercise_type` VARCHAR(50) NOT NULL,                -- 운동 종류 (걷기, 러닝 등)
-    `duration_minutes` INT NOT NULL,                     -- 운동 시간 (분 단위)
-    `calories_burned` INT,                               -- 소모된 칼로리
-    `memo` VARCHAR(255),                                 -- 추가 메모
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- 생성일
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정일
-    FOREIGN KEY (`mem_no`) REFERENCES `memberinfo`(`memNo`) ON DELETE CASCADE
-);
-
--- 식단 기록 테이블 (홈화면용)
-CREATE TABLE `diet_record` (
-    `record_id` INT AUTO_INCREMENT PRIMARY KEY,          -- 식단 기록 ID
-    `mem_no` INT NOT NULL,                               -- 회원 번호 (외래키)
-    `diet_date` DATE NOT NULL,                           -- 식사 날짜
-    `meal_type` ENUM('아침', '점심', '저녁', '간식') NOT NULL, -- 식사 종류
-    `food_name` VARCHAR(100) NOT NULL,                   -- 음식 이름
-    `calories` INT NOT NULL,                             -- 섭취한 칼로리
-    `memo` VARCHAR(255),                                 -- 메모
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- 생성일
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정일
-    FOREIGN KEY (`mem_no`) REFERENCES `memberinfo`(`memNo`) ON DELETE CASCADE
-);
 
 commit;
+
+select * from memberinfo;
+select * from weightchange;
+
+ALTER table memberinfo AUTO_INCREMENT = 1;

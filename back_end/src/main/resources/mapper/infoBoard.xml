@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vitaltrack.dao.InfoBoardDao">
+
+    <!-- 게시판 목록 조회 -->
+    <select id="getInfoBoardList" parameterType="java.util.Map" resultType="com.vitaltrack.model.InfoBoard">
+        SELECT ib.info_no,
+               ib.info_title,
+               ib.info_content,
+               DATE_FORMAT(ib.info_date, '%Y.%m.%d') AS info_date,
+               mem.mem_nick
+          FROM info_board ib
+          JOIN memberinfo mem ON ib.mem_no = mem.mem_no
+         WHERE 1=1
+           <if test="gubun != null and keyword != null and gubun == 'infoTitle'">
+               AND ib.info_title LIKE CONCAT('%', #{keyword}, '%')
+           </if>
+           <if test="gubun != null and keyword != null and gubun == 'infoContent'">
+               AND ib.info_content LIKE CONCAT('%', #{keyword}, '%')
+           </if>
+         ORDER BY ib.info_no DESC
+    </select>
+
+    <!-- 게시판 상세 조회 -->
+    <select id="getInfoBoardDetail" resultType="com.vitaltrack.model.InfoBoard">
+        SELECT * FROM info_board WHERE info_no = #{infoNo}
+    </select>
+
+    <!-- 게시판 등록 -->
+    <insert id="insertInfoBoard" parameterType="com.vitaltrack.model.InfoBoard">
+        INSERT INTO info_board (info_title, info_content, info_date, info_file, mem_no)
+        VALUES (#{infoTitle}, #{infoContent}, NOW(), #{infoFile}, #{memNo})
+    </insert>
+
+    <!-- 게시판 수정 -->
+    <update id="updateInfoBoard" parameterType="com.vitaltrack.model.InfoBoard">
+        UPDATE info_board
+        SET info_title = #{infoTitle},
+            info_content = #{infoContent},
+            info_file = #{infoFile}
+        WHERE info_no = #{infoNo}
+    </update>
+
+    <!-- 게시판 삭제 -->
+    <delete id="deleteInfoBoard" parameterType="int">
+        DELETE FROM info_board WHERE info_no = #{infoNo}
+    </delete>
+
+    <!-- 댓글 목록 조회 -->
+    <select id="getInfoBoardComments" parameterType="int" resultType="com.vitaltrack.model.InfoBoardComment">
+        SELECT * FROM info_board_comment WHERE info_no = #{infoNo} ORDER BY comment_date DESC
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="insertInfoBoardComment" parameterType="com.vitaltrack.model.InfoBoardComment">
+        INSERT INTO info_board_comment (comment_content, comment_date, info_no, mem_no)
+        VALUES (#{commentContent}, NOW(), #{infoNo}, #{memNo})
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateInfoBoardComment" parameterType="com.vitaltrack.model.InfoBoardComment">
+        UPDATE info_board_comment
+        SET comment_content = #{commentContent}
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteInfoBoardComment" parameterType="int">
+        DELETE FROM info_board_comment WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>
