@@ -12,28 +12,28 @@
     FROM counsel cs
     JOIN memberinfo mem ON cs.memNo = mem.memNo
    WHERE 1=1
-     <!-- 관리자가 아닌 경우 자신이 작성한 글만 조회 -->
-     <if test="admin != null and admin == 0">
+             <!-- 관리자가 아닌 경우 자신이 작성한 글만 조회 -->
+    <if test="admin != null and admin == 0">
        AND cs.memNo = #{memNo}
-     </if>
+    </if>
 
-     <!-- gubun이 있을 때 -->
-     <if test="gubun != null and gubun != '' and keyword != null and keyword != ''">
-       <choose>
-         <when test="gubun == 'counselTitle'">
+    <!-- gubun이 있을 때 -->
+    <if test="gubun != null and gubun != '' and keyword != null and keyword != ''">
+      <choose>
+        <when test="gubun == 'counselTitle'">
            AND cs.counselTitle LIKE CONCAT('%', #{keyword}, '%')
-         </when>
-         <when test="gubun == 'counselContent'">
+        </when>
+        <when test="gubun == 'counselContent'">
            AND REGEXP_REPLACE(cs.counselContent, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{keyword}, '%')
-         </when>
-       </choose>
-     </if>
+        </when>
+      </choose>
+    </if>
 
-     <!-- gubun이 없고 keyword만 있을 때 (제목 + 내용 검색) -->
-     <if test="(gubun == null or gubun == '') and keyword != null and keyword != ''">
+    <!-- gubun이 없고 keyword만 있을 때 (제목 + 내용 검색) -->
+    <if test="(gubun == null or gubun == '') and keyword != null and keyword != ''">
        AND (cs.counselTitle LIKE CONCAT('%', #{keyword}, '%') 
             OR REGEXP_REPLACE(cs.counselContent, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{keyword}, '%'))
-     </if>
+    </if>
 
    ORDER BY cs.counselNo DESC
   </select>
@@ -50,19 +50,19 @@
      WHERE cs.counselNo = #{counselNo}
   </select>
 
-  <!-- 상담 게시글 등록 --> 
+  <!-- 상담 게시글 등록 -->
   <insert id="boardInsert" parameterType="com.vitaltrack.model.CounselBoard">
     INSERT INTO counsel (counselTitle, counselContent, counselDate, memNo)
     VALUES (#{counselTitle}, #{counselContent}, NOW(), #{memNo})
   </insert>
 
   <!-- 상담 게시글 수정 -->
-<update id="boardUpdate" parameterType="map">
+  <update id="boardUpdate" parameterType="map">
   UPDATE counsel
      SET counselTitle = #{counselTitle},
          counselContent = #{counselContent}
    WHERE counselNo = #{counselNo}
-</update>
+  </update>
 
   <!-- 상담 게시글 삭제 -->
   <delete id="boardDelete" parameterType="map">
@@ -73,7 +73,6 @@
   <select id="commentList" parameterType="int" resultType="java.util.Map">
     SELECT answerId        AS commentId,
            answerContent   AS commentContent,
-           answerWriter    AS commentWriter,
            DATE_FORMAT(answerDate, '%Y.%m.%d') AS commentDate
       FROM counselanswer
      WHERE counselNo = #{counselNo}

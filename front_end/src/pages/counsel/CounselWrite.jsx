@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { boardInsertDB } from '../../services/counselLogic.js';
-import TiptapEditor from '../../components/TiptapEditor.jsx';
 import { toast } from 'react-toastify';
 import Sidebar from './CounselSidebar.jsx';
+import CounselTiptapEditor from './CounselTiptapEditor.jsx';
 
 const CounselWrite = () => {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ const CounselWrite = () => {
 
               <div>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-2">내용</h2>
-                <TiptapEditor value={content} handleContent={handleContent} />
+                <CounselTiptapEditor value={content} handleContent={handleContent} />
               </div>
 
               <div className="flex justify-end">

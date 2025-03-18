@@ -2,9 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import InfoSidebar from './InfoSidebar';
-import TiptapEditor from '../../components/TiptapEditor';
 import { toast } from 'react-toastify';
 import { infoBoardInsertDB } from '../../services/infoBoardLogic.js';
+import InfoBoardTiptapEditor from './InfoBoardTiptapEditor.jsx';
 
 const InfoBoardWrite = () => {
   const navigate = useNavigate();
@@ -73,30 +73,12 @@ const InfoBoardWrite = () => {
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">
             {/* 제목 */}
-            <input
-              type="text"
-              value={title}
-              onChange={handleTitle}
-              className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]"
-              placeholder="제목을 입력하세요"
-              required
-            />
+            <input type="text" value={title} onChange={handleTitle} className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" placeholder="제목을 입력하세요" required />
 
             {/* 작성자와 분류 */}
             <div className="flex gap-4">
-              <input
-                type="text"
-                value={memNick}
-                readOnly
-                className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed"
-                placeholder="작성자"
-              />
-              <select
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]"
-                required
-              >
+              <input type="text" value={memNick} readOnly className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
+              <select value={selectedCategory} onChange={handleCategoryChange} className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" required>
                 <option value="">분류 선택</option>
                 <option value="운동정보">운동정보</option>
                 <option value="영양정보">영양정보</option>
@@ -105,26 +87,17 @@ const InfoBoardWrite = () => {
             </div>
 
             {/* 내용 */}
-            <TiptapEditor value={content} handleContent={handleContent} />
+            <InfoBoardTiptapEditor value={content} handleContent={handleContent} />
 
             {/* 버튼 영역 */}
             <div className="flex justify-end gap-4 mt-6">
-              <button
-                onClick={handleGoToCommunity}
-                className="px-8 py-3 bg-indigo-600 text-white text-base font-semibold rounded-lg hover:bg-indigo-700 transition-all shadow-sm mx-2"
-              >
+              <button onClick={handleGoToCommunity} className="px-8 py-3 bg-indigo-600 text-white text-base font-semibold rounded-lg hover:bg-indigo-700 transition-all shadow-sm mx-2">
                 목록
               </button>
-              <button
-                onClick={boardInsert}
-                className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2"
-              >
+              <button onClick={boardInsert} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2">
                 작성
               </button>
-              <button
-                onClick={handleCancel}
-                className="px-8 py-3 bg-[#e5d8bf] text-[#5f7a60] text-base font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-sm mx-2"
-              >
+              <button onClick={handleCancel} className="px-8 py-3 bg-[#e5d8bf] text-[#5f7a60] text-base font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-sm mx-2">
                 취소
               </button>
             </div>

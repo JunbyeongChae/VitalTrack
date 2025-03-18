@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import InfoSidebar from './InfoSidebar';
@@ -11,7 +11,7 @@ const InfoBoardList = () => {
   const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [search, setSearch] = useState('');
   const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -21,31 +21,38 @@ const InfoBoardList = () => {
 
   const currentItems = (boards || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  useEffect(() => {
-    const fetchBoardList = async () => {
-      try {
-        const board = { memNo: memNo, admin: user.admin };
-        const res = await infoBoardListDB(board);
-        setBoards(res.data || []);
-      } catch (error) {
-        console.error('게시글 목록 불러오기 실패:', error);
-        setBoards([]);
-      }
-    };
-    fetchBoardList();
-  }, [memNo, user.admin]);
+  const fetchBoardList = useCallback(async () => {
+    try {
+      const categoryFilter = selectedCategory === '전체' ? '' : selectedCategory;
+      const board = { gubun: 'infoContent', keyword: search, category: categoryFilter };
+      console.log('📌 API 요청:', board); // 디버깅 로그 추가
+      const res = await infoBoardListDB(board);
+      setBoards(res.data || []);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('게시글 목록 불러오기 실패:', error);
+      setBoards([]);
+    }
+  }, [selectedCategory, search]);
 
-  const boardSearch = async () => {
-    const board = { gubun: selectedCategory, keyword: search, memNo: memNo };
-    const res = await infoBoardListDB(board);
-    setBoards(res.data);
-    setCurrentPage(1);
-    navigate('/healthInfo?page=1');
+  useEffect(() => {
+    fetchBoardList();
+  }, [selectedCategory, fetchBoardList]);
+
+  const handleSearch = () => {
+    fetchBoardList(selectedCategory, search); // 🔹 검색 시 현재 카테고리 유지
   };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     navigate(`/healthInfo?page=${pageNumber}`);
+  };
+
+  // 엔터 키 입력 시 검색 실행
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      fetchBoardList();
+    }
   };
 
   return (
@@ -57,11 +64,11 @@ const InfoBoardList = () => {
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473]">건강 관리 게시판</h1>
             <div className="flex space-x-2">
-              <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" value={search} onChange={(e) => setSearch(e.target.value)} />
-              <button onClick={boardSearch} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
+              <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyDown}/>
+              <button onClick={handleSearch} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
                 검색
               </button>
-              {/* ✅ 관리자(admin=1)만 글쓰기 버튼 보이기 */}
+              {/* 관리자(admin=1)만 글쓰기 버튼 보이기 */}
               {isAdmin && (
                 <button onClick={() => navigate('/healthInfo/write')} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
                   글쓰기
@@ -73,10 +80,12 @@ const InfoBoardList = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#d7e3c7] text-[#5f7a60]">
               <tr>
-                <th className="p-3 text-center border-b border-[#c2c8b0]">번호</th>
-                <th className="p-3 text-center border-b border-[#c2c8b0]">제목</th>
-                <th className="p-3 text-center border-b border-[#c2c8b0]">작성자</th>
-                <th className="p-3 text-center border-b border-[#c2c8b0]">날짜</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center w-[10%]">번호</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center">제목</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성자</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">분류</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center w-[17%]">게시일</th>
+                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">조회수</th>
               </tr>
             </thead>
             <tbody>

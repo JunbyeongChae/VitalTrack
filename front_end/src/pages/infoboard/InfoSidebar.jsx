@@ -11,8 +11,12 @@ const InfoSidebar = ({ selectedCategory, onSelectCategory }) => {
           <li
             key={index}
             className={`p-3 text-[#5f7a60] rounded-lg cursor-pointer hover:bg-[#d7e3c7] transition-all 
-          ${selectedCategory === category ? 'bg-[#93ac90] text-white font-bold' : ''}`}
-            onClick={() => onSelectCategory(category)}>
+            ${selectedCategory === category ? 'bg-[#93ac90] text-white font-bold' : ''}`}
+            onClick={() => {
+              if (selectedCategory !== category) {
+                onSelectCategory(category);
+              }
+            }}>
             {category}
           </li>
         ))}

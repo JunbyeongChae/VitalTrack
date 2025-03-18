@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +25,7 @@ public class CounselBoardLogic {
   @Autowired
   private CounselBoardDao counselBoardDao;// 절대로 new하지 않음.-빈관리를 받지않음.
 
-  // application.yml에서 spring.file.upload-dir 키의 값을 주입받음
-  @Value("${spring.file.upload-dir}")
-  private String uploadDir;
+  private String uploadDir = "src/main/webapp/image/counsel";
 
   // 이미지 업로드
   public String imageUpload(MultipartFile image) {

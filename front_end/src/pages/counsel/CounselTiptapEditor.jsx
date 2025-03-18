@@ -7,8 +7,8 @@ import Underline from '@tiptap/extension-underline';
 import TextStyle from '@tiptap/extension-text-style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBold, faItalic, faUnderline, faImage } from '@fortawesome/free-solid-svg-icons';
-import { uploadImageDB } from '../services/counselLogic';
-import '../styles/TiptapEditor.css';
+import { uploadImageDB } from '../../services/counselLogic';
+import '../../styles/TiptapEditor.css';
 import { toast } from 'react-toastify';
 
 // 폰트 사이즈 확장
@@ -29,7 +29,7 @@ const FontSize = TextStyle.extend({
   }
 });
 
-const TiptapEditor = ({ value, handleContent }) => {
+const CounselTiptapEditor = ({ value, handleContent }) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -128,4 +128,4 @@ const TiptapEditor = ({ value, handleContent }) => {
   );
 };
 
-export default TiptapEditor;
+export default CounselTiptapEditor;

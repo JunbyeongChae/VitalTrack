@@ -7,7 +7,7 @@ export const boardListDB = (board) => {
     try {
       const res = axios({
         method: 'get',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselList',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselList',
         params: {
           memNo: board.memNo,
           admin: board.admin, // 1 또는 0으로 전달
@@ -29,7 +29,7 @@ export const boardDetailDB = (counselNo) => {
     try {
       const res = axios({
         method: 'get',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboard/boardDetail?counselNo=' + counselNo,
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/boardDetail?counselNo=' + counselNo,
       });
       resolve(res);
     } catch (error) {
@@ -45,7 +45,7 @@ export const boardInsertDB = (board) => {
     try {
       const res = axios({
         method: 'post',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboardInsert',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboardInsert',
         data: board,
       });
       resolve(res);
@@ -62,7 +62,7 @@ export const boardUpdateDB = (board) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboard/counselboardUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/counselboardUpdate',
         data: board,
       });
       resolve(res);
@@ -79,7 +79,7 @@ export const boardDeleteDB = (counselNo) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboard/counselboardDelete?counselNo=' + counselNo,
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/counselboardDelete?counselNo=' + counselNo,
       });
       resolve(res);
     } catch (error) {
@@ -94,7 +94,7 @@ export const uploadImageDB = (file) => {
     try {
       const response = axios({
         method: 'post',
-        url: `${process.env.REACT_APP_SPRING_IP}/api/counsel/imageUpload`,
+        url: `${process.env.REACT_APP_SPRING_IP}api/counsel/imageUpload`,
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -116,7 +116,7 @@ export const commentInsertDB = (comment) => {
     try {
       const res = axios({
         method: 'post',
-        url: `${process.env.REACT_APP_SPRING_IP}/api/counsel/commentInsert`,
+        url: `${process.env.REACT_APP_SPRING_IP}api/counsel/commentInsert`,
         data: comment,
       });
       resolve(res);
@@ -133,7 +133,7 @@ export const commentUpdateDB = (cmt) => {
     try {
       const res = axios({
         method: 'put',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboard/commentUpdate',
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/commentUpdate',
         data: cmt,
       });
       resolve(res);
@@ -150,7 +150,7 @@ export const commentDeleteDB = (answerId) => {
     try {
       const res = axios({
         method: 'delete',
-        url: process.env.REACT_APP_SPRING_IP + '/api/counsel/counselboard/commentDelete?answerId=' + answerId, // 변수명 수정됨
+        url: process.env.REACT_APP_SPRING_IP + 'api/counsel/counselboard/commentDelete?answerId=' + answerId, // 변수명 수정됨
       });
       resolve(res);
     } catch (error) {

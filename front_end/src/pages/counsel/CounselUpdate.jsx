@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { boardDetailDB, boardUpdateDB } from '../../services/counselLogic';
 import { useNavigate, useParams } from 'react-router-dom';
-import TiptapEditor from '../../components/TiptapEditor';
+import TiptapEditor from './CounselTiptapEditor';
 import { toast } from 'react-toastify';
 import Sidebar from './CounselSidebar';
 
@@ -86,7 +86,7 @@ const CounselUpdate = () => {
               <div>
                 {/* 작성자 (읽기 전용) */}
                 <h2 className="text-2xl font-semibold text-gray-800 mb-2">작성자</h2>
-                <input type="text" maxLength="20" value={memNick} readOnly className="w-1/4 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed"/>
+                <input type="text" maxLength="20" value={memNick} readOnly className="w-1/4 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed" />
               </div>
 
               <hr className="my-6 border-gray-300" />

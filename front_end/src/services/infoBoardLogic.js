@@ -2,13 +2,13 @@ import axios from 'axios';
 
 
 // 게시판 목록 조회 (필터링 포함)
-export const infoBoardListDB = ({ gubun, keyword }) => {
+export const infoBoardListDB = ({ keyword, category }) => {
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'get',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardList`,
-        params: { gubun, keyword },
+        params: { gubun: "infoContent", keyword, category },
       });
       resolve(res);
     } catch (error) {
@@ -23,7 +23,7 @@ export const infoBoardDetailDB = (infoNo) => {
     try {
       const res = axios({
         method: 'get',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDetail?infoNo=${infoNo}`,
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDetail`,
         params: { infoNo },
       });
       resolve(res);
@@ -33,9 +33,9 @@ export const infoBoardDetailDB = (infoNo) => {
   });
 };
 
-// 게시판 등록
 // 게시판 등록 (infoCategory 포함)
 export const infoBoardInsertDB = (board) => {
+  console.log('infoBoardInsertDB called with:', board); // 디버깅용 로그
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
@@ -89,7 +89,7 @@ export const infoBoardDeleteDB = (infoNo) => {
   });
 };
 
-// 이미지 업로드 API
+// 이미지 업로드 api
 export const uploadImageDB = (file) => {
   return new Promise((resolve, reject) => {
     try {
@@ -119,12 +119,15 @@ export const infoCommentListDB = (infoNo) => {
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/comments`,
         params: { infoNo },
       });
+
+      console.log("📌 불러온 댓글 목록:", res.data); // 디버깅 로그 추가
       resolve(res);
     } catch (error) {
       reject(error);
     }
   });
 };
+
 
 // 댓글 등록
 export const infoCommentInsertDB = (comment) => {

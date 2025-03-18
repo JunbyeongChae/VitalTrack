@@ -190,7 +190,7 @@ const CounselDetail = () => {
                         <div dangerouslySetInnerHTML={{ __html: comment.commentContent }} />
                         <div className="flex justify-between text-sm text-gray-500 mt-2">
                           <div className="flex space-x-2">
-                            <span>작성자: {comment.commentWriter}</span>
+                            <span>작성자: {comment.memNick}</span>
                             <span>작성일: {comment.commentDate}</span>
                           </div>
                           <button onClick={() => startEditing(comment.commentId, comment.commentContent)} className="text-blue-500 hover:underline">

@@ -25,14 +25,14 @@ public class MemberController {
     try {
       int result = memberLogic.registerMember(member);
       if (result > 0) {
-        // ✅ 반드시 200 OK로 명확히 반환
+        // 반드시 200 OK로 명확히 반환
         return ResponseEntity.ok(Map.of("status", "success", "message", "회원가입이 완료되었습니다."));
       } else {
-        // ✅ 실패 시에는 400으로 반환
+        // 실패 시에는 400으로 반환
         return ResponseEntity.status(400).body(Map.of("status", "error", "message", "회원가입에 실패했습니다."));
       }
     } catch (IllegalArgumentException e) {
-      // ✅ 예외가 발생하면 400으로 명확히 반환
+      // 예외가 발생하면 400으로 명확히 반환
       return ResponseEntity.status(400).body(Map.of("status", "error", "message", e.getMessage()));
     }
   }

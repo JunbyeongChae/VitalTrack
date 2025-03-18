@@ -183,7 +183,7 @@ export const checkEmailExists = async (email) => {
 // 체중 변화 데이터 조회
 export const getWeightChanges = async (memNo) => {
   try {
-    const response = await fetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+    const response = await fetch(`/api/auth/getWeightChanges?memNo=${memNo}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
