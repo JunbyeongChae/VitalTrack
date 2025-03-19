@@ -33,30 +33,46 @@ const Mypage = ({ user, setUser }) => {
 
   const fetchUserData = async () => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUserData(storedUser);
+      // 현재 로그인된 사용자 이메일 가져오기
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (!storedUser?.memEmail) {
+        toast.error("사용자 정보를 불러올 수 없습니다.");
+        return;
+      }
+  
+      // MySQL에서 최신 사용자 데이터 가져오기
+      const latestUserData = await getUserByEmail(storedUser.memEmail);
+      if (!latestUserData) {
+        toast.error("사용자 정보를 불러오는 데 실패했습니다.");
+        return;
+      }
+  
+      // 최신 데이터를 localStorage에 저장
+      localStorage.setItem("user", JSON.stringify(latestUserData));
+  
+      // 최신 데이터를 state에 업데이트
+      setUserData(latestUserData);
       setFormData({
-        memEmail: storedUser.memEmail || '',
-        memNick: storedUser.memNick || '',
-        memPhone: storedUser.memPhone || '',
-        memHeight: storedUser.memHeight || '',
-        memWeight: storedUser.memWeight || '',
-        birthYear: storedUser.birthYear || '',
-        birthMonth: storedUser.birthMonth || '',
-        birthDay: storedUser.birthDay || '',
-        memAge: storedUser.memAge || ''
+        memEmail: latestUserData.memEmail || "",
+        memNick: latestUserData.memNick || "",
+        memPhone: latestUserData.memPhone || "",
+        memHeight: latestUserData.memHeight || "",
+        memWeight: latestUserData.memWeight || "",
+        birthYear: latestUserData.birthYear || "",
+        birthMonth: latestUserData.birthMonth || "",
+        birthDay: latestUserData.birthDay || "",
+        memAge: latestUserData.memAge || ""
       });
-      calculateBmiStatus(storedUser.memBmi);
-    } else {
-      toast.error('사용자 정보를 불러올 수 없습니다.');
+  
+      // BMI 업데이트
+      calculateBmiStatus(latestUserData.memBmi);
+    } catch (error) {
+      console.error("사용자 데이터 불러오기 실패:", error);
+      toast.error("사용자 데이터를 불러오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     // 새로고침 시 localStorage에서 user 정보 복구
@@ -76,12 +92,12 @@ const Mypage = ({ user, setUser }) => {
   }, [user, navigate]);
 
   const calculateBmiStatus = (memBmi) => {
-    if (memBmi < 18.5) setBmiStatus('저체중 🟡');
+    if (memBmi < 18.5) setBmiStatus('저체중 ⚠️');
     else if (memBmi < 23) setBmiStatus('정상 🟢');
     else if (memBmi < 25) setBmiStatus('과체중 🟡');
     else if (memBmi < 30) setBmiStatus('경도비만 🟠');
     else if (memBmi < 35) setBmiStatus('중등도비만 🔴');
-    else setBmiStatus('고도비만 ⚠️');
+    else setBmiStatus('🚨 고도비만 🚨');
   };
 
   // 나이 계산 함수
