@@ -57,23 +57,29 @@
 
   <!-- 댓글 목록 조회 -->
   <select id="getInfoBoardComments" parameterType="int" resultType="com.vitaltrack.model.InfoBoardComment">
-    SELECT c.commentId, c.commentContent, c.commentDate, c.infoNo, c.memNo, m.memNick
-    FROM comment c
-    JOIN memberinfo m ON c.memNo = m.memNo
-    WHERE c.infoNo = #{infoNo}
-    ORDER BY c.commentDate DESC;
+  SELECT c.commentId, 
+         c.commentContent, 
+         c.commentDate, 
+         c.infoNo, 
+         c.memNo, 
+         m.memNick 
+  FROM comment c
+  JOIN memberinfo m ON c.memNo = m.memNo
+  WHERE c.infoNo = #{infoNo}
+  ORDER BY c.commentDate DESC;
   </select>
-
 
   <!-- 댓글 등록 -->
   <insert id="insertInfoBoardComment" parameterType="com.vitaltrack.model.InfoBoardComment">
-    INSERT INTO comment (commentContent, commentDate, infoNo, memNo)
-    VALUES (#{commentContent}, NOW(), #{infoNo}, #{memNo})
+  INSERT INTO comment (commentContent, commentDate, infoNo, memNo)
+  VALUES (#{commentContent}, NOW(), #{infoNo}, #{memNo})
   </insert>
 
   <!-- 댓글 수정 -->
   <update id="updateInfoBoardComment" parameterType="com.vitaltrack.model.InfoBoardComment">
-        UPDATE comment SET commentContent = #{commentContent} WHERE commentId = #{commentId}
+  UPDATE comment 
+  SET commentContent = #{commentContent} 
+  WHERE commentId = #{commentId}
   </update>
 
   <!-- 댓글 삭제 -->

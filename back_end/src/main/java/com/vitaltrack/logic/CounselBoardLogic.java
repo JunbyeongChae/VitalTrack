@@ -80,7 +80,6 @@ public class CounselBoardLogic {
     return fileArray;
   }
 
-  
   // 상담게시판 글 목록 조회하기
   public List<Map<String, Object>> boardList(Map<String, Object> pmap) {
     log.info("boardList 호출 성공.");
@@ -103,7 +102,7 @@ public class CounselBoardLogic {
 
   // 상담게시판 글 상세 조회하기
   public List<Map<String, Object>> boardDetail(int counselNo) {
-    log.info("boardDetail 호출, 파라미터: " + counselNo);
+    log.info("boardDetail 호출, counselNo: " + counselNo);
     List<Map<String, Object>> bList = counselBoardDao.boardDetail(counselNo);
 
     // 댓글 가져오기
@@ -128,7 +127,6 @@ public class CounselBoardLogic {
     return result;
   }
 
-  
   // 상담게시판 글 삭제하기
   public int boardDelete(int counselNo) {
     int result = -1;
@@ -137,15 +135,35 @@ public class CounselBoardLogic {
     return result;
   }
 
-  // 답변 등록하기
+  // 댓글 작성자 조회 (작성자 검증용)
+  public Integer getCommentWriterMemNo(int answerId) {
+    log.info("getCommentWriterMemNo 호출, answerId: " + answerId);
+
+    Integer memNo = null;
+    try {
+      memNo = counselBoardDao.getCommentWriterMemNo(answerId);
+      log.info("DB에서 가져온 작성자 memNo: " + memNo);
+    } catch (Exception e) {
+      log.error("댓글 작성자 조회 중 오류 발생: ", e);
+    }
+
+    return memNo;
+  }
+
+  // 상담게시판 댓글 등록
   public int commentInsert(Map<String, Object> pmap) {
-    int result = -1;
-    result = counselBoardDao.commentInsert(pmap);
+    int result = counselBoardDao.commentInsert(pmap);
     log.info("commentInsert result:" + result);
     return result;
   }
 
-  // 답변 수정하기
+  // 상담게시판 댓글 목록 조회
+  public List<Map<String, Object>> commentList(int counselNo) {
+    log.info("commentList 호출");
+    return counselBoardDao.commentList(counselNo);
+  }
+
+  // 상담게시판 댓글 수정
   public int commentUpdate(Map<String, Object> pmap) {
     int result = -1;
     result = counselBoardDao.commentUpdate(pmap);

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { boardDetailDB, boardUpdateDB } from '../../services/counselLogic';
 import { useNavigate, useParams } from 'react-router-dom';
-import TiptapEditor from './CounselTiptapEditor';
+import CounselTiptapEditor from './CounselTiptapEditor';
 import { toast } from 'react-toastify';
 import Sidebar from './CounselSidebar';
 
@@ -58,6 +58,7 @@ const CounselUpdate = () => {
       const res = await boardUpdateDB(board);
       // [주석] boardUpdateDB의 성공 여부 판단
       if (res.data === 1) {
+        toast.success('게시글이 수정되었습니다.');
         navigate('/counsel?page=1');
       } else {
         toast.warn('수정 실패하였습니다.');
@@ -67,44 +68,41 @@ const CounselUpdate = () => {
     }
   };
 
+  const handleCancel = () => {
+    if (window.confirm('수정을 취소하시겠습니까?')) {
+      navigate('/counsel');
+    }
+  };
+
   return (
-    <div className="container mx-auto p-4 flex">
-      <div>
+    <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
+      <div className="w-full max-w-5xl flex">
         <Sidebar />
-      </div>
-      <div className="flex-grow flex-col">
-        <div className="page-header mb-4">
-          <div className="p-6 bg-white rounded-lg shadow-lg h-screen">
-            <h1 className="text-3xl font-bold mb-4">글 수정</h1>
-            <hr className="my-2" />
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">제목</h2>
-                <input type="text" maxLength="50" value={title} onChange={(e) => handleTitle(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-              </div>
+        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6 h-auto">
+          <h1 className="text-2xl font-semibold text-[#7c9473] text-center"> 게시물 수정</h1>
 
-              <div>
-                {/* 작성자 (읽기 전용) */}
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">작성자</h2>
-                <input type="text" maxLength="20" value={memNick} readOnly className="w-1/4 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed" />
-              </div>
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">
+            {/* 제목 */}
+            <input type="text" value={title} onChange={(e) => handleTitle(e.target.value)} className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" placeholder="제목을 입력하세요" required />
 
-              <hr className="my-6 border-gray-300" />
-
-              {/* TiptapEditor로 내용 수정 */}
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">내용</h2>
-                <TiptapEditor value={content} handleContent={handleContent} editorRef={editorRef} />
-              </div>
-
-              {/* 수정 버튼 */}
-              <div className="flex justify-end">
-                <button onClick={boardUpdate} className="px-8 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-colors duration-200 text-lg">
-                  수정 완료
-                </button>
-              </div>
+            {/* 작성자 */}
+            <div className="flex gap-4">
+              <input type="text" value={memNick} readOnly className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
             </div>
-          </div>
+
+            {/* 내용 */}
+            <CounselTiptapEditor value={content} handleContent={handleContent} editorRef={editorRef} />
+
+            {/* 버튼 영역 */}
+            <div className="flex justify-end gap-4 mt-6">
+              <button onClick={boardUpdate} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2">
+                수정 완료
+              </button>
+              <button onClick={handleCancel} className="px-8 py-3 bg-[#e5d8bf] text-[#5f7a60] text-base font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-sm mx-2">
+                취소
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

@@ -90,31 +90,19 @@ public class InfoBoardLogic {
     return fileArray;
   }
 
+  // 댓글 목록 조회
   public List<InfoBoardComment> getInfoBoardComments(int infoNo) {
-    if (infoNo <= 0) {
-      log.error("❌ 잘못된 infoNo 값: " + infoNo);
-      return Collections.emptyList();
-    }
-    try {
-      return infoBoardDao.getInfoBoardComments(infoNo);
-    } catch (Exception e) {
-      log.error("❌ 댓글 조회 중 오류 발생: " + e.getMessage(), e);
-      return Collections.emptyList();
-    }
+    List<InfoBoardComment> comments = infoBoardDao.getInfoBoardComments(infoNo);
+    return comments;
   }
 
+  // 댓글 등록
   public int insertInfoBoardComment(InfoBoardComment comment) {
-    if (comment.getInfoNo() == 0 || comment.getMemNo() == 0 || comment.getCommentContent().trim().isEmpty()) {
+    if (comment.getMemNo() == 0 || comment.getCommentContent().trim().isEmpty()) {
       log.error("❌ 댓글 등록 실패: 잘못된 요청 데이터");
       return 0;
     }
-
-    try {
-      return infoBoardDao.insertInfoBoardComment(comment);
-    } catch (Exception e) {
-      log.error("❌ 댓글 등록 중 오류 발생: " + e.getMessage(), e);
-      return 0;
-    }
+    return infoBoardDao.insertInfoBoardComment(comment);
   }
 
   public int updateInfoBoardComment(InfoBoardComment comment) {

@@ -1,24 +1,27 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = () => {
+const CounselSidebar = () => {
+  const location = useLocation();
+  const links = [
+    { path: '/adivsor', label: '상담사 소개' },
+    { path: '/counsel', label: '1:1 상담' }
+  ];
+
   return (
-    <div className="w-64 bg-gray-100 p-4 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">영양상담</h2>
-      <ul className="space-y-2">
-        <li>
-          <Link to="/counseladivsor" className="block p-2 bg-green-500 text-white rounded hover:bg-green-400">
-            상담사 소개
-          </Link>
-        </li>
-        <li>
-          <Link to="/counsel" className="block p-2 bg-green-500 text-white rounded hover:bg-green-400">
-            1:1 상담
-          </Link>
-        </li>
+    <div className="w-1/4 h-screen min-h-[600px] max-h-screen overflow-y-auto bg-[#f2f5eb] p-6 rounded-xl shadow-lg border border-[#c2c8b0] mt-6">
+      <h2 className="text-xl font-semibold text-[#7c9473] mb-4">영양 상담</h2>
+      <ul className="space-y-3">
+        {links.map((link, index) => (
+          <li key={index} className={`p-3 text-[#5f7a60] rounded-lg cursor-pointer hover:bg-[#d7e3c7] transition-all ${location.pathname.startsWith(link.path) ? 'bg-[#93ac90] text-white font-bold' : ''}`}>
+            <Link to={link.path} className="block w-full h-full">
+              {link.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
 };
 
-export default Sidebar;
+export default CounselSidebar;

@@ -85,7 +85,7 @@ const Login = ({ setUser }) => {
       <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-20">
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">
-            <img src="../images/logo.png" alt="Logo" style={{ height: '200px' }} />
+            <img src="../images/logo2_login.png" alt="Logo" style={{ height: '200px' }} />
           </div>
 
           <form className="space-y-3" onSubmit={handleSubmit}>
@@ -95,7 +95,7 @@ const Login = ({ setUser }) => {
             </div>
             <div>
               <label className="block text-xl font-medium text-gray-700">비밀번호</label>
-              <input type="password" name="memPw" placeholder="Enter your password" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
+              <input type="password" name="memPw" placeholder="비밀번호를 입력하세요" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
             </div>
             <button type="submit" className=" text-xl w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-700 transition">
               로그인

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { boardDetailDB, boardDeleteDB, commentInsertDB, commentUpdateDB } from '../../services/counselLogic';
+import { boardDetailDB, boardDeleteDB, commentInsertDB, commentUpdateDB, commentDeleteDB } from '../../services/counselLogic';
 import { toast } from 'react-toastify';
-import Sidebar from './CounselSidebar';
+import CounselSidebar from './CounselSidebar';
 
 const CounselDetail = () => {
   const { counselNo } = useParams();
@@ -18,23 +18,19 @@ const CounselDetail = () => {
   // 로그인정보 가져오기
   const user = JSON.parse(localStorage.getItem('user')) || {};
   const memNo = user.memNo || '';
-  const memNick = user.memNick || '';
 
-  // 게시글 상세 정보 가져오기
+  // 답변 목록 가져오기
   const fetchBoardDetail = useCallback(async () => {
     try {
       const res = await boardDetailDB(counselNo);
       if (res.data && res.data.length > 0) {
-        // 0번 인덱스: 게시글
         const boardData = res.data.find((item) => item.counselNo === parseInt(counselNo));
         if (boardData) setBoard(boardData);
 
-        // 1번 인덱스: comments
         const commentIndex = res.data.findIndex((item) => item.comments);
         if (commentIndex !== -1) {
           setComments(res.data[commentIndex].comments);
         } else {
-          // 답변이 없을 경우
           setComments([]);
         }
       }
@@ -70,18 +66,16 @@ const CounselDetail = () => {
       toast.warn('답변 내용을 입력하세요.');
       return;
     }
-    // 로그인하지 않은 상태라면 등록 불가
-    if (!memNo || !memNick) {
+    if (!memNo) {
       toast.warn('로그인 후 이용 가능합니다.');
       return;
     }
-    const formattedComment = newComment.replace(/\n/g, '<br>'); // 줄바꿈을 <br>로 변환
 
-    // DB저장 답변 정보
+    const formattedComment = newComment.replace(/\n/g, '<br>');
+
     const commentData = {
       counselNo: parseInt(counselNo),
       memNo: memNo,
-      answerWriter: memNick,
       answerContent: formattedComment
     };
 
@@ -89,9 +83,7 @@ const CounselDetail = () => {
       const res = await commentInsertDB(commentData);
       if (res.data === 1) {
         toast.success('답변이 등록되었습니다.');
-        // 입력 필드 초기화
         setNewComment('');
-        // 재조회하여 답변 목록 갱신
         fetchBoardDetail();
       } else {
         toast.warn('답변 등록에 실패했습니다.');
@@ -103,8 +95,10 @@ const CounselDetail = () => {
 
   // 답변 수정
   const startEditing = (commentId, content) => {
+    // HTML 태그 제거 및 줄바꿈 처리
+    const plainTextContent = content.replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '');
     setEditingCommentId(commentId);
-    setEditingCommentContent(content);
+    setEditingCommentContent(plainTextContent);
   };
 
   const handleCommentUpdate = async () => {
@@ -113,105 +107,132 @@ const CounselDetail = () => {
       return;
     }
 
-    const formattedComment = editingCommentContent.replace(/\n/g, '<br>'); // 줄바꿈 적용
+    const formattedComment = editingCommentContent.replace(/\n/g, '<br>');
+
+    // 현재 로그인한 사용자 정보 가져오기
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    const currentUserMemNo = user.memNo;
 
     const updatedComment = {
       answerId: editingCommentId,
       answerContent: formattedComment,
-      answerWriter: memNick
+      memNo: currentUserMemNo
     };
 
     try {
       const res = await commentUpdateDB(updatedComment);
-      if (res.data === 1) {
+      if (res.status === 200) {
         toast.success('댓글이 수정되었습니다.');
         setEditingCommentId(null);
-        fetchBoardDetail(); // 댓글 목록 새로고침
+        fetchBoardDetail();
       } else {
-        toast.error('수정 실패');
+        toast.error(res.data || '수정 권한이 없습니다.');
       }
     } catch (error) {
-      console.error('수정 중 오류:', error);
+      toast.error('댓글 수정 중 오류 발생.');
+    }
+  };
+
+  // 답변 삭제
+  const handleDeleteComment = async (commentId) => {
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      try {
+        const res = await commentDeleteDB(commentId);
+        if (res.data === 1) {
+          toast.success('삭제되었습니다.');
+          fetchBoardDetail(); // 댓글 목록 새로고침
+        } else {
+          toast.warn('삭제 실패');
+        }
+      } catch (error) {
+        toast.error('삭제 중 오류:', error);
+      }
     }
   };
 
   return (
-    <div className="container mx-auto p-4 flex">
-      <div>
-        <Sidebar />
-      </div>
-      <div className="flex-grow flex-col">
-        <div className="page-header mb-4">
-          <div className="p-6 bg-white rounded-lg shadow-lg h-screen">
-            <h1 className="text-3xl font-bold mb-4">상담내용</h1>
-            <hr className="my-2" />
-            <div className="max-w-5xl mx-auto p-6 space-y-10">
-              {/* 게시글 상세 정보 */}
-              <section className="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">{board.counselTitle}</h1>
-                <div className="flex justify-between items-center mb-4 text-gray-500">
-                  <p>
-                    작성자: <span className="font-semibold">{board.memNick}</span>
-                  </p>
-                  <p>
-                    작성일: <span className="font-semibold">{board.counselDate}</span>
-                  </p>
-                </div>
-                <div className="prose max-w-full" dangerouslySetInnerHTML={{ __html: board.counselContent }} />
-                <hr className="my-4" />
-                <div className="flex justify-end">
-                  <button onClick={() => navigate(`/counsel/update/${counselNo}`)} className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                    수정
-                  </button>
-                  <button onClick={handleDelete} className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                    삭제
-                  </button>
-                </div>
-              </section>
+    <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
+      <div className="w-full max-w-5xl flex">
+        <CounselSidebar className="w-1/4" />
+        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6">
+          <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
+            {/* 게시글 제목 및 버튼 정렬 */}
+            <h1 className="text-3xl font-semibold text-[#7c9473] pb-4">{board.counselTitle || '로딩 중...'}</h1>
+            <div className="flex space-x-2">
+              <button onClick={() => navigate('/counsel')} className="px-6 py-2 bg-[#ACA7AF] text-white font-semibold rounded-lg hover:bg-[#A190AB] transition-all shadow-md">
+                목록
+              </button>
+              <button onClick={() => navigate(`/counsel/update/${counselNo}`)} className="px-6 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
+                수정
+              </button>
+              <button onClick={handleDelete} className="px-6 py-2 bg-[#e5d8bf] text-[#5f7a60] font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-md">
+                삭제
+              </button>
+            </div>
+          </div>
 
-              <hr className="border-gray-300" />
+          {/* 작성자 및 날짜 표시 */}
+          <div className="flex justify-between items-center text-[#5f7a60] mt-4 mb-6">
+            <div className="text-lg">
+              <span className="font-semibold">작성자 :</span> {board.memNick || '알 수 없음'}
+              <span className="ml-4 font-semibold">작성일 :</span> {board.counselDate || '날짜 없음'}
+            </div>
+          </div>
 
-              {/* 답변 영역 */}
-              <section className="p-6 bg-gray-50 shadow-lg rounded-lg border border-gray-200">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-4">답변</h3>
-                {comments.map((comment) => (
-                  <div key={comment.commentId} className="p-4 bg-white shadow rounded-lg border border-gray-200 mb-4">
-                    {editingCommentId === comment.commentId ? (
-                      // 댓글 수정 모드
-                      <>
-                        <textarea value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} className="w-full p-2 border border-gray-300 rounded" />
-                        <button onClick={handleCommentUpdate} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                          수정 완료
-                        </button>
-                      </>
-                    ) : (
-                      // 기존 댓글 출력
-                      <>
-                        <div dangerouslySetInnerHTML={{ __html: comment.commentContent }} />
-                        <div className="flex justify-between text-sm text-gray-500 mt-2">
-                          <div className="flex space-x-2">
-                            <span>작성자: {comment.memNick}</span>
-                            <span>작성일: {comment.commentDate}</span>
-                          </div>
-                          <button onClick={() => startEditing(comment.commentId, comment.commentContent)} className="text-blue-500 hover:underline">
+          {/* 게시글 내용 */}
+          <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0]">
+            <div className="text-lg text-[#5f7a60] whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: board.counselContent || '내용을 불러오는 중입니다.' }} />
+          </div>
+
+          {/* 댓글 섹션 */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold text-[#7c9473] mb-4">답변</h2>
+            <div className="bg-white p-4 rounded-lg shadow-md border border-[#c2c8b0]">
+              {comments.map((comment) => (
+                <div key={comment.answerId} className="p-3 border-b border-gray-300 flex justify-between items-center">
+                  {/* 고유 key 추가 */}
+                  <div className="text-gray-500 mb-3 ">
+                    <span className="font-semibold">작성자: </span>{comment.memNick}
+                    <span className="font-semibold">작성일: </span>{comment.commentDate}
+                  </div>
+                  {editingCommentId === comment.answerId ? (
+                    <div className="flex justify-between items-center">
+                      <textarea value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} className="flex-grow p-2 rounded-lg h-40" />
+                      <button onClick={handleCommentUpdate} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
+                        수정완료
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex-grow" dangerouslySetInnerHTML={{ __html: comment.answerContent }} />
+
+                      {/* ✅ 로그인한 사용자의 memNo와 작성자의 memNo가 일치할 때만 수정/삭제 버튼 표시 */}
+                      {comment.memNo === user.memNo && (
+                        <div className="flex space-x-2 mt-2">
+                          <button onClick={() => startEditing(comment.answerId, comment.answerContent)} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
                             수정
                           </button>
+                          <button onClick={() => handleDeleteComment(comment.answerId)} className="px-4 py-2 bg-[#e5d8bf] text-[#5f7a60] font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-md">
+                            삭제
+                          </button>
                         </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </section>
-
-              {/* [추가] 답변 작성 폼 */}
-              <div className="mt-4">
-                <h4 className="text-xl font-semibold text-gray-800 mb-2">답변 작성</h4>
-                <textarea className="w-full h-20 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="답변을 입력하세요..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
-                <div className="flex justify-end mt-2">
-                  <button onClick={handleCommentInsert} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    등록
-                  </button>
+                      )}
+                    </div>
+                  )}
                 </div>
+              ))}
+            </div>
+
+            {/* 댓글 입력창 및 버튼 정렬 */}
+            <div className="mt-4">
+              <h4 className="text-2xl font-semibold text-[#7c9473] mb-4">답변 작성</h4>
+              <textarea  className="w-full h-20 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="답변을 입력하세요..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+
+              {/* 댓글 등록 버튼 */}
+              <div className="flex justify-end mt-2">
+                <button onClick={handleCommentInsert} className="px-6 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
+                  답변 등록
+                </button>
               </div>
             </div>
           </div>

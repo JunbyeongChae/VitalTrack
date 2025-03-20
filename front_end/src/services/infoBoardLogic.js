@@ -1,5 +1,5 @@
+import { info } from 'autoprefixer';
 import axios from 'axios';
-
 
 // 게시판 목록 조회 (필터링 포함)
 export const infoBoardListDB = ({ keyword, category }) => {
@@ -8,7 +8,7 @@ export const infoBoardListDB = ({ keyword, category }) => {
       const res = axios({
         method: 'get',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardList`,
-        params: { gubun: "infoContent", keyword, category },
+        params: { gubun: 'infoContent', keyword, category }
       });
       resolve(res);
     } catch (error) {
@@ -19,13 +19,16 @@ export const infoBoardListDB = ({ keyword, category }) => {
 
 // 게시판 상세 조회
 export const infoBoardDetailDB = (infoNo) => {
+  console.log(infoNo); // 디버깅용 로그
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'get',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDetail`,
-        params: { infoNo },
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDetail?infoNo=${infoNo}`
       });
+      //디버깅용 url 출력
+      console.log(res.url);
+      console.log(infoNo);
       resolve(res);
     } catch (error) {
       reject(error);
@@ -44,11 +47,11 @@ export const infoBoardInsertDB = (board) => {
         data: {
           infoTitle: board.infoTitle,
           infoContent: board.infoContent,
-          infoCategory: board.infoCategory,  // infoCategory 추가
+          infoCategory: board.infoCategory, // infoCategory 추가
           infoDate: board.infoDate,
           memNo: board.memNo,
-          infoFile: board.infoFile || null  // 파일이 없을 경우 null로 처리
-        },
+          infoFile: board.infoFile || null // 파일이 없을 경우 null로 처리
+        }
       });
       resolve(res);
     } catch (error) {
@@ -64,7 +67,7 @@ export const infoBoardUpdateDB = (board) => {
       const res = axios({
         method: 'put',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardUpdate`,
-        data: board,
+        data: board
       });
       resolve(res);
     } catch (error) {
@@ -79,8 +82,8 @@ export const infoBoardDeleteDB = (infoNo) => {
     try {
       const res = axios({
         method: 'delete',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDelete`,
-        params: { infoNo },
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDelete?infoNo=${infoNo}`,
+        params: { infoNo }
       });
       resolve(res);
     } catch (error) {
@@ -97,11 +100,11 @@ export const uploadImageDB = (file) => {
         method: 'post',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/imageUpload`,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data'
         },
         processData: false,
         contentType: false,
-        data: file,
+        data: file
       });
       resolve(response);
     } catch (error) {
@@ -110,33 +113,15 @@ export const uploadImageDB = (file) => {
   });
 };
 
-// 댓글 목록 조회
-export const infoCommentListDB = (infoNo) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const res = axios({
-        method: 'get',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/comments`,
-        params: { infoNo },
-      });
-
-      console.log("📌 불러온 댓글 목록:", res.data); // 디버깅 로그 추가
-      resolve(res);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-
 // 댓글 등록
 export const infoCommentInsertDB = (comment) => {
+  console.log(comment); // 디버깅용 로그
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'post',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/comment`,
-        data: comment,
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentInsert`,
+        data: comment
       });
       resolve(res);
     } catch (error) {
@@ -151,8 +136,11 @@ export const infoCommentUpdateDB = (comment) => {
     try {
       const res = axios({
         method: 'put',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/comment`,
-        data: comment,
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentUpdate`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: comment
       });
       resolve(res);
     } catch (error) {
@@ -167,8 +155,8 @@ export const infoCommentDeleteDB = (commentId) => {
     try {
       const res = axios({
         method: 'delete',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/comment`,
-        params: { commentId },
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentDelete?answerId=${commentId}`,
+        params: { commentId }
       });
       resolve(res);
     } catch (error) {

@@ -50,7 +50,7 @@ const Header = ({ user, setUser }) => {
           <div className="flex items-center">
             {/* 로고 클릭 시 홈으로 이동 */}
             <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate('/')}>
-              <img className="h-14 w-auto sm:h-16" src="/images/logo_title.png" alt="Logo" />
+              <img className="h-14 w-auto sm:h-16" src="/images/logo2.png" alt="Logo" />
             </div>
             {/* 네비게이션 메뉴 */}
             <div className="hidden md:flex md:space-x-8 ml-10">
@@ -63,10 +63,10 @@ const Header = ({ user, setUser }) => {
               <button onClick={() => handleNavClick('/workout')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 운동관리
               </button>
-              <button onClick={() => handleNavClick('/diet')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
+              <button onClick={() => handleNavClick('/nutrition')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 식단관리
               </button>
-              <button onClick={() => handleNavClick('/counseladivsor')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
+              <button onClick={() => handleNavClick('/adivsor')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
                 영양상담
               </button>
             </div>

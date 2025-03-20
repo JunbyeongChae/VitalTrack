@@ -1,22 +1,18 @@
 import React from 'react';
-import Sidebar from './CounselSidebar';
+import CounselSidebar from './CounselSidebar';
 import 'tailwindcss/tailwind.css';
 
 const CounselAdvisor = () => {
   return (
-    <div className="container mx-auto p-4 flex">
-      <div>
-        <Sidebar />
-      </div>
-      <div className='flex-grow flex-col'>
-        <div className="page-header mb-4">
-          <div className="p-6 bg-white rounded-lg shadow-lg">
-            <h1 className="text-3xl font-bold mb-4">상담사 소개</h1>
-            <hr className="my-2" />
-            
-            <div className="flex items-center">
-              <img src="/images/advisor.png" alt="영양사 면허" className="rounded-lg shadow-md mr-6 border-2 border-gray-300" />
-            </div>
+    <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
+      <div className="w-full max-w-5xl flex">
+        <CounselSidebar className="w-1/4" />
+        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6">
+          <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
+            <h1 className="text-2xl font-semibold text-[#7c9473]">상담사 소개</h1>
+          </div>
+          <div className="flex mt-1 flex-wrap gap-1 pb-2">
+            <img src="/images/advisor.png" alt="영양사 면허" className="rounded-lg shadow-md" />
           </div>
         </div>
       </div>

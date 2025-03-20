@@ -42,7 +42,7 @@ const App = () => {
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/mypage" element={<Mypage user={user} setUser={setUser} />} />
-          <Route path="/counseladivsor" element={<CounselAdvisor />} />
+          <Route path="/adivsor" element={<CounselAdvisor />} />
           <Route path="/counsel" element={<CounselList />} />
           <Route path="/counsel/write" element={<CounselWrite />} />
           <Route path="/counsel/:counselNo" element={<CounselDetail />} />

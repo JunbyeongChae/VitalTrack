@@ -41,13 +41,13 @@ public class CounselBoardDao {
     log.info("boardDetail 호출");
     List<Map<String, Object>> bDetail = new ArrayList<>(); // null 방지
     try {
-        bDetail = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.boardDetail", counselNo);
-        log.info("boardDetail 결과: " + bDetail);
+      bDetail = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.boardDetail", counselNo);
+      log.info("boardDetail 결과: " + bDetail);
     } catch (Exception e) {
-        log.error("boardDetail 실행 중 오류 발생: ", e);
+      log.error("boardDetail 실행 중 오류 발생: ", e);
     }
     return bDetail;
-}
+  }
 
   // 상담게시판 글 등록하기
   public int boardInsert(CounselBoard board) {
@@ -72,10 +72,27 @@ public class CounselBoardDao {
     return result;
   }
 
+  // 댓글 작성자 조회 (작성자 검증용)
+  public Integer getCommentWriterMemNo(int answerId) {
+    log.info("getCommentWriterMemNo 호출, answerId: " + answerId);
+
+    Integer writerMemNo = null;
+    try {
+      writerMemNo = sessionTemplate.selectOne("com.vitaltrack.dao.CounselBoardDao.getCommentWriterMemNo", answerId);
+      if (writerMemNo == null) {
+        log.warn("해당 댓글의 작성자를 찾을 수 없음, answerId=" + answerId);
+      }
+    } catch (Exception e) {
+      log.error("getCommentWriterMemNo 실행 중 오류 발생: ", e);
+    }
+
+    return writerMemNo;
+  }
+
   // 답변 조회하기
   public List<Map<String, Object>> commentList(int counselNo) {
     log.info("commentList 호출 성공, 파라미터: " + counselNo);
-    List<Map<String, Object>> commList = new ArrayList<>(); // null 방지
+    List<Map<String, Object>> commList = new ArrayList<>();
     try {
       commList = sessionTemplate.selectList("com.vitaltrack.dao.CounselBoardDao.commentList", counselNo);
       log.info("commentList 결과: " + commList);
@@ -88,8 +105,7 @@ public class CounselBoardDao {
   // 답변 등록하기
   public int commentInsert(Map<String, Object> pmap) {
     log.info("commentInsert 호출");
-    int result = -1;
-    result = sessionTemplate.insert("com.vitaltrack.dao.CounselBoardDao.commentInsert", pmap);
+    int result = sessionTemplate.insert("com.vitaltrack.dao.CounselBoardDao.commentInsert", pmap);
     log.info("commentInsert result:" + result);
     return result;
   }
@@ -97,8 +113,7 @@ public class CounselBoardDao {
   // 답변 수정하기
   public int commentUpdate(Map<String, Object> pmap) {
     log.info("commentUpdate 호출");
-    int result = -1;
-    result = sessionTemplate.update("com.vitaltrack.dao.CounselBoardDao.commentUpdate", pmap);
+    int result = sessionTemplate.update("com.vitaltrack.dao.CounselBoardDao.commentUpdate", pmap);
     log.info("commentUpdate result:" + result);
     return result;
   }

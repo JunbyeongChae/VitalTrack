@@ -10,15 +10,25 @@ import java.util.Map;
 @Mapper
 public interface InfoBoardDao {
   List<InfoBoard> getInfoBoardList(Map<String, Object> params);
+
   InfoBoard getInfoBoardDetail(int infoNo);
+
   int insertInfoBoard(InfoBoard infoBoard);
+
   int updateInfoBoard(InfoBoard infoBoard);
+
   int deleteInfoBoard(int infoNo);
+
   int incrementInfoBoardView(int infoNo);
 
   // 댓글 CRUD
   List<InfoBoardComment> getInfoBoardComments(int infoNo);
+
+  // 댓글 등록
   int insertInfoBoardComment(InfoBoardComment comment);
+
+  // 댓글 수정
   int updateInfoBoardComment(InfoBoardComment comment);
+
   int deleteInfoBoardComment(int commentId);
 }

@@ -85,38 +85,23 @@ public class InfoBoardController {
     return infoBoardLogic.deleteInfoBoard(infoNo);
   }
 
+  // 댓글 목록 조회 API
   @GetMapping("/comments")
-  public ResponseEntity<?> getInfoBoardComments(@RequestParam(name = "infoNo") Integer infoNo) {
+  public ResponseEntity<List<InfoBoardComment>> getInfoBoardComments(@RequestParam(name = "infoNo") Integer infoNo) {
     if (infoNo == null) {
-      return ResponseEntity.badRequest().body("infoNo 값이 필요합니다.");
+      return ResponseEntity.badRequest().body(null);
     }
-
-    try {
-      List<InfoBoardComment> comments = infoBoardLogic.getInfoBoardComments(infoNo);
-      return ResponseEntity.ok(comments);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글 조회 실패: " + e.getMessage());
-    }
+    return ResponseEntity.ok(infoBoardLogic.getInfoBoardComments(infoNo));
   }
 
+  // 댓글 등록 API
   @PostMapping("/comment")
-  public ResponseEntity<?> insertInfoBoardComment(@RequestBody InfoBoardComment comment) {
-    if (comment.getInfoNo() == 0 || comment.getMemNo() == 0 || comment.getCommentContent().trim().isEmpty()) {
-      log.error("❌ 댓글 등록 실패: 잘못된 요청 데이터");
+  public ResponseEntity<String> insertInfoBoardComment(@RequestBody InfoBoardComment comment) {
+    if (comment.getMemNo() == 0 || comment.getCommentContent().trim().isEmpty()) {
       return ResponseEntity.badRequest().body("잘못된 요청 데이터입니다.");
     }
-
-    try {
-      int result = infoBoardLogic.insertInfoBoardComment(comment);
-      if (result > 0) {
-        return ResponseEntity.ok("댓글이 등록되었습니다.");
-      } else {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글 등록 실패");
-      }
-    } catch (Exception e) {
-      log.error("❌ 댓글 등록 중 오류 발생: " + e.getMessage(), e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생: " + e.getMessage());
-    }
+    int result = infoBoardLogic.insertInfoBoardComment(comment);
+    return result > 0 ? ResponseEntity.ok("댓글이 등록되었습니다.") : ResponseEntity.internalServerError().body("댓글 등록 실패");
   }
 
   @PutMapping("/comment")

@@ -15,7 +15,6 @@ const InfoBoardList = () => {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [search, setSearch] = useState('');
   const user = JSON.parse(localStorage.getItem('user')) || {};
-  const memNo = user.memNo || '';
   // 로컬스토리지에서 user 정보 가져오기
   const isAdmin = user.admin === 1;
 
