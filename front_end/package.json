@@ -45,8 +45,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "chat": "node chat/main.js",
-    "seniorcare": "concurrently \"npm run start\" \"npm run chat\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

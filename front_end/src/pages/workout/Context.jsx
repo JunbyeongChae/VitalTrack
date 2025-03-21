@@ -9,12 +9,13 @@ export const ScheduleProvider = ({ children }) => {
     const [selectedSchedule, setSelectedSchedule] = useState({});
     const [modalMode, setModalMode] = useState('') //insert (등록) or update (수정)
     const [showModal, setShowModal] = useState(false)
+    const [signal, setSignal] = useState(0)
 
     return (
         <Context.Provider value={{
             schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, setDateSchedules,
             selectedSchedule, setSelectedSchedule,
-            modalMode, setModalMode, showModal, setShowModal }}>
+            modalMode, setModalMode, showModal, setShowModal, signal, setSignal }}>
             {children}
         </Context.Provider>
     )

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import { Link } from 'react-router';
 import { getWeightChanges } from '../services/authLogic';
+import WorkoutChartBox from "./workout/WorkoutChartBox";
+import WoChart from "./workout/WoChart";
 
 const UserHome = () => {
   const [bmiStatus, setBmiStatus] = useState('');
@@ -140,6 +142,8 @@ const UserHome = () => {
               </Link>
             </div>
             <div id="activityChart" className="h-80 mt-4"></div>
+           {/* <WoChart/>*/}
+            {/*WoChart 데이터를 어떻게 가져올까...!!*/}
           </div>
         </div>
       </div>

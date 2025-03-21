@@ -10,6 +10,7 @@ USE vitaltrack;
 -- 회원정보
 CREATE TABLE `memberinfo` (
   `memNo` int NOT NULL AUTO_INCREMENT,
+  `admin` TINYINT NOT NULL DEFAULT '0',
   `memId` varchar(50) NOT NULL,
   `memPw` varchar(100) NOT NULL,
   `memNick` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -28,6 +29,9 @@ CREATE TABLE `memberinfo` (
   `proteinMax` int NOT NULL,
   `fatMin` int NOT NULL,
   `fatMax` int NOT NULL,
+   birthYear VARCHAR(4),
+   birthMonth VARCHAR(2),
+   birthDay VARCHAR(2),
   PRIMARY KEY (`memNo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -105,20 +109,28 @@ CREATE TABLE `weightchange` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
--- 운동관리
-CREATE TABLE `workoutschedule` (
-  `scheduleId` int NOT NULL AUTO_INCREMENT,
-  `workoutDate` date NOT NULL,
-  `workoutName` varchar(100) NOT NULL,
-  `workoutTime` int DEFAULT NULL,
-  `workoutKcal` int DEFAULT NULL,
-  `workoutCheck` tinyint DEFAULT NULL,
-  `memNo` int NOT NULL,
-  PRIMARY KEY (`scheduleId`),
-  KEY `fkScheduleMember` (`memNo`),
-  CONSTRAINT `fkScheduleMember` FOREIGN KEY (`memNo`) REFERENCES `memberinfo` (`memNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- 운동종목 : fron_end/public/workoutTypes.json 파일로 데이터테이블 만들기 - 만들때 타입은 text로 설정해도 됨
+-- 이후 데이터 타입 및 pk 정리
+ALTER TABLE workoutTypes ADD PRIMARY KEY (workoutId);
+ALTER TABLE workoutTypes CHANGE workoutId workoutId int;
+ALTER TABLE workoutTypes CHANGE metValue metValue decimal(5,2);
+ALTER TABLE workoutTypes CHANGE workoutName workoutName varchar(150);
 
+-- 운동 스케줄 (Workout Schedule)
+CREATE TABLE workoutschedule (
+    scheduleId    INT AUTO_INCREMENT PRIMARY KEY,
+    workoutId      INT NOT NULL,
+    scheduleStart      DATETIME,
+	scheduleEnd      DATETIME,
+    color			VARCHAR(20),
+    allDay    BOOLEAN DEFAULT FALSE,
+    isFinished    BOOLEAN DEFAULT FALSE,
+    workoutTimeMin      INT,
+    kcal      INT,
+    memNo         INT NOT NULL,
+    CONSTRAINT fk_schedule_member FOREIGN KEY (memNo) REFERENCES memberinfo(memNo),
+    CONSTRAINT fk_schedule_workout FOREIGN KEY (workoutId) REFERENCES workoutTypes(workoutId)
+) ENGINE=InnoDB;
 
 -- 건강정보 게시판 댓글
 CREATE TABLE `comment` (

@@ -9,13 +9,13 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
 import Mypage from './pages/auth/Mypage';
-import WorkoutPage from './pages/WorkoutPage';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 import { ToastContainer } from 'react-toastify';
 import CounselWrite from './pages/counsel/CounselWrite';
 import CounselDetail from './pages/counsel/CounselDetail';
 import CounselUpdate from './pages/counsel/CounselUpdate';
 import CounselAdvisor from './pages/counsel/CounselAdvisor';
+import WorkoutPage from './pages/workout/WorkoutPage';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -44,7 +44,7 @@ const App = () => {
           <Route path="/counsel/:counselNo" element={<CounselDetail />} />
           <Route path="/counsel/update/:counselNo" element={<CounselUpdate />} />
           <Route path="/nutrition" element={<Dashboard />} />
-          <Route path="/workout" exact={true} element={<WorkoutPage/>}/>
+          <Route path="/workout" exact={true} element={<WorkoutPage />}/>
         </Routes>
       </main>
       <Footer />
