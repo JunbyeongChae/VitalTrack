@@ -32,6 +32,9 @@ CREATE TABLE `memberinfo` (
   `birthYear` varchar(4) DEFAULT NULL,
   `birthMonth` varchar(2) DEFAULT NULL,
   `birthDay` varchar(2) DEFAULT NULL,
+  `birthYear` varchar(4) DEFAULT NULL,
+  `birthMonth` varchar(2) DEFAULT NULL,
+  `birthDay` varchar(2) DEFAULT NULL,
   PRIMARY KEY (`memNo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
