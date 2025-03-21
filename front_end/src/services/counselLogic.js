@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 // 게시판 목록 조회 api
 export const boardListDB = (board) => {
   return new Promise((resolve, reject) => {

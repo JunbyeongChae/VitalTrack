@@ -189,26 +189,29 @@ const CounselDetail = () => {
             <h2 className="text-2xl font-semibold text-[#7c9473] mb-4">답변</h2>
             <div className="bg-white p-4 rounded-lg shadow-md border border-[#c2c8b0]">
               {comments.map((comment) => (
-                <div key={comment.answerId} className="p-3 border-b border-gray-300 flex justify-between items-center">
-                  {/* 고유 key 추가 */}
-                  <div className="text-gray-500 mb-3 ">
-                    <span className="font-semibold">작성자: </span>{comment.memNick}
-                    <span className="font-semibold">작성일: </span>{comment.commentDate}
+                <div key={comment.answerId} className="p-3 border-b border-gray-300">
+                  {/* 작성자 및 작성일 정보 */}
+                  <div className="text-gray-500 mb-2">
+                    <span className="font-semibold">작성자 : </span>
+                    {comment.memNick}
+                    <span className="font-semibold"> | </span>
+                    <span className="font-semibold">작성일 : </span>
+                    {comment.commentDate}
                   </div>
                   {editingCommentId === comment.answerId ? (
-                    <div className="flex justify-between items-center">
-                      <textarea value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} className="flex-grow p-2 rounded-lg h-40" />
-                      <button onClick={handleCommentUpdate} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
+                    <div className="flex flex-col">
+                      <textarea value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} className="w-full p-2 rounded-lg h-40" />
+                      <button onClick={handleCommentUpdate} className="mt-2 px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
                         수정완료
                       </button>
                     </div>
                   ) : (
-                    <div>
-                      <div className="flex-grow" dangerouslySetInnerHTML={{ __html: comment.answerContent }} />
-
-                      {/* ✅ 로그인한 사용자의 memNo와 작성자의 memNo가 일치할 때만 수정/삭제 버튼 표시 */}
+                    <>
+                      {/* 답변 내용 */}
+                      <div className="mb-2 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: comment.answerContent }} />
+                      {/* 수정/삭제 버튼 */}
                       {comment.memNo === user.memNo && (
-                        <div className="flex space-x-2 mt-2">
+                        <div className="flex space-x-2">
                           <button onClick={() => startEditing(comment.answerId, comment.answerContent)} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
                             수정
                           </button>
@@ -217,7 +220,7 @@ const CounselDetail = () => {
                           </button>
                         </div>
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
               ))}
@@ -226,7 +229,7 @@ const CounselDetail = () => {
             {/* 댓글 입력창 및 버튼 정렬 */}
             <div className="mt-4">
               <h4 className="text-2xl font-semibold text-[#7c9473] mb-4">답변 작성</h4>
-              <textarea  className="w-full h-20 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="답변을 입력하세요..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+              <textarea className="w-full h-20 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="답변을 입력하세요..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
 
               {/* 댓글 등록 버튼 */}
               <div className="flex justify-end mt-2">

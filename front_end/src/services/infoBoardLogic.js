@@ -1,4 +1,3 @@
-import { info } from 'autoprefixer';
 import axios from 'axios';
 
 // 게시판 목록 조회 (필터링 포함)
@@ -19,17 +18,13 @@ export const infoBoardListDB = ({ keyword, category }) => {
 
 // 게시판 상세 조회
 export const infoBoardDetailDB = (infoNo) => {
-  console.log(infoNo); // 디버깅용 로그
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => { // ✅ async 추가
     try {
-      const res = axios({
+      const res = await axios({ // ✅ await 추가
         method: 'get',
         url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/infoBoardDetail?infoNo=${infoNo}`
       });
-      //디버깅용 url 출력
-      console.log(res.url);
-      console.log(infoNo);
-      resolve(res);
+      resolve(res); // 이제 실제 응답 데이터가 반환됨
     } catch (error) {
       reject(error);
     }
@@ -53,6 +48,7 @@ export const infoBoardInsertDB = (board) => {
           infoFile: board.infoFile || null // 파일이 없을 경우 null로 처리
         }
       });
+      console.log(res.url)
       resolve(res);
     } catch (error) {
       reject(error);
@@ -113,6 +109,22 @@ export const uploadImageDB = (file) => {
   });
 };
 
+// 댓글 목록 조회
+export const infoCommentListDB = (infoNo) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await axios({
+        method: 'get',
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentList`,
+        params: { infoNo }
+      });
+      resolve(res);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 // 댓글 등록
 export const infoCommentInsertDB = (comment) => {
   console.log(comment); // 디버깅용 로그
@@ -151,11 +163,12 @@ export const infoCommentUpdateDB = (comment) => {
 
 // 댓글 삭제
 export const infoCommentDeleteDB = (commentId) => {
+  console.log("DeleteCommentDB called with:", commentId);
   return new Promise((resolve, reject) => {
     try {
       const res = axios({
         method: 'delete',
-        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentDelete?answerId=${commentId}`,
+        url: `${process.env.REACT_APP_SPRING_IP}api/infoboard/commentDelete?commentId=${commentId}`,
         params: { commentId }
       });
       resolve(res);

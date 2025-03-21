@@ -86,7 +86,7 @@ public class InfoBoardController {
   }
 
   // 댓글 목록 조회 API
-  @GetMapping("/comments")
+  @GetMapping("/commentList")
   public ResponseEntity<List<InfoBoardComment>> getInfoBoardComments(@RequestParam(name = "infoNo") Integer infoNo) {
     if (infoNo == null) {
       return ResponseEntity.badRequest().body(null);
@@ -95,7 +95,7 @@ public class InfoBoardController {
   }
 
   // 댓글 등록 API
-  @PostMapping("/comment")
+  @PostMapping("/commentInsert")
   public ResponseEntity<String> insertInfoBoardComment(@RequestBody InfoBoardComment comment) {
     if (comment.getMemNo() == 0 || comment.getCommentContent().trim().isEmpty()) {
       return ResponseEntity.badRequest().body("잘못된 요청 데이터입니다.");
@@ -104,7 +104,7 @@ public class InfoBoardController {
     return result > 0 ? ResponseEntity.ok("댓글이 등록되었습니다.") : ResponseEntity.internalServerError().body("댓글 등록 실패");
   }
 
-  @PutMapping("/comment")
+  @PutMapping("/commentUpdate")
   public ResponseEntity<?> updateComment(@RequestBody InfoBoardComment comment) {
     try {
       int result = infoBoardLogic.updateInfoBoardComment(comment);
@@ -114,8 +114,9 @@ public class InfoBoardController {
     }
   }
 
-  @DeleteMapping("/comment")
+  @DeleteMapping("/commentDelete")
   public ResponseEntity<?> deleteComment(@RequestParam("commentId") int commentId) {
+    log.info("댓글 삭제 요청: commentId=" + commentId);
     try {
       int result = infoBoardLogic.deleteInfoBoardComment(commentId);
       return result > 0 ? ResponseEntity.ok("댓글이 삭제되었습니다.") : ResponseEntity.badRequest().body("삭제 실패");

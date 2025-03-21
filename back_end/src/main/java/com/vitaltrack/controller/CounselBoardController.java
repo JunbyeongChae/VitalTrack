@@ -201,7 +201,7 @@ public class CounselBoardController {
   public String imageGet(HttpServletRequest req, HttpServletResponse res) {
     String imageName = req.getParameter("imageName");
     log.info("imageGet 호출 성공===>" + imageName);
-    String filePath = "src\\main\\webapp\\image\\counsel";
+    String filePath = "src/main/webapp/image/counsel";
     log.info("imageName : 8->euc" + imageName);
     File file = new File(filePath, imageName.trim());
     String mimeType = req.getServletContext().getMimeType(file.toString());

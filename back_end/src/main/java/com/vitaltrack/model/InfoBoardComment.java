@@ -11,4 +11,5 @@ public class InfoBoardComment {
   private LocalDate commentDate;
   private int memNo;
   private long infoNo;
+  private String memNick;
 }
