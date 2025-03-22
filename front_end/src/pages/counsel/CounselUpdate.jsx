@@ -59,7 +59,7 @@ const CounselUpdate = () => {
       // [주석] boardUpdateDB의 성공 여부 판단
       if (res.data === 1) {
         toast.success('게시글이 수정되었습니다.');
-        navigate('/counsel?page=1');
+        navigate(`/counsel/${counselNo}`);
       } else {
         toast.warn('수정 실패하였습니다.');
       }

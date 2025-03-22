@@ -64,7 +64,7 @@ const InfoBoardUpdate = () => {
       const response = await infoBoardUpdateDB(updatedBoard);
       if (response.data) {
         toast.success('게시글이 수정되었습니다.');
-        navigate('/healthInfo');
+        navigate(`/healthInfo/${infoNo}`);
       } else {
         toast.warn('게시글 수정 실패');
       }

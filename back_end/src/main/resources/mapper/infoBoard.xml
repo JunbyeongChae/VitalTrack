@@ -66,7 +66,7 @@
   FROM comment c
   JOIN memberinfo m ON c.memNo = m.memNo
   WHERE c.infoNo = #{infoNo}
-  ORDER BY c.commentDate DESC;
+  ORDER BY c.commentDate ASC, c.commentId ASC
   </select>
 
   <!-- 댓글 등록 -->

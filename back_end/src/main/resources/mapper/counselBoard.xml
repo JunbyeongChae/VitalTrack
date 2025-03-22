@@ -89,7 +89,7 @@
   FROM counselanswer c
   JOIN memberinfo m ON c.memNo = m.memNo
   WHERE c.counselNo = #{counselNo}
-  ORDER BY c.answerDate DESC
+  ORDER BY c.answerDate ASC, c.answerId ASC
   </select>
 
   <!-- 댓글 등록 -->
