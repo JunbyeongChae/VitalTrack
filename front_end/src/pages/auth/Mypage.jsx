@@ -75,12 +75,12 @@ const Mypage = ({ user, setUser }) => {
   }, [user, navigate, fetchUserData, setUser]);
 
   const calculateBmiStatus = (memBmi) => {
-    if (memBmi < 18.5) setBmiStatus('저체중 🟡');
+    if (memBmi < 18.5) setBmiStatus('저체중 ⚠️');
     else if (memBmi < 23) setBmiStatus('정상 🟢');
     else if (memBmi < 25) setBmiStatus('과체중 🟡');
     else if (memBmi < 30) setBmiStatus('경도비만 🟠');
     else if (memBmi < 35) setBmiStatus('중등도비만 🔴');
-    else setBmiStatus('고도비만 ⚠️');
+    else setBmiStatus('🚨 고도비만 🚨');
   };
 
   // 나이 계산 함수
