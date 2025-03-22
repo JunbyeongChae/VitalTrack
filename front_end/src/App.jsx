@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/include/Header';
 import Footer from './components/include/Footer';
@@ -36,7 +36,7 @@ const App = () => {
   }, []);
 
   // 공통 로그아웃 처리 함수 (중복 방지 포함)
-  const performLogout = () => {
+  const performLogout = useCallback(() => {
     if (logoutHandled) return; // 중복 실행 방지
     setLogoutHandled(true);    // 실행 플래그 설정
     localStorage.removeItem('token');
@@ -47,14 +47,14 @@ const App = () => {
       navigate('/');
     }
     toast.info('세션이 만료되어 로그아웃되었습니다.');
-  };
+  }, [logoutHandled, navigate]);
 
   // 세션 만료 여부 확인 (앱 진입 시)
   useEffect(() => {
     if (isSessionExpired()) {
       performLogout(); // 공통 함수 호출
     }
-  }, [navigate]);
+  }, [navigate, performLogout]);
 
   // 세션 연장 확인 및 만료 타이머 설정
   useEffect(() => {
@@ -80,7 +80,7 @@ const App = () => {
         performLogout(); // 만료되었는데 warningTime < 0이면 즉시 처리
       }
     }
-  }, [navigate]);
+  }, [navigate, performLogout]);
   return (
     <>
       <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss={false} pauseOnHover style={{ zIndex: 9999 }} />
