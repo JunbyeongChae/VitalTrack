@@ -6,40 +6,65 @@ import interactionPlugin from "@fullcalendar/interaction"
 import {Button, Form, Modal, Popover} from "react-bootstrap"; // needed for dayClick
 import "./style/WorkoutCalendar.css"
 import DateClick from "./DateClick";
-import {useScheduleContext} from "./Context";
+import {useScheduleContext} from "../Context";
+import axios from "axios";
+import {getScheduleList, getScheduleListDB} from "../../../services/workoutLogic";
 
 const WorkoutCalendar = () => {
-    const {schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, setDateSchedules} = useScheduleContext()
+    const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
+    const { memNo } = user
+    const {schedules, setSchedules, selectedDate, setSelectedDate,
+                dateSchedules, setDateSchedules, signal} = useScheduleContext()
+
+    useEffect( () => {
+        scheduleList()
+        if (selectedDate) { //signal로 재랜더링 되도 날짜선택은 유지 -> DateClik.jsx 창 오픈되어있도록 하고픔
+            dateClick({ dateStr: selectedDate})
+        }
+    }, [signal]) // schedules가 변경될 때만 실행 -> 넣었더니 무한재부팅....ㄴㅇㄱ 와이라노....
+
+
+    //전체 운동 일정 조회 - DB 경유
+    const scheduleList = async () => {
+        // /api -> 웹페이지 요청이 아닌 RESTful API 요청임을 명시
+        const response = await getScheduleListDB({memNo})
+        const schedules = response.data;
+
+        const formattedSchedules = schedules.map((schedule) => {
+            // 'T'로 바꿔서 ISO 형식으로 변환
+            const formattedStart = schedule.scheduleStart.replace(" ", "T");  // start 날짜 변환
+            const formattedEnd = schedule.scheduleEnd.replace(" ", "T");  // end 날짜 변환
+
+            return {
+                id: schedule.scheduleId, // 기존 이벤트의 id 그대로 사용
+                title: schedule.workoutName,
+                start: formattedStart,  // 변환된 start 날짜 사용
+                end: formattedEnd,  // 변환된 end 날짜 사용
+                color: schedule.color,
+                allDay: schedule.allDay,
+                extendedProps: {
+                    isFinished: schedule.isFinished,
+                    workoutId: schedule.workoutId,
+                    workoutTimeMin: schedule.workoutTimeMin,
+                    kcal : schedule.kcal
+                }
+            }
+        })
+        setSchedules(formattedSchedules)
+    } //end of scheduleListDB
 
     const dateClick = (info) => {
-            const clickedDate = info.dateStr
-            setSelectedDate(clickedDate)
-            // 선택한 날짜에 해당하는 일정들 필터링
-            const schedulesOnSelectedDate = schedules.filter(schedule => {
-                if (!schedule.start) return false; // start 값이 없으면 제외
-                const scheduleStart = new Date(schedule.start);
-                if (isNaN(scheduleStart.getTime())) return false; // 유효하지 않은 날짜 제외
-                return scheduleStart.toISOString().split('T')[0] === clickedDate;
-            }) //end of schedulesOnSelectedDate
-
-            // 선택한 날짜에 해당하는 이벤트가 있다면 dateSchedules에 설정
-            if (schedulesOnSelectedDate.length > 0) {
-                setDateSchedules(schedulesOnSelectedDate);
-            } else {
-                setDateSchedules([]); // 선택한 날짜에 일정이 없으면 null로 설정
-            }
+        const clickedDate = info.dateStr
+        //console.log(clickedDate) //2025-03-22
+        //console.log(typeof clickedDate) //String
+        setSelectedDate(clickedDate)
     }
-    useEffect(() => {
-        if (selectedDate) {
-            dateClick({ dateStr: selectedDate});
-        }
-    }, [schedules]) // schedules가 변경될 때만 실행
 
     const calHeight = ()=>{
         if(selectedDate){
-            return "calc(100vh - 400px)"
+            return "calc(100vh - 485px)"
         }else {
-            return "90vh"
+            return "100%"
         }
     }
 
@@ -79,6 +104,7 @@ const WorkoutCalendar = () => {
                                 maxWidth: '100%' // 칸 너비에 맞춤
                             }}>
                                 {/* 동그란 점 */}
+                                {!eventInfo.event.allDay &&
                                 <div
                                     style={{
                                         backgroundColor: eventInfo.event.backgroundColor,
@@ -89,10 +115,11 @@ const WorkoutCalendar = () => {
                                         flexShrink: 0 // 점이 숨겨지지 않게 고정
                                     }}
                                 />
+                                }
+                                {eventInfo.event.extendedProps.isFinished ? "✅" : ""}
                                 {/* 타이틀 */}
                                 <span>
-                                    {eventInfo.event.extendedProps.isFinished ? "✅" : ""}
-                                    {eventInfo.event.title}
+                                     {eventInfo.event.title}
                                 </span>
                             </div>
                         );

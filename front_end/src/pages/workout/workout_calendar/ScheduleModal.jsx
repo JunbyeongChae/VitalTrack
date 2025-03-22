@@ -1,21 +1,19 @@
 import React, {useEffect, useMemo, useState} from 'react'
-import {useScheduleContext} from "./Context";
+import {useScheduleContext} from "../Context";
 import {Button, Form, Modal} from "react-bootstrap";
-import Select from "react-select/base";
-import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {insertScheduleDB, updateScheduleDB} from "../../../services/workoutLogic";
+import {useNavigate} from "react-router-dom";
 
 
 const ScheduleModal = () => {
+    const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
+    const { memNo } = user
+    const navigate = useNavigate()
     const {schedules, setSchedules, selectedDate, selectedSchedule,
-        modalMode, setModalMode, showModal, setShowModal} = useScheduleContext()
-
-
-
-
-
+        modalMode, setModalMode, showModal, setShowModal, signal, setSignal} = useScheduleContext()
     const pastelColors = [
         '#76c3c5', // Pastel Green
         '#ff8d8d', // Pastel Red
@@ -36,7 +34,7 @@ const ScheduleModal = () => {
     const [scheduleColor, setScheduleColor] = useState(pastelColors[0])
     const [existingScheduleId, setExistingScheduleId] = useState(null) // 수정할 이벤트 ID 상태로 관리
     const [isFinished, setIsFinished] = useState(false) //사용자가 운동 완료 체크할수있도록
-    const [durationMinutes, setDurationMinutes] = useState(0)
+    const [workoutTimeMin, setWorkoutTimeMin] = useState(0)
     const [workoutTypes, setWorkoutTypes] = useState([])
     const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
 
@@ -78,7 +76,7 @@ const ScheduleModal = () => {
         setSelectedWorkoutType({label: schedule.title, value: schedule.extendedProps.workoutId})
         setExistingScheduleId(schedule.id)
         setIsFinished(schedule.extendedProps.isFinished)
-        setDurationMinutes(schedule.extendedProps.durationMinutes)
+        setWorkoutTimeMin(schedule.extendedProps.workoutTimeMin)
         // startTime, endTime은 schedule.start와 schedule.end에서 시간 정보를 추출해서 설정
         const start = new Date(schedule.start);
         const end = new Date(schedule.end);
@@ -90,53 +88,59 @@ const ScheduleModal = () => {
         // 날짜는 toISOString()으로 형식화하여 설정
         setStartDate(start.toISOString().split('T')[0])
         setEndDate(end.toISOString().split('T')[0])
+        setAllDay(schedule.allDay)
         // 색상 및 모달 표시 상태 설정
         setScheduleColor(schedule.color)
         setShowModal(true)
    }
 
 
-
-    const handleSave = () => {
-        let newSchedule
-        //console.log(selectedWorkoutType)
+    //✔클릭
+    const handleSave = async () => {
+        if(!selectedWorkoutType) {
+            alert('운동 종목을 선택하세요!')
+            return
+        }
+        //새로운 일정 등록이니?
         if(modalMode === 'insert') {
-            newSchedule = {
-                id: scheduleId, // 새로 추가하는 이벤트는 id가 필요
-                title : selectedWorkoutType.label,
-                start: allDay ? startDate : `${startDate}T${startTime}`,
-                end: allDay ? endDate : `${endDate}T${endTime}`,
+            const newSchedule = {
+                workoutId: selectedWorkoutType.value,
+                scheduleStart: allDay ? startDate : `${startDate} ${startTime}`,
+                scheduleEnd: allDay ? endDate : `${endDate} ${endTime}`,
                 color: scheduleColor,
-                allDay,
-                extendedProps: {
-                    isFinished: false, // 기본값 설정
-                    durationMinutes: '',
-                    workoutId: selectedWorkoutType.value
-                }
+                allDay: allDay,
+                memNo: memNo
             }
-            setSchedules([...schedules, newSchedule])
-            console.log("scheduleId: ", scheduleId)
-        } else if(modalMode === 'update') {
+           // console.log(newSchedule)
+            const response = await insertScheduleDB(newSchedule)
+            if(response.status === 200) {
+                alert("✔운동 일정이 추가되었습니다!")
+                setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
+            }
+        }
+        //기존 일정 수정이니?
+        else if(modalMode === 'update') {
             // 수정하는 경우
-            newSchedule = {
-                id: existingScheduleId, // 기존 이벤트의 id 그대로 사용
-                title: selectedWorkoutType.label,
-                start: allDay ? startDate : `${startDate}T${startTime}`,
-                end: allDay ? endDate : `${endDate}T${endTime}`,
+            const updSchedule = {
+                workoutId: selectedWorkoutType.value,
+                scheduleId: existingScheduleId, // 기존 이벤트의 id 그대로 사용
+                scheduleStart: allDay ? startDate : `${startDate} ${startTime}`,
+                scheduleEnd: allDay ? endDate : `${endDate} ${endTime}`,
                 color: scheduleColor,
-                allDay,
-                extendedProps: {
-                    isFinished: isFinished,
-                    durationMinutes: durationMinutes,
-                    workoutId: selectedWorkoutType.value
-                }
+                allDay: allDay,
+                memNo: memNo
             }
-            setSchedules(schedules.map(schedule => schedule.id === existingScheduleId ? newSchedule : schedule)); // 기존 이벤트 수정
-            console.log("existingScheduleId: ",existingScheduleId)
+            //console.log(updSchedule)
+            const response = await updateScheduleDB(updSchedule)
+            if(response.status === 200) {
+                alert("✍운동 일정이 수정되었습니다!")
+                setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
+            }
         }
         console.log(modalMode)
         handleClose()
     } //end of handleSave
+
 
     const handleClose = ()=> {
         setShowModal(false)
@@ -153,12 +157,26 @@ const ScheduleModal = () => {
         <Modal show={showModal} onHide={handleClose} centered>
 
             <Modal.Header closeButton className="custom-header">
-                <Button variant="primary" onClick={handleClose}>
-                    <FontAwesomeIcon icon={faXmark} />
+                <Button
+                    variant="primary"
+                    onClick={handleClose}
+                    className="border-0 p-0"
+                >
+                    <FontAwesomeIcon
+                        icon={faXmark}
+                        className="border-0"
+                    />
                 </Button>
                 <Modal.Title>운동 일정</Modal.Title>
-                <Button variant="primary" onClick={handleSave}>
-                    <FontAwesomeIcon icon={faCheck} />
+                <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    className="border-0 p-0"
+                >
+                    <FontAwesomeIcon
+                        icon={faCheck}
+                        className="border-0"
+                    />
                 </Button>
             </Modal.Header>
 
@@ -171,8 +189,8 @@ const ScheduleModal = () => {
                             onChange={setSelectedWorkoutType}
                             placeholder="운동 종목을 선택. Create 금지!! 있는것중에 선택하기"
                             options={workoutTypes.map((workout) => ({
-                                value: workout.id,
-                                label: workout.name,
+                                value: workout.workoutId,
+                                label: workout.workoutName,
                             }))}
                         />
                     </Form.Group>
@@ -192,7 +210,7 @@ const ScheduleModal = () => {
                                 />
                             }
                         </div>
-                        <FontAwesomeIcon icon={faAngleRight} />
+                        <FontAwesomeIcon icon={faAngleRight}/>
                         <div className="date-time-box right-box">
                             <Form.Control
                                 type="date"
@@ -209,21 +227,20 @@ const ScheduleModal = () => {
                             }
                         </div>
                         <div>
-                            <Button
-                                variant={allDay ? "success" : "outline-secondary"}
+                            <button
+                                type="button"
                                 onClick={() => {
                                     setAllDay(!allDay);
                                     setEndTime("");
                                     setStartTime("");
                                 }}
                                 className={`${allDay ?
-                                    "bg-teal-400 text-white border-teal-400"
-                                    :
-                                    "bg-transparent text-gray-600 border-teal-300"}
-                                border-2 font-bold rounded-full text-sm w-20 h-9 text-center
-                            `}>
+                                    "bg-teal-400 text-white border-teal-400" :
+                                    "bg-transparent text-gray-600 border-teal-300"
+                                } border-2 font-bold rounded-full text-sm w-20 h-9 text-center`}
+                            >
                                 종일
-                            </Button>
+                            </button>
                         </div>
                     </Form.Group>
 

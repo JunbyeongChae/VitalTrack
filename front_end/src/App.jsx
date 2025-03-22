@@ -9,7 +9,6 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import CounselList from './pages/counsel/CounselList';
 import Mypage from './pages/auth/Mypage';
-import WorkoutPage from './pages/WorkoutPage';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 import { toast, ToastContainer } from 'react-toastify';
 import CounselWrite from './pages/counsel/CounselWrite';
@@ -21,6 +20,7 @@ import InfoBoardWrite from './pages/infoboard/InfoBoardWrite';
 import InfoBoardUpdate from './pages/infoboard/InfoBoardUpdate';
 import InfoBoardDetail from './pages/infoboard/InfoBoardDetail';
 import { isSessionExpired } from './services/authLogic';
+import WorkoutPage from './pages/workout/WorkoutPage';
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -101,7 +101,7 @@ const App = () => {
           <Route path="/healthInfo/:infoNo" element={<InfoBoardDetail />} />
           <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
           <Route path="/nutrition" element={<Dashboard />} />
-          <Route path="/workout" exact={true} element={<WorkoutPage />} />
+          <Route path="/workout" exact={true} element={<WorkoutPage />}/>
         </Routes>
       </main>
       <Footer />

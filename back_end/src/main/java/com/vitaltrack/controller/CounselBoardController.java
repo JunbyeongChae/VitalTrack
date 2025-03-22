@@ -198,6 +198,10 @@ public class CounselBoardController {
   }
 
   @GetMapping("/imageGet")
+
+
+
+
   public String imageGet(HttpServletRequest req, HttpServletResponse res) {
     String imageName = req.getParameter("imageName");
     log.info("imageGet 호출 성공===>" + imageName);

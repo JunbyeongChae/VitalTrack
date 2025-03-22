@@ -1,75 +1,111 @@
 import React, {useEffect, useState} from 'react'
 import {motion} from "framer-motion";
-import {useScheduleContext} from "./Context";
+import {useScheduleContext} from "../Context";
 import ScheduleModal from "./ScheduleModal";
 import {Button, Form, Modal} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCircleCheck, faCirclePlus, faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {deleteScheduleDB, updateIsFinishedDB} from "../../../services/workoutLogic";
 
 const DateClick = () => {
-    const { schedules, setSchedules, selectedDate, setSelectedDate, dateSchedules, selectedSchedule, setSelectedSchedule, modalMode,setModalMode } = useScheduleContext()
+    const user = JSON.parse(localStorage.getItem('user'))
+    const { memNo } = user
+    const { schedules, setSchedules, selectedDate, setSelectedDate, setSignal, signal, setDateSchedules
+        ,dateSchedules, selectedSchedule, setSelectedSchedule, modalMode,setModalMode } = useScheduleContext()
     const [isFinished, setIsFinished] = useState(false)
     const [show, setShow] = useState(false)
-
-
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
 
+    useEffect(() => {
+        // 선택한 날짜에 해당하는 일정들 필터링
+        const filteredSchedules  = schedules.filter(schedule => {
+           // console.log(schedule.start) //"2025-03-22T05:00:00" string
+            const startDate = schedule.start.split('T')[0]
+            return startDate === selectedDate; //string & string
+        }) //end of schedulesOnSelectedDate
+
+        // start 시간을 기준으로 일정 정렬 (오름차순)
+        const sortedSchedules = filteredSchedules.sort((a, b) => {
+            const startA = new Date(a.start);
+            const startB = new Date(b.start);
+            return startA - startB; // 오름차순 정렬
+        });
+
+        //console.log(schedulesOnSelectedDate.length)
+
+        // 선택한 날짜에 해당하는 이벤트가 있다면 dateSchedules에 설정
+        if (sortedSchedules.length > 0) {
+            setDateSchedules(sortedSchedules);
+        } else {
+            setDateSchedules([]); // 선택한 날짜에 일정이 없으면 null로 설정
+        }
+    }, [schedules, selectedDate]); //setDateSchedules를 직접 호출하는 schedules, selectedDate를 의존성 배열로!!
 
 
-
-
-    // 이벤트 클릭 -> 수정 모달 오픈
-    const handleAddSchedule = () => {
-        setModalMode('insert')
-    }
-
-    // 이벤트 클릭 -> 수정 모달 오픈
+    // +버튼 클릭 -> 새 일정 등록 모달 오픈
+    const handleAddSchedule = () => setModalMode('insert')
+    // 일정명 클릭 -> 수정 모달 오픈
     const scheduleClick = (schedule) => {
         setModalMode('update')
         setSelectedSchedule(schedule)
     }
-
-    const deleteSchedule = (schedule) => {
-        setSchedules(schedules.filter(e => e.id !== schedule.id));
-    }
-
     // 운동 완료 체크 클릭
-    const checkClick = (schedule) => {
-        setIsFinished(!isFinished)
-        if (!isFinished) {
-            setSelectedSchedule(schedule) // 어떤 이벤트인지 저장
-            setShow(true) // 모달 열기
+    const checkClick = async (schedule) => {
+        //운동 완료!
+        if (!schedule.extendedProps.isFinished) {
+            setSelectedSchedule(schedule) // 어떤 이벤트인지 저장 -> handleSave()에서 사용
+            setShow(true) // 운동 소요시간 모달 열기
         } else {
-            // 완료 해제 시 바로 업데이트
-            const updatedSchedules = schedules.map((e) =>
-                e.id === schedule.id ? {
-                    ...e,
-                    extendedProps: { ...e.extendedProps, isFinished: false, durationMinutes: '' }
-                } : e
-            )
-            setSchedules(updatedSchedules)
+            // 완료 해제 & 소요시간 삭제
+            const upd_unFinishedSch = {
+                isFinished: !schedule.extendedProps.isFinished,
+                workoutTimeMin: 0,
+                memNo: memNo,
+                scheduleId: schedule.id
+            }
+            const response = await updateIsFinishedDB(upd_unFinishedSch)
+            //console.log(response.status)
+            if(response.status === 200) {
+                setSignal(prev => prev + 1)
+            }
         }
     }
-
     // 운동 소요 시간 저장
-    const handleSave = () => {
+    const handleSave = async() => {
         // 시간을 분으로 변환하여 처리할 때
-        const durationMinutes = (Number(hours) * 60) + Number(minutes)
-       // console.log(hours, minutes, durationMinutes)
-        if (durationMinutes && !isNaN(durationMinutes)) {
-            const updatedSchedules = schedules.map((e) =>
-                e.id === selectedSchedule.id ? {
-                    ...e,
-                    extendedProps: { ...e.extendedProps, isFinished: true, durationMinutes: durationMinutes }
-                } : e
-            )
-            setSchedules(updatedSchedules)
+        const workoutTimeMin = (Number(hours) * 60) + Number(minutes)
+        //console.log(hours, minutes, workoutTimeMin)
+
+        if (workoutTimeMin && !isNaN(workoutTimeMin)) {
+            const upd_unFinishedSch = {
+                isFinished: !selectedSchedule.extendedProps.isFinished,
+                workoutTimeMin: workoutTimeMin,
+                memNo: memNo,
+                scheduleId: selectedSchedule.id
+            }
+            const response = await updateIsFinishedDB(upd_unFinishedSch)
+            //console.log(response.status)
+            if(response.status === 200) {
+                setSignal(prev => prev + 1)
+            }
             handleClose()
         } else {
-            alert('유효한 시간을 입력해주세요!')
+            alert('‼유효한 시간을 입력해주세요!')
         }
-    };
+    } // end of handleSave()
+
+    //일정 삭제
+    const deleteSchedule = async (schedule) => {
+        const response = await deleteScheduleDB({
+            scheduleId: schedule.id,
+            memNo: memNo
+        })
+        //console.log(response.status)
+        if(response.status === 200) {
+            setSignal(prev => prev + 1)
+        }
+    }
 
     // Modal 닫기
     const handleClose = () => {
@@ -87,7 +123,7 @@ const DateClick = () => {
                 animate={{opacity: 1}}
                 exit={{opacity: 0, y: 20}}
                 transition={{duration: 0.3, ease: 'easeInOut'}}
-                className="fixed bottom-0 left-0.5 right-0.5 bg-white pl-6 pr-6  shadow-lg rounded-t-2xl w-3/5 h-[400px] border border-gray-300 box-border flex flex-col justify-between" // 테두리 추가
+                className="fixed bottom-0 left-0.5 right-0.5 bg-white pl-6 pr-6  shadow-lg rounded-t-2xl w-3/5 h-[390px] border border-gray-300 box-border flex flex-col justify-between" // 테두리 추가
             >
                 <div className="flex mt-5">
                     <h2 className="text-center text-xl text-gray-900">
@@ -98,14 +134,14 @@ const DateClick = () => {
                         <FontAwesomeIcon icon={faXmark} className="text-gray-600" />
                     </button>
                 </div>
-                <div className="mt-6">
+                <div className="mt-6 ">
                     {dateSchedules && dateSchedules.length > 0 ? (
                         dateSchedules.map((schedule, index) => (
                             <div key={index}
-                                 className="flex items-center space-x-2 btn mt-2 cursor-default transition-transform duration-100 hover:bg-gray-200 p-2 rounded-lg group"
+                                 className="flex items-center space-x-2 btn mt-2 cursor-default transition-transform duration-100 hover:bg-gray-200 p-2 rounded-lg group border-0"
                             >
 
-                                <button className="cursor-pointer mr-2"
+                                <button className="cursor-pointer mr-2 border-none"
                                         onClick={() => checkClick(schedule)}
                                         aria-pressed={schedule.isFinished}
                                 >
@@ -136,10 +172,10 @@ const DateClick = () => {
                                         </p>
                                     </div>
                                     <div className="text-gray-700 ml-4">
-                                        {schedule.extendedProps.durationMinutes > 0 && (
+                                        {schedule.extendedProps.workoutTimeMin > 0 && (
                                             <p className="ml-10">
-                                                [ 운동 소요시간 {String(Math.floor(schedule.extendedProps.durationMinutes / 60)).padStart(2, '0')}:
-                                                {String(schedule.extendedProps.durationMinutes % 60).padStart(2, '0')}
+                                                [ 운동 소요시간 {String(Math.floor(schedule.extendedProps.workoutTimeMin / 60)).padStart(2, '0')}:
+                                                {String(schedule.extendedProps.workoutTimeMin % 60).padStart(2, '0')}
                                                 :00
                                                 ]
                                             </p>
@@ -184,7 +220,7 @@ const DateClick = () => {
                 <Modal.Title>운동 소요시간</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form.Group controlId="workoutDuration">
+                <Form.Group controlId="workoutTimeMin">
                     <div className="flex gap-2">
                         <Form.Control
                             type="number"
