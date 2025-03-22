@@ -1,6 +1,5 @@
 package com.vitaltrack.model;
 
-import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -27,7 +26,6 @@ public class MemberInfo {
   private String activityLevel;
   private int admin; //기본값 0으로 초기화
 
-  @Transient
   private String confirmPassword; // DB 저장 제외 필드 추가
 
   private String birthYear;

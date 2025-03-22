@@ -132,7 +132,13 @@ public class InfoBoardController {
     if (image != null && !image.isEmpty()) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
       Calendar time = Calendar.getInstance();
-      filename = sdf.format(time.getTime()) + "-" + image.getOriginalFilename().replaceAll(" ", "-");
+      String originalFilename = image.getOriginalFilename();
+      if (originalFilename != null) {
+        filename = sdf.format(time.getTime()) + "-" + originalFilename.replaceAll(" ", "-");
+      } else {
+        log.error("업로드된 파일의 이름을 가져올 수 없습니다.");
+        return null;
+      }
 
       // [수정] application.yml에서 주입받은 경로 사용
       String fullPath = uploadDir + File.separator + filename;

@@ -56,10 +56,17 @@ public class InfoBoardLogic {
     String uploadDir = type.equals("infoboard") ? "src/main/webapp/image/infoboard" : "src/main/webapp/image/another";
     String filename = null;
 
+    String fullPath = null;
     if (image != null && !image.isEmpty()) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-      filename = sdf.format(new Date()) + "-" + image.getOriginalFilename().replaceAll(" ", "-");
-      String fullPath = uploadDir + File.separator + filename;
+      String originalFilename = image.getOriginalFilename();
+      if (originalFilename != null) {
+        filename = sdf.format(new Date()) + "-" + originalFilename.replaceAll(" ", "-");
+        fullPath = uploadDir + File.separator + filename;
+      } else {
+        log.error("imageUpload 실패: 파일 이름이 null입니다.");
+        return null;
+      }
 
       try {
         File file = new File(fullPath);

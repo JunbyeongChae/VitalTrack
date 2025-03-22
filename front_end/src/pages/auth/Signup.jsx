@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { checkEmailExists, checkIdExists, registerMember } from '../../services/authLogic';
+import { checkEmailExists, checkIdExists, registerMember } from '../../services/authLogic'; // 기존 주석 유지
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
@@ -34,14 +34,14 @@ const Signup = () => {
   const [agreed, setAgreed] = useState(false); // 개인정보 동의 체크 상태
 
   // 입력값 검증
-  const validateField = async(name, value) => {
+  const validateField = async (name, value) => {
     let message = '';
     switch (name) {
       case 'memEmail':
         if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)) {
-            message = '올바른 이메일 형식으로 입력해 주세요.';
+          message = '올바른 이메일 형식으로 입력해 주세요.';
         } else {
-          const emailExists = await checkEmailExists(value);
+          const emailExists = await checkEmailExists(value); // 이메일 중복 확인 함수는 authFetch 기반으로 이미 JWT 대응 완료됨
           message = emailExists ? '이미 사용 중인 이메일입니다.' : '사용 가능한 이메일입니다.';
         }
         break;
@@ -49,7 +49,7 @@ const Signup = () => {
         if (!/^[a-zA-Z0-9]{5,15}$/.test(value)) {
           message = '아이디는 5~15자의 영문과 숫자로 입력해 주세요.';
         } else {
-          const result = await checkIdExists(value);
+          const result = await checkIdExists(value); // 아이디 중복 체크도 authFetch 기반으로 적용됨
           message = result.exists ? '이미 사용 중인 아이디입니다.' : '사용 가능한 아이디입니다.';
         }
         break;
@@ -112,15 +112,17 @@ const Signup = () => {
     }
 
     setFormData(updatedFormData);
-    console.log('Updated memAge:', updatedFormData.memAge); // 디버깅 로그
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(errors); // errors 객체 출력
-    if (Object.values(errors).some((msg) => msg && !msg.includes('사용 가능') && !msg.includes('비밀번호가 일치합니다.'))) return; // 오류가 있으면 제출 방지
+
+    // 에러 메시지 중 "사용 가능", "비밀번호 일치"가 아닌 것이 존재하면 중단
+    if (Object.values(errors).some((msg) => msg && !msg.includes('사용 가능') && !msg.includes('비밀번호가 일치합니다.'))) return;
+
     try {
-      const result = await registerMember(formData);
+      const result = await registerMember(formData); // 회원가입 요청 함수는 JWT 없이 처리되며, authFetch 사용하지 않음
       // 성공 메시지 처리
       if (result.status === 'success') {
         toast.success(result.message);

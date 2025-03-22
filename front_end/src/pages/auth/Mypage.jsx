@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserByEmail, updateUser, checkPassword, deleteUser } from '../../services/authLogic';
-import { toast} from 'react-toastify';
+import { updateUser, checkPassword, deleteUser } from '../../services/authLogic'; // 기존 주석 유지
+import { toast } from 'react-toastify';
 
 const Mypage = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -31,49 +31,48 @@ const Mypage = ({ user, setUser }) => {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUserData(storedUser);
-      setFormData({
-        memEmail: storedUser.memEmail || '',
-        memNick: storedUser.memNick || '',
-        memPhone: storedUser.memPhone || '',
-        memHeight: storedUser.memHeight || '',
-        memWeight: storedUser.memWeight || '',
-        birthYear: storedUser.birthYear || '',
-        birthMonth: storedUser.birthMonth || '',
-        birthDay: storedUser.birthDay || '',
-        memAge: storedUser.memAge || ''
-      });
-      calculateBmiStatus(storedUser.memBmi);
-    } else {
-      toast.error('사용자 정보를 불러올 수 없습니다.');
+      const storedUser = JSON.parse(localStorage.getItem('user')); // localStorage에서 최초 1회 사용자 정보 로드하도록 수정
+      if (storedUser) {
+        setUserData(storedUser); // 전역 상태 대신 저장된 사용자 정보 기반으로 상태 초기화하도록 수정
+        setFormData({
+          memEmail: storedUser.memEmail || '',
+          memNick: storedUser.memNick || '',
+          memPhone: storedUser.memPhone || '',
+          memHeight: storedUser.memHeight || '',
+          memWeight: storedUser.memWeight || '',
+          birthYear: storedUser.birthYear || '',
+          birthMonth: storedUser.birthMonth || '',
+          birthDay: storedUser.birthDay || '',
+          memAge: storedUser.memAge || ''
+        });
+        calculateBmiStatus(storedUser.memBmi);
+      } else {
+        toast.error('사용자 정보를 불러올 수 없습니다.');
+      }
+    } catch (error) {
+      toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    toast.error('사용자 데이터를 불러오는 데 실패했습니다.', error);
-  } finally {
-    setLoading(false);
-  }
-};
+  }, []);
 
   useEffect(() => {
-    // 새로고침 시 localStorage에서 user 정보 복구
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('user'); // 불필요한 user 상태 의존 줄이고 localStorage 활용하도록 수정
     if (!user && storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(JSON.parse(storedUser)); // 새로고침 후 user 복구용 localStorage 적용
       return;
     }
-  
+
     if (!user) {
       toast.success('로그인이 필요합니다.');
       navigate('/login');
       return;
     }
-  
+
     fetchUserData();
-  }, [user, navigate]);
+  }, [user, navigate, fetchUserData, setUser]);
 
   const calculateBmiStatus = (memBmi) => {
     if (memBmi < 18.5) setBmiStatus('저체중 🟡');
@@ -95,18 +94,17 @@ const Mypage = ({ user, setUser }) => {
     }
     return age;
   };
-  
 
   // 입력값 처리 함수 (복원)
   const handleChange = (e) => {
     const { name, value } = e.target;
     let updatedFormData = { ...formData, [name]: value };
-  
+
     // 생년월일 입력 시 나이 자동 계산
     if (updatedFormData.birthYear && updatedFormData.birthMonth && updatedFormData.birthDay) {
       updatedFormData.memAge = calculateAge(updatedFormData.birthYear, updatedFormData.birthMonth, updatedFormData.birthDay);
     }
-  
+
     setFormData(updatedFormData);
   };
 
@@ -136,21 +134,22 @@ const Mypage = ({ user, setUser }) => {
   const handleDeleteAccount = async () => {
     const password = prompt('비밀번호를 한 번 더 입력하세요:');
     if (!password) return;
-  
+
     try {
       const checkResult = await checkPassword(user.memEmail, password);
       if (!checkResult.success) {
         toast.warn('비밀번호가 일치하지 않습니다.');
         return;
       }
-  
+
       const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
       if (!confirmDelete) return;
-  
+
       const result = await deleteUser(user.memEmail);
       if (result.success) {
         toast.success('회원탈퇴가 완료되었습니다.');
         localStorage.removeItem('user');
+        localStorage.removeItem('token'); // 탈퇴 시 토큰도 삭제
         setUser(null);
         navigate('/');
       } else {

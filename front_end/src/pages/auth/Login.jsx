@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebaseConfig';
 import { toast } from 'react-toastify';
-import { loginMember, getUserByEmail } from '../../services/authLogic';
+import { loginMember, oauthLogin } from '../../services/authLogic';
 
 // mySQL사용으로 전체 수정 : 채준병
 // 로그인 페이지
@@ -40,40 +40,19 @@ const Login = ({ setUser }) => {
     }
   };
 
+  // Google 로그인 처리 함수
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
-      // authLogic.js에서 사용자 정보 조회
-      const userData = await getUserByEmail(user.email);
-
+  
+      // JWT 포함된 사용자 정보 요청
+      const userData = await oauthLogin(user.email);
+  
       if (userData) {
-        localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
         navigate('/');
         toast.success(`${userData.memNick}님, 환영합니다!`);
-      } else {
-        // Toast가 닫힌 후에만 페이지 이동
-        toast.error(
-          <div>
-            회원정보를 찾을 수 없습니다.
-            <br />
-            클릭하면 회원가입으로 넘어갑니다.
-          </div>,
-          {
-            onClose: () => {
-              navigate('/signup', {
-                state: {
-                  email: user.email,
-                  name: user.displayName,
-                  uid: user.uid
-                }
-              });
-            },
-            autoClose: 3000 // 사용자가 닫지 않으면 3초 후 자동으로 닫힘
-          }
-        );
       }
     } catch (error) {
       toast.error(`Google 로그인 실패: ${error.message}`);

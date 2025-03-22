@@ -8,6 +8,7 @@ const Header = ({ user, setUser }) => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(user); // 즉시 UI 반영을 위해 별도 상태 관리
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 상태
+  const [timeLeft, setTimeLeft] = useState(null); // 세션 남은 시간 상태 추가
 
   // 네비게이션 클릭 핸들러
   const handleNavClick = (path) => {
@@ -28,6 +29,26 @@ const Header = ({ user, setUser }) => {
       setCurrentUser(null);
     }
   }, [user]); // user 값이 변경될 때마다 실행
+
+  // 세션 만료까지 남은 시간 1초마다 업데이트
+  useEffect(() => {
+    const updateRemainingTime = () => {
+      const expiresAt = localStorage.getItem('expiresAt');
+      if (expiresAt) {
+        const remainingMs = Number(expiresAt) - Date.now();
+        if (remainingMs > 0) {
+          const minutes = Math.floor(remainingMs / 60000);
+          const seconds = Math.floor((remainingMs % 60000) / 1000);
+          setTimeLeft(`세션 남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+        } else {
+          setTimeLeft(null);
+        }
+      }
+    };
+    updateRemainingTime();
+    const interval = setInterval(updateRemainingTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // 로그아웃 처리
   const handleLogout = async () => {
@@ -92,6 +113,8 @@ const Header = ({ user, setUser }) => {
               </>
             ) : (
               <>
+                {/* 닉네임 앞에 남은 시간 표시 */}
+                {timeLeft && <span className="text-sm text-gray-500 mr-3">({timeLeft})</span>}
                 <button onClick={() => handleNavClick('/mypage')} className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition">
                   {currentUser.memNick}님
                 </button>

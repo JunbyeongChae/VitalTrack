@@ -1,36 +1,55 @@
-// Firestore에 사용자 데이터 저장 - 삭제 => mySQL로 변경 구현 : 채준병
-//회원가입
-export const registerMember = async (formData) => {
-  console.log('회원가입 요청 데이터:', formData); // 디버깅용 출력
+// 공통 authFetch 함수 (JWT 자동 포함)
+export const authFetch = async (url, options = {}) => {
+  const token = localStorage.getItem('token');
 
-  // 회원가입시 admin 값을 무조건 0으로 설정
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` })
+  };
+
+  const finalOptions = {
+    ...options,
+    headers: {
+      ...defaultHeaders,
+      ...(options.headers || {})
+    },
+    credentials: 'include'
+  };
+
+  const response = await fetch(url, finalOptions);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || '요청 실패');
+  }
+  return await response.json();
+};
+
+// 회원가입
+export const registerMember = async (formData) => {
+  console.log('회원가입 요청 데이터:', formData);
   formData.admin = 0;
 
   try {
-    const response = await fetch('/api/auth/signup', {
+    const response = await fetch(`${process.env.REACT_APP_SPRING_IP}api/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
     });
 
     const result = await response.json();
-
-    // response.ok가 false면, 에러 처리
     if (!response.ok) {
       throw new Error(result.error || '회원가입 실패');
     }
-
-    // 성공 시 결과 반환
     return result;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-//로그인 : 채준병
+// 로그인
 export const loginMember = async (formData) => {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${process.env.REACT_APP_SPRING_IP}api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
@@ -40,158 +59,117 @@ export const loginMember = async (formData) => {
       const errorData = await response.json();
       throw new Error(errorData.error || '로그인 실패');
     }
-    const userInfo = await response.json(); // 로그인 성공 시 사용자 정보 반환
 
-    // 사용자 정보를 localStorage에 저장
-    localStorage.setItem(
-      'user',
-      JSON.stringify({
-        memId: userInfo.memId,
-        memNick: userInfo.memNick,
-        admin: userInfo.admin
-      })
-    );
+    const result = await response.json();
+    const { token, user } = result;
 
-    return userInfo;
+    // 로그인 성공 후 토큰과 함께 만료 시간 저장 (1시간 기준)
+    const now = new Date();
+    const expiresAt = now.getTime() + 1000 * 60 * 60; // 1시간
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('expiresAt', expiresAt.toString());
+
+    return user;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-//구글 로그인 : 채준병
-export const getUserByEmail = async (email) => {
+// 구글 로그인(JWT 포함)
+export const oauthLogin = async (email) => {
   try {
-    const response = await fetch(`/api/auth/getUserByEmail?email=${email}`, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    const response = await fetch(`${process.env.REACT_APP_SPRING_IP}api/auth/oauth-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memEmail: email })
     });
 
-    if (response.status === 404) return null; // 회원 정보가 없을 경우 null 반환
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || '구글 로그인 실패');
+    }
 
-    if (!response.ok) throw new Error('사용자 정보를 가져오는 데 실패했습니다.');
-    
     const result = await response.json();
+    const { token, user } = result;
 
-    // member 데이터만 반환하도록 수정
-    return result.member || null;
+    // 로그인 성공 후 토큰과 함께 만료 시간 저장 (1시간 기준)
+    const now = new Date();
+    const expiresAt = now.getTime() + 1000 * 60 * 60; // 1시간
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('expiresAt', expiresAt.toString());
+
+    return user;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-//구글 로그인시 가입여부 확인 : 채준병
-export const checkUserExists = async (email) => {
-  console.log('checkUserExists 호출, 이메일: ', email);
+// 비밀번호 확인
+export const checkPassword = async (memEmail, memPw) => {
+  return await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/checkPassword`, {
+    method: 'POST',
+    body: JSON.stringify({ memEmail, memPw })
+  });
+};
 
-  try {
-    const response = await fetch(`/api/auth/checkUser?email=${email}`);
-
-    if (!response.ok) {
-      return false;
+// 회원 정보 업데이트
+export const updateUser = async (formData) => {
+  const payload = { ...formData };
+  Object.keys(payload).forEach((key) => {
+    if (payload[key] === '' || payload[key] === null) {
+      delete payload[key];
     }
+  });
 
-    const exists = await response.json();
-    return exists;
-  } catch (error) {
-    console.error('사용자 존재 확인 실패:', error);
+  const response = await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/updateUser`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+
+  return response;
+};
+
+// 회원 탈퇴
+export const deleteUser = async (memEmail) => {
+  const result = await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/deleteUser`, {
+    method: 'DELETE',
+    body: JSON.stringify({ memEmail })
+  });
+
+  return result;
+};
+
+// 아이디 중복 체크
+export const checkIdExists = async (memId) => {
+  const result = await authFetch(`api/auth/checkId?memId=${memId}`, {
+    method: 'GET'
+  });
+  return result;
+};
+
+// 이메일 중복 체크
+export const checkEmailExists = async (email) => {
+  try {
+    const result = await oauthLogin(email); // 또는 user 조회 API
+    return result !== null;
+  } catch {
     return false;
   }
 };
 
-// 비밀번호 확인 : 채준병
-export const checkPassword = async (memEmail, memPw) => {
-  try {
-    const response = await fetch('/api/auth/checkPassword', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memEmail, memPw })
-    });
-    return await response.json();
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
-// 회원 정보 업데이트 : 장원준 -> authLogic.js로 이동 : 채준병
-export const updateUser = async (formData) => {
-  try {
-    const payload = { ...formData };
-
-    // 비어있는 값은 제외
-    Object.keys(payload).forEach((key) => {
-      if (payload[key] === '' || payload[key] === null) {
-        delete payload[key];
-      }
-    });
-
-    const response = await fetch('/api/auth/updateUser', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.text();
-    if (!response.ok) throw new Error(result);
-    return result;
-  } catch (error) {
-    throw new Error(`${error.message}`);
-  }
-};
-
-// 회원 탈퇴 : 장원준 -> authLogic.js로 이동 : 채준병
-export const deleteUser = async (memEmail) => {
-  try {
-    const response = await fetch('/api/auth/deleteUser', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memEmail })
-    });
-
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message);
-    return result;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
-// 회원가입시 아이디 중복 체크
-export const checkIdExists = async (memId) => {
-  try {
-    const response = await fetch(`/api/auth/checkId?memId=${memId}`, {
-      method: 'GET'
-    });
-    if (!response.ok) {
-      throw new Error('아이디 중복 확인 중 오류가 발생했습니다.');
-    }
-    return response.json();
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 회원가입시 이메일 중복 체크
-export const checkEmailExists = async (email) => {
-  const user = await getUserByEmail(email);
-  return user !== null;
-};
-
 // 체중 변화 데이터 조회
 export const getWeightChanges = async (memNo) => {
-  try {
-    const response = await fetch(`/api/auth/getWeightChanges?memNo=${memNo}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    });
+  return await authFetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+    method: 'GET'
+  });
+};
 
-    if (!response.ok) throw new Error('체중 변화 데이터를 불러오는 데 실패했습니다.');
-    return await response.json();
-  } catch (error) {
-    throw new Error(error.message);
-  }
+// 세션 만료 여부 확인 함수
+export const isSessionExpired = () => {
+  const expiresAt = localStorage.getItem('expiresAt');
+  return !expiresAt || Date.now() > Number(expiresAt);
 };
