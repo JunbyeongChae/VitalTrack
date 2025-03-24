@@ -97,4 +97,40 @@ public class DietRecordService {
             return false;
         }
     }
+    /**
+     * Update water intake for a specific member on a specific date
+     * Creates a new record if none exists or updates an existing one
+     *
+     * @param memNo Member number
+     * @param dietDate Date of the water intake in string format
+     * @param waterIntake Amount of water intake to record
+     */
+    public void updateWaterIntake(int memNo, String dietDate, int waterIntake) {
+        try {
+            // Convert String date to LocalDate if needed
+            LocalDate date = LocalDate.parse(dietDate);
+
+            // Check if a record exists for this date
+            List<DietRecordDao> existingRecords = dietRecordMapper.findDietRecordsByMemNoAndDate(memNo, date);
+
+            if (existingRecords.isEmpty()) {
+                // Create a new record with just water intake
+                DietRecordDao newRecord = new DietRecordDao();
+                newRecord.setMemNo(memNo);
+                newRecord.setDietDate(dietDate);  // Using the string date
+                newRecord.setWaterIntake(waterIntake);
+                newRecord.setMealType("water"); // Special type for water records
+                newRecord.setName("Water Intake");
+                newRecord.setCalories(0);
+
+                dietRecordMapper.insertDietRecord(newRecord);
+            } else {
+                // Update water intake on an existing record
+                dietRecordMapper.updateWaterIntake(memNo, dietDate, waterIntake);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating water intake: " + e.getMessage(), e);
+        }
+    }
+
 }

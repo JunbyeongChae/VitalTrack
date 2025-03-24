@@ -17,4 +17,5 @@ public class DietRecordDao {
     private Double protein;
     private Double carbs;
     private Double fat;
+    private Integer waterIntake;
 }

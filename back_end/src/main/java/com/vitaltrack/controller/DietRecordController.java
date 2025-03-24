@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vitaltrack.model.WaterIntakeRequest;
 import com.vitaltrack.service.DietRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,24 +38,29 @@ public class DietRecordController {
 
     // GET: /api/meals/{memNo}
     @GetMapping("/{memNo}")
-    public ResponseEntity<?> getMealsByMemberNumber(@PathVariable int memNo) {
-        try {
-            // Delegate to the service layer
-            List<DietRecordDao> meals = dietRecordService.getMealsByMemberNumber(memNo);
+    public ResponseEntity<?> getMealsByMemberNumber(
+            @PathVariable int memNo,
+            @RequestParam(required = false) String date) {
 
-            // Return 404 if no meals are found
-            if (meals == null || meals.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No meals found for member number: " + memNo);
+        try {
+            List<DietRecordDao> meals;
+
+            if (date != null && !date.isEmpty()) {
+                // Parse the date string from the request parameter
+                LocalDate parsedDate = LocalDate.parse(date);
+                meals = dietRecordService.getMealsByMemberAndDate(memNo, parsedDate);
+            } else {
+                // Fallback to current date if no date provided
+                meals = dietRecordService.getMealsByMemberAndDate(memNo, LocalDate.now());
             }
 
             return ResponseEntity.ok(meals);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to fetch meals: " + e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to retrieve meals: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-    }//end of GetMapping(memNo)
+    }
 
     @GetMapping("/macronutrients/{memNo}")
     public ResponseEntity<?> getMacronutrientsByMemberNumber(@PathVariable int memNo,
@@ -102,6 +108,32 @@ public class DietRecordController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch macronutrient data: " + e.getMessage());
+        }
+    }
+    @PostMapping("/water-intake")
+    public ResponseEntity<?> updateWaterIntake(@RequestBody WaterIntakeRequest request) {
+        try {
+            // Extract data from request
+            int memNo = request.getMemNo();
+            String dietDate = request.getDietDate();
+            int waterIntake = request.getWaterIntake();
+
+            // Call the service method
+            dietRecordService.updateWaterIntake(memNo, dietDate, waterIntake);
+
+            // Return success response
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Water intake updated successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Handle errors
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", "Failed to update water intake: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 

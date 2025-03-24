@@ -21,4 +21,9 @@ public interface DietRecordMapper {
     int deleteDietRecordByRecordId(@Param("recordId") int recordId);
 
     List<DietRecordDao> findDietRecordsByMemNoAndDate( int memNo, LocalDate date);
+
+    /**
+     * Update the water intake for a specific member and date
+     */
+    void updateWaterIntake(int memNo, String dietDate, int waterIntake);
 }
