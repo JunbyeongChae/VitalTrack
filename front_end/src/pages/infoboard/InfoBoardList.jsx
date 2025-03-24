@@ -11,7 +11,7 @@ const InfoBoardList = () => {
   const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 6;
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [search, setSearch] = useState('');
   const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -63,7 +63,7 @@ const InfoBoardList = () => {
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473]">건강 관리 게시판</h1>
             <div className="flex space-x-2">
-              <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyDown}/>
+              <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyDown} />
               <button onClick={handleSearch} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
                 검색
               </button>
@@ -76,29 +76,8 @@ const InfoBoardList = () => {
             </div>
           </div>
 
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-[#d7e3c7] text-[#5f7a60]">
-              <tr>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[10%]">번호</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center">제목</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성자</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">분류</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[17%]">게시일</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">조회수</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.length > 0 ? (
-                currentItems.map((board, index) => <InfoBoardItem key={index} board={board} page={currentPage} index={index} itemsPerPage={itemsPerPage} />)
-              ) : (
-                <tr>
-                  <td colSpan="4" className="p-6 text-center text-[#7c9473]">
-                    📭 해당 카테고리에 게시물이 없습니다.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {/* 카드 목록으로 출력 */}
+          <div className="grid grid-cols-2 gap-6">{currentItems.length > 0 ? currentItems.map((board, index) => <InfoBoardItem key={index} board={board} />) : <div className="col-span-full text-center text-[#7c9473] p-6">📭 해당 카테고리에 게시물이 없습니다.</div>}</div>
 
           <div className="flex justify-center mt-4">
             <nav className="flex items-center space-x-1">

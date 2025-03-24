@@ -27,20 +27,20 @@
 
   <!-- 게시글 등록 -->
   <insert id="insertInfoBoard" parameterType="com.vitaltrack.model.InfoBoard">
-    INSERT INTO information (infoTitle, infoContent, infoCategory, infoDate, memNo)
-    VALUES (#{infoTitle}, #{infoContent}, #{infoCategory}, NOW(), #{memNo})
+  INSERT INTO information (infoTitle, infoContent, infoCategory, infoDate, memNo, infoFile)
+  VALUES (#{infoTitle}, #{infoContent}, #{infoCategory}, NOW(), #{memNo}, #{infoFile})
   </insert>
 
   <!-- 게시글 수정 -->
   <update id="updateInfoBoard" parameterType="com.vitaltrack.model.InfoBoard">
-    UPDATE information
-    SET infoTitle = #{infoTitle},
-        infoContent = #{infoContent},
-        infoCategory = #{infoCategory}
+  UPDATE information
+  SET infoTitle = #{infoTitle},
+      infoContent = #{infoContent},
+      infoCategory = #{infoCategory}
     <if test="infoFile != null">
-            , infoFile = #{infoFile}
+    , infoFile = #{infoFile}
     </if>
-    WHERE infoNo = #{infoNo}
+  WHERE infoNo = #{infoNo}
   </update>
 
   <!-- 게시글 삭제 -->

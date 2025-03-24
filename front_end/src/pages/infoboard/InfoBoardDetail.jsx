@@ -159,6 +159,20 @@ const InfoBoardDetail = () => {
     }
   };
 
+  const convertYoutubeLinksToIframe = (htmlContent) => {
+    if (!htmlContent || typeof htmlContent !== 'string') return '';
+
+    const youtubeWatchRegex = /https?:\/\/www\.youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/g;
+    const youtubeShortRegex = /https?:\/\/youtu\.be\/([A-Za-z0-9_-]{11})(?:\?.*)?/g; // 뒤에 ?si= 제거
+
+    try {
+      return htmlContent.replace(youtubeWatchRegex, (match, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`).replace(youtubeShortRegex, (match, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`);
+    } catch (err) {
+      console.error('유튜브 변환 중 오류 발생:', err);
+      return htmlContent;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
       <div className="w-full max-w-5xl flex">
@@ -195,7 +209,12 @@ const InfoBoardDetail = () => {
 
           {/* 게시글 내용 */}
           <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0]">
-            <div className="text-lg text-[#5f7a60] whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: board.infoContent || '내용을 불러오는 중입니다.' }} />
+            <div
+              className="text-lg text-[#5f7a60] whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{
+                __html: convertYoutubeLinksToIframe(board?.infoContent || '')
+              }}
+            />
           </div>
 
           {/* 댓글 섹션 */}
@@ -247,7 +266,7 @@ const InfoBoardDetail = () => {
               {/* 댓글 등록 버튼 */}
               <div className="flex justify-end mt-2">
                 <button onClick={handleCommentSubmit} className="px-6 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
-                  답변 등록
+                  댓글 등록
                 </button>
               </div>
             </div>

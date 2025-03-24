@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import InfoSidebar from './InfoSidebar';
 import { toast } from 'react-toastify';
-import { infoBoardInsertDB } from '../../services/infoBoardLogic.js';
+import { infoBoardInsertDB} from '../../services/infoBoardLogic.js';
 import InfoBoardTiptapEditor from './InfoBoardTiptapEditor.jsx';
 
 const InfoBoardWrite = () => {
@@ -11,19 +11,36 @@ const InfoBoardWrite = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [thumbnail, setThumbnail] = useState(null); // 썸네일 이미지 상태 추가
+  const [previewUrl, setPreviewUrl] = useState(''); // 썸네일 미리보기 URL 상태 추가
+
   const user = JSON.parse(localStorage.getItem('user')) || {};
   const memNick = user.memNick || '';
   const memNo = user.memNo || '';
 
   const handleTitle = useCallback((e) => setTitle(e.target.value), []);
-  const handleContent = useCallback((value) => setContent(value), []);
   const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
+
+  // 유튜브 썸네일 자동 추출 기능 포함
+  const handleContent = useCallback((value) => {
+    setContent(value);
+
+    const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+    const match = value.match(youtubeRegex);
+    if (match && match[1]) {
+      const videoId = match[1];
+      const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+      setPreviewUrl(thumbnailUrl); // 미리보기용 이미지 설정
+      setThumbnail(thumbnailUrl); // infoFile로 저장할 URL
+    }
+  }, []);
 
   const getCurrentDate = () => {
     const date = new Date();
     return date.toISOString().split('T')[0];
   };
 
+  // 글 등록 처리 (유튜브 썸네일 URL 사용)
   const boardInsert = async () => {
     if (!title || !content || !selectedCategory) {
       toast.warn('제목, 내용, 분류를 모두 입력하세요.');
@@ -35,7 +52,8 @@ const InfoBoardWrite = () => {
       infoContent: content,
       infoCategory: selectedCategory,
       infoDate: getCurrentDate(),
-      memNo: memNo
+      memNo: memNo,
+      infoFile: typeof thumbnail === 'string' ? thumbnail : null // URL 형식만 저장
     };
 
     try {
@@ -85,6 +103,14 @@ const InfoBoardWrite = () => {
                 <option value="건강관리팁">건강관리팁</option>
               </select>
             </div>
+
+            {/* ✅ 유튜브 썸네일 미리보기 영역 */}
+            {previewUrl && (
+              <div>
+                <label className="block text-sm font-medium text-[#5f7a60] mb-2">유튜브 썸네일 미리보기</label>
+                <img src={previewUrl} alt="유튜브 썸네일" className="w-60 h-60 object-cover rounded-lg border" />
+              </div>
+            )}
 
             {/* 내용 */}
             <InfoBoardTiptapEditor value={content} handleContent={handleContent} />
