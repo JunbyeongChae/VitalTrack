@@ -19,10 +19,15 @@ const DietCalendar = () => {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
-    // Store the DB-compatible formatted date in localStorage when selectedDate changes
+    // Update localStorage and dispatch custom event when selectedDate changes
     useEffect(() => {
         const formattedDate = formatDateToDB(selectedDate); // Convert to DB-compatible format
         localStorage.setItem("selectedDate", formattedDate);
+
+        // Dispatch the custom event to notify Meals component
+        window.dispatchEvent(new CustomEvent("selectedDateChanged"));
+
+        console.log("Date updated and event dispatched:", formattedDate);
     }, [selectedDate]);
 
     // Function to fetch data for the formatted selectedDate
@@ -44,6 +49,13 @@ const DietCalendar = () => {
     const handleTodayClick = () => {
         const today = new Date(); // Get today's date
         setSelectedDate(today); // Update the selected date
+        // No need to dispatch event here as it will be handled in the useEffect
+    };
+
+    // Handle date change from DateExplorer
+    const handleDateChange = (newDate) => {
+        setSelectedDate(newDate);
+        // No need to dispatch event here as it will be handled in the useEffect
     };
 
     return (
@@ -59,7 +71,7 @@ const DietCalendar = () => {
             </div>
             <DateExplorer
                 selectedDate={selectedDate}
-                onDateChange={(newDate) => setSelectedDate(newDate)} // Update the format when the user selects a date
+                onDateChange={handleDateChange} // Use our new handler function
             />
         </div>
     );

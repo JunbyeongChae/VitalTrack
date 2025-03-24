@@ -12,11 +12,11 @@ const DiaryEntry = ({ title, time, calories, protein, carbs, fat }) => {
 
             {/* Right Section: Nutrition details */}
             <div className="flex flex-col items-end">
-                <div className="text-sm font-semibold">{calories} cal</div>
+                <div className="text-sm font-semibold">{calories} kcal</div>
                 <div className="flex text-xs text-gray-500 gap-3">
-                    <span>단: {protein}g</span>
-                    <span>탄: {carbs}g</span>
-                    <span>지: {fat}g</span>
+                    <span>carb: {carbs}g</span>
+                    <span>pro: {protein}g</span>
+                    <span>fat: {fat}g</span>
                 </div>
             </div>
         </div>

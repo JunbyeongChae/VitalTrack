@@ -35,8 +35,16 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
                             <div>
                                 <h3 className="meal-name text-sm font-medium">{meal.name}</h3>
                                 <p className="text-gray-500 text-xs">
-                                    {meal.unit || "Serving"} • {meal.calories} kcal
+                                    {meal.unit || "1 Serving"} • {meal.calories} kcal
                                 </p>
+                                {/* Display macronutrients if available */}
+                                {(meal.protein || meal.carbs || meal.fat) && (
+                                    <p className="text-gray-500 text-xs">
+                                        탄: {meal.carbs?.toFixed(1) || 0}g •
+                                        단: {meal.protein?.toFixed(1) || 0}g •
+                                        지: {meal.fat?.toFixed(1) || 0}g
+                                    </p>
+                                )}
                             </div>
                             {meal.photo ? (
                                 <img

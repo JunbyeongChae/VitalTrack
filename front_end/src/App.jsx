@@ -16,6 +16,8 @@ import CounselWrite from './pages/counsel/CounselWrite';
 import CounselDetail from './pages/counsel/CounselDetail';
 import CounselUpdate from './pages/counsel/CounselUpdate';
 import CounselAdvisor from './pages/counsel/CounselAdvisor';
+import {MealsProvider} from "./contexts/MealsContext";
+
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -43,8 +45,8 @@ const App = () => {
           <Route path="/counsel/write" element={<CounselWrite />} />
           <Route path="/counsel/:counselNo" element={<CounselDetail />} />
           <Route path="/counsel/update/:counselNo" element={<CounselUpdate />} />
-          <Route path="/nutrition" element={<Dashboard />} />
           <Route path="/workout" exact={true} element={<WorkoutPage />} />
+          <Route path="/nutrition" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
         </Routes>
       </main>
       <Footer />

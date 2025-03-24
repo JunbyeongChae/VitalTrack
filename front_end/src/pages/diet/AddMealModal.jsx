@@ -199,6 +199,9 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                                                 name: result["식품명"],
                                                 id: result["식품코드"],
                                                 calories: result["에너지(kcal)"],
+                                                carbs: result["탄수화물(g)"],
+                                                protein: result["단백질(g)"],
+                                                fat: result["지방(g)"]
                                             };
 
                                             console.log("Meal Data:", meal); // Ensure full meal object is logged
