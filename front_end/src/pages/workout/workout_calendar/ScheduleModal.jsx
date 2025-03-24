@@ -72,7 +72,7 @@ const ScheduleModal = () => {
     }
 
     //일정 수정
-   const updateSchedule = (schedule) => {
+    const updateSchedule = (schedule) => {
         setSelectedWorkoutType({label: schedule.title, value: schedule.extendedProps.workoutId})
         setExistingScheduleId(schedule.id)
         setIsFinished(schedule.extendedProps.isFinished)
@@ -86,13 +86,13 @@ const ScheduleModal = () => {
         setStartTime(startTimeFormatted)
         setEndTime(endTimeFormatted)
         // 날짜는 toISOString()으로 형식화하여 설정
-        setStartDate(start.toISOString().split('T')[0])
-        setEndDate(end.toISOString().split('T')[0])
+        setStartDate(schedule.start.split('T')[0])
+        setEndDate(schedule.end.split('T')[0])
         setAllDay(schedule.allDay)
         // 색상 및 모달 표시 상태 설정
         setScheduleColor(schedule.color)
         setShowModal(true)
-   }
+    }
 
 
     //✔클릭
@@ -113,7 +113,7 @@ const ScheduleModal = () => {
             }
            // console.log(newSchedule)
             const response = await insertScheduleDB(newSchedule)
-            if(response.status === 200) {
+            if(response) {
                 alert("✔운동 일정이 추가되었습니다!")
                 setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
             }
@@ -187,7 +187,7 @@ const ScheduleModal = () => {
                             isClearable
                             value={selectedWorkoutType}
                             onChange={setSelectedWorkoutType}
-                            placeholder="운동 종목을 선택. Create 금지!! 있는것중에 선택하기"
+                            placeholder="운동 종목을 선택하세요."
                             options={workoutTypes.map((workout) => ({
                                 value: workout.workoutId,
                                 label: workout.workoutName,

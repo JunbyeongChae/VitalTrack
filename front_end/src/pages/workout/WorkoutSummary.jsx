@@ -5,7 +5,7 @@ import {
     faFlagCheckered,
     faPersonRunning,
 } from "@fortawesome/free-solid-svg-icons";
-import {getFutureWorkoutDB, getLastWorkoutDB} from "../../services/workoutLogic";
+//import {getFutureWorkoutDB, getLastWorkoutDB} from "../../services/workoutLogic";
 import {useScheduleContext} from "./Context";
 
 const WorkoutSummary = () => {
@@ -21,17 +21,23 @@ const WorkoutSummary = () => {
     const [dayDiff, setDayDiff] = useState()
     const [futureWorkout, setFutureWorkout] = useState({})
 
+    useEffect(() => {
+        if (!schedules || schedules.length === 0) return; // 데이터 불러와야 실행하도록
+        getFutureWorkout()
+        getLastWorkout()
+    }, [schedules])
+
 
     useEffect(() => {
 
         const fetchWorkouts_future = async () => {
-            if (futureWorkout.length === 0) return; // 데이터가 없으면 실행 안 함
+            if (Object.keys(futureWorkout).length === 0) return; // 데이터가 없으면 실행 안 함
 
-            const futureData = await getFutureWorkout()
+            //const futureData = await getFutureWorkout()
 
-            if (futureData?.scheduleStart) {
+            //if (futureWorkout?.scheduleStart) {
                 //console.log(futureData.scheduleStart) //2025-03-22 05:00:00
-                const futureWoDay = new Date(futureData.scheduleStart).toLocaleDateString(options)
+                const futureWoDay = new Date(futureWorkout.start).toLocaleDateString(options)
                 setFutureWoDay(futureWoDay)
 
                 /*const startTimeFormatted = `${start.getHours() < 10 ? '0' : ''}${start.getHours()}:${start.getMinutes() < 10 ? '0' : ''}${start.getMinutes()}`;
@@ -49,41 +55,45 @@ const WorkoutSummary = () => {
                         setDayDiff(dayDiff+"일 뒤에 시작해요!");
                     }
                 }
-            }
+           // }
         }
 
         const fetchWorkouts_last = async () => {
-            if (lastWorkout.length === 0) return; // 데이터가 없으면 실행 안 함
+            if (Object.keys(lastWorkout).length === 0) return; // 데이터가 없으면 실행 안 함
 
-            const lastData = await getLastWorkout()
+          //  const lastData = await getLastWorkout()
 
-            if (lastData?.scheduleStart) {
-                const lastWoDay = new Date(lastData.scheduleStart).toLocaleDateString(options)
+           // if (lastWorkout?.scheduleStart) {
+                const lastWoDay = new Date(lastWorkout.start).toLocaleDateString(options)
                 //setLastWoDay(lastWoDay.toLocaleDateString('ko-KR', options));
                 setLastWoDay(lastWoDay)
-            }
+            //}
         }
 
         fetchWorkouts_future()
         fetchWorkouts_last()
-    }, [schedules]) //end of useEffect()
+    }, [futureWorkout, lastWorkout]) //end of useEffect()
 
     //앞으로 할 운동
     const getFutureWorkout = async () => {
-        const response = await getFutureWorkoutDB({memNo: memNo})
-        let futureWorkout = response.data || [];
+        const futureWorkout= schedules
+            .filter(sc => sc.start > new Date().toISOString() && sc.extendedProps.isFinished === false) // 조건 적용
+            .sort((a, b) => new Date(a.start) - new Date(b.start)) // scheduleStart 기준 오름차순 정렬
+            [0] // 가장 최근 항목 가져오기
+        console.log(futureWorkout)
+        //const response = await getFutureWorkoutDB({memNo: memNo})
+        //const futureWorkout = response.data
 
-        setFutureWorkout(futureWorkout);
-        return response.data
+        setFutureWorkout(futureWorkout || {})
     }
     //최근 한 운동
-    const getLastWorkout = async ()=>{
-        const response = await getLastWorkoutDB({memNo: memNo})
-        let lastWorkout1 = response.data || [];
-        console.log(lastWorkout1)
-        setLastWorkout(lastWorkout1);
+    const getLastWorkout = async () => {
+        const lastWorkout = schedules
+            .filter(sc => sc.start < new Date().toISOString() && sc.extendedProps.isFinished === true) // 조건 적용
+            .sort((a, b) => new Date(b.start) - new Date(a.start)) // scheduleStart 기준 내림차순 정렬
+            [0] // 가장 최근 항목 가져오기
 
-        return response.data
+        setLastWorkout(lastWorkout || {})
     }
 
 
@@ -99,18 +109,18 @@ const WorkoutSummary = () => {
                   </div>
                   <div
                       className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md">
-                      {lastWorkout.length>0 ? (
+                      {lastWorkout && Object.keys(lastWorkout).length>0 ? (
                           <>
-                              <div className="flex items-center justify-between ml-16 mr-16">
+                              <div className="flex items-center justify-center gap-4">
                                   <div className="flex flex-col items-center justify-center">
                                       <FontAwesomeIcon icon={faPersonRunning} className="text-teal-500 text-5xl"/>
-                                      <div className="text-teal-500 font-bold">{lastWorkout.kcal} KCAL</div>
+                                      <div className="text-teal-500 font-bold mt-1">{lastWorkout.extendedProps.kcal} kcal</div>
                                   </div>
                                   <div className="flex flex-col items-left justify-start">
-                                      <div className="font-bold">{lastWorkout.workoutName}</div>
+                                      <div className="font-bold">{lastWorkout.title}</div>
                                       <div className="text-[#323232]">
-                                          {String(Math.floor(lastWorkout.workoutTimeMin / 60)).padStart(2, '0')}:
-                                          {String(lastWorkout.workoutTimeMin % 60).padStart(2, '0')}
+                                          {String(Math.floor(lastWorkout.extendedProps.workoutTimeMin / 60)).padStart(2, '0')}:
+                                          {String(lastWorkout.extendedProps.workoutTimeMin % 60).padStart(2, '0')}
                                           :00
                                       </div>
                                       <h3 className="text-sm text-gray-400 mt-1"> {lastWoDay}</h3>
@@ -118,7 +128,7 @@ const WorkoutSummary = () => {
                               </div>
                           </>
                       ) : (
-                          <p>아직 운동을 하지 않았어요!</p>
+                          <p className="text-center text-sm text-gray-500">완료한 운동이 없습니다.</p>
                       )}
                   </div>
 
@@ -131,12 +141,12 @@ const WorkoutSummary = () => {
                       </div>
                       <div
                           className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md ">
-                          {futureWorkout.length>0 ? (
+                          {futureWorkout && Object.keys(futureWorkout).length>0 ? (
                               <>
-                                  <div className="flex items-center justify-center space-x-4">
+                                  <div className="flex items-center justify-center gap-4">
                                       <FontAwesomeIcon icon={faFlagCheckered} className="text-gray-400 mr-4 text-6xl"  />
                                       <div className="flex flex-col items-left justify-center">
-                                          <div className="font-bold">{futureWorkout.workoutName}</div>
+                                          <div className="font-bold">{futureWorkout.title}</div>
                                           <div className="text-sm text-[#323232]">{dayDiff}</div>
                                           <div
                                               className="flex flex-row justify-between items-center text-sm text-gray-400 mt-1">
@@ -147,7 +157,10 @@ const WorkoutSummary = () => {
                                   </div>
                               </>
                           ) : (
-                              <p>운동 계획이 없습니다.</p>
+                              <>
+                              <p className="text-center text-sm text-gray-500" >운동 계획이 없습니다!<br/></p>
+                              <p className="text-center text-sm text-gray-500" >일정을 등록해보세요.</p>
+                              </>
                           )}
                       </div>
               </div>

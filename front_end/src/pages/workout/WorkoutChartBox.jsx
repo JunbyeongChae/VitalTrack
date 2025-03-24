@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
-import * as echarts from 'echarts';
-import {getLast7WorkoutsDB} from "../../services/workoutLogic";
+import React, { useEffect, useState} from 'react';
+//import * as echarts from 'echarts';
+//import {getLast7WorkoutsDB} from "../../services/workoutLogic";
 import WoChart from "./WoChart";
 import {useScheduleContext} from "./Context";
 
@@ -15,13 +15,26 @@ const WorkoutChartBox = () => {
   const [kcalMean, setKcalMean] = useState(0);
 
   const getLast7Workouts = async () => {
-    const response = await getLast7WorkoutsDB({memNo: memNo})
-    setLastWeekDB(response.data)
+    const lastWeek = schedules
+        .filter(sc => {
+          const now = new Date(); // 현재 시간
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(now.getDate() - 6); // 7일 전 날짜 (오늘 포함이므로 -6)
+          sevenDaysAgo.setHours(0, 0, 0, 0); // 7일 전의 00:00:00으로 설정
+
+          const startDate = new Date(sc.start);
+
+          return startDate >= sevenDaysAgo && startDate <= now && sc.extendedProps.isFinished === true;
+        }) // 조건 적용
+        .sort((a, b) => new Date(a.start) -new Date(b.start)) // scheduleStart 기준 내림차순 정렬
+   // const response = await getLast7WorkoutsDB({memNo: memNo})
+    setLastWeekDB(lastWeek || [])
     //console.log(response.data)
-    return response.data
+    //return lastWeek
   }
 
   useEffect(() => {
+    if (!schedules || schedules.length === 0) return; // 데이터 불러와야 실행하도록
     getLast7Workouts()
   }, [schedules]);
 
@@ -35,8 +48,8 @@ const WorkoutChartBox = () => {
 
     // lastWeekDB 데이터를 미리 날짜별로 매핑하여 효율적인 비교
     const lastWeekMap = lastWeekDB.reduce((acc, item) => {
-      const scheduleDate = new Date(item.scheduleStart).toLocaleDateString('ko-KR', { weekday: 'short' });
-      acc[scheduleDate] = item.kcal; // 날짜를 key로 사용하여 칼로리를 매핑
+      const scheduleDate = new Date(item.start).toLocaleDateString('ko-KR', { weekday: 'short' });
+      acc[scheduleDate] = item.extendedProps.kcal; // 날짜를 key로 사용하여 칼로리를 매핑
       return acc;
     }, {});
 
@@ -81,12 +94,12 @@ const WorkoutChartBox = () => {
                 <>
                 <div className="text-right text-sm mt-5 mr-5 text-[#323232]">{lastWeekTerm[0]} ~ {lastWeekTerm[1]}</div>
                 <div
-                    className="text-right text-lg font-bold mr-5 mt-2 text-teal-500">평균 {kcalMean.toFixed(0)} KCAL</div>
+                    className="text-right text-lg font-bold mr-5 mt-2 text-teal-500">평균 {kcalMean.toFixed(0)} kcal</div>
             {/*            <div id="activityChartWO" className="h-80"></div>*/}
               <WoChart lastWeekDays={lastWeekDays} lastWeekKcal={lastWeekKcal}/>
                 </>
           :
-          <p>아직 운동을 하지 않았어요!</p>
+          <p className="text-center mt-4 text-gray-500">지난주 운동량이 없습니다.</p>
           }
       </div>
 </>
