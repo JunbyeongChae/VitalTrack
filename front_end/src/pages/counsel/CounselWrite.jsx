@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { boardInsertDB } from '../../services/counselLogic.js';
-import TiptapEditor from '../../components/TiptapEditor.jsx';
 import { toast } from 'react-toastify';
-import Sidebar from './CounselSidebar.jsx';
+import CounselSidebar from './CounselSidebar.jsx';
+import CounselTiptapEditor from './CounselTiptapEditor.jsx';
 
 const CounselWrite = () => {
   const navigate = useNavigate();
@@ -49,40 +49,31 @@ const CounselWrite = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 flex">
-      <div>
-        <Sidebar />
-      </div>
-      <div className="flex-grow flex-col">
-        <div className="page-header mb-4">
-          <div className="p-6 bg-white rounded-lg shadow-lg h-screen">
-            <h1 className="text-3xl font-bold mb-4">1:1 상담 작성</h1>
-            <hr className="my-2" />
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">제목</h2>
-                <input id="dataset-title" type="text" maxLength="50" placeholder="제목을 입력하세요." onChange={(e) => handleTitle(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-              </div>
+    <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
+      <div className="w-full max-w-5xl flex">
+        <CounselSidebar />
 
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">작성자</h2>
-                <input id="dataset-writer" type="text" maxLength="20" value={memNick} readOnly className="w-1/3 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed" />
-              </div>
+        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6 h-auto">
+          <h1 className="text-2xl font-semibold text-[#7c9473]"> 상담 작성</h1>
 
-              <hr className="my-6 border-gray-300" />
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">
+            <input type="text" value={title} onChange={handleTitle} className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" placeholder="제목을 입력하세요" required />
 
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">내용</h2>
-                <TiptapEditor value={content} handleContent={handleContent} />
-              </div>
-
-              <div className="flex justify-end">
-                <button onClick={boardInsert} className="px-8 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-colors duration-200 text-lg">
-                  상담 등록
-                </button>
-              </div>
+            <div className="flex gap-4">
+              <input type="text" value={memNick} readOnly className="w-1/2 p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
             </div>
-          </div>
+
+            <CounselTiptapEditor value={content} handleContent={handleContent} />
+
+            <div className="flex justify-end gap-4 mt-6">
+              <button onClick={() => navigate('/counsel')} className="px-8 py-3 bg-gray-500 text-white text-base font-semibold rounded-lg hover:bg-gray-700 transition-all shadow-sm mx-2">
+                목록
+              </button>
+              <button onClick={boardInsert} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2">
+                작성
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

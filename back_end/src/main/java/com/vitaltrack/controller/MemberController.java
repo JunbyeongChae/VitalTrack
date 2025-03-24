@@ -2,6 +2,7 @@ package com.vitaltrack.controller;
 
 import com.vitaltrack.logic.MemberLogic;
 import com.vitaltrack.model.MemberInfo;
+import com.vitaltrack.util.JwtUtil;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -19,20 +20,22 @@ import org.springframework.http.HttpStatus;
 public class MemberController {
   @Autowired
   private MemberLogic memberLogic;
+  @Autowired
+  private JwtUtil jwtUtil;
 
   @PostMapping("/signup")
   public ResponseEntity<?> register(@RequestBody MemberInfo member) {
     try {
       int result = memberLogic.registerMember(member);
       if (result > 0) {
-        // ✅ 반드시 200 OK로 명확히 반환
+        // 반드시 200 OK로 명확히 반환
         return ResponseEntity.ok(Map.of("status", "success", "message", "회원가입이 완료되었습니다."));
       } else {
-        // ✅ 실패 시에는 400으로 반환
+        // 실패 시에는 400으로 반환
         return ResponseEntity.status(400).body(Map.of("status", "error", "message", "회원가입에 실패했습니다."));
       }
     } catch (IllegalArgumentException e) {
-      // ✅ 예외가 발생하면 400으로 명확히 반환
+      // 예외가 발생하면 400으로 명확히 반환
       return ResponseEntity.status(400).body(Map.of("status", "error", "message", e.getMessage()));
     }
   }
@@ -46,7 +49,14 @@ public class MemberController {
       // 비밀번호는 반환하지 않도록 null로 처리
       member.setMemPw(null);
 
-      return ResponseEntity.ok(member);
+      // JWT 토큰 생성
+      String token = jwtUtil.generateToken(member.getMemId());
+
+      // 토큰 + 사용자 정보 반환
+      return ResponseEntity.ok(Map.of(
+          "token", token,
+          "user", member));
+
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("error", e.getMessage()));
@@ -148,4 +158,27 @@ public class MemberController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 조회 실패");
     }
   }
+
+  // 구글 로그인용 JWT 발급 API 추가
+  @PostMapping("/oauth-login")
+  public ResponseEntity<?> oauthLogin(@RequestBody Map<String, String> request) {
+    String email = request.get("memEmail");
+    if (email == null || email.isEmpty()) {
+      return ResponseEntity.badRequest().body(Map.of("error", "이메일이 필요합니다."));
+    }
+
+    MemberInfo member = memberLogic.findByEmail(email);
+    if (member == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(Map.of("error", "해당 이메일로 등록된 사용자가 없습니다."));
+    }
+
+    member.setMemPw(null); // 비밀번호 제거
+    String token = jwtUtil.generateToken(member.getMemId());
+
+    return ResponseEntity.ok(Map.of(
+        "token", token,
+        "user", member));
+  }
+
 }

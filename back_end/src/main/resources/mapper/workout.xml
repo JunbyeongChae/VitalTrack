@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vitaltrack.dao.WorkoutDao">
+    <!--곧 있을 운동 일정 1개-->
+    <select id="getFutureWorkout" resultType="map">
+        SELECT ws.scheduleStart, ws.scheduleEnd, ws.color, wt.workoutName
+        FROM workoutschedule ws, workouttypes wt
+        WHERE ws.workoutId = wt.workoutId
+          <![CDATA[ AND ws.scheduleStart > NOW() ]]>
+          AND ws.memNo = #{memNo}
+        ORDER BY ws.scheduleStart ASC
+            LIMIT 1;
+    </select>
+    <!--가장 최근에 한 운동 1개 -->
+    <select id="getLastWorkout" resultType="map">
+        SELECT ws.scheduleStart, ws.color, wt.workoutName, ws.kcal, ws.workoutTimeMin
+        FROM workoutschedule ws, workouttypes wt
+        WHERE ws.workoutId = wt.workoutId
+        AND ws.isFinished = true
+        <![CDATA[ AND ws.scheduleStart < NOW() ]]>
+        AND ws.memNo = #{memNo}
+        ORDER BY ws.scheduleStart DESC
+        LIMIT 1;
+    </select>
+    <!-- 최근 7일간 한 운동-->
+    <select id="getLast7Workouts" parameterType="map" resultType="map">
+        SELECT ws.scheduleStart, ws.color, wt.workoutName, ws.kcal, ws.workoutTimeMin
+        FROM workoutschedule ws, workouttypes wt
+        WHERE ws.workoutId = wt.workoutId
+          AND ws.isFinished = true
+          AND ws.scheduleEnd BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+          AND ws.memNo = #{memNo}
+        ORDER BY ws.scheduleEnd DESC;
+    </select>
+    <!--전체 운동 일정 조회-->
+    <select id="getScheduleList" parameterType="map" resultType="map">
+        SELECT ws.scheduleId, ws.scheduleStart, ws.scheduleEnd, ws.color, ws.workoutId, ws.allDay, ws.isFinished, ws.kcal, ws.workoutTimeMin, wt.workoutName
+        from workoutschedule ws, workouttypes wt
+        where ws.workoutId = wt.workoutId
+          and ws.memNo = #{memNo};
+    </select>
+    <!--운동 일정 추가-->
+    <insert id="insertSchedule" parameterType="map">
+        INSERT INTO workoutschedule(scheduleStart, scheduleEnd, color, workoutId, allDay, memNo)
+        VALUES(#{scheduleStart}, #{scheduleEnd}, #{color}, #{workoutId}, #{allDay}, #{memNo});
+    </insert>
+    <!--운동 일정 수정-->
+    <update id="updateSchedule" parameterType="map">
+        UPDATE workoutschedule
+        SET scheduleStart=#{scheduleStart}, scheduleEnd=#{scheduleEnd}, color=#{color}, workoutId=#{workoutId}, allDay = #{allDay}
+        WHERE scheduleId = #{scheduleId}
+          AND memNo = #{memNo};
+    </update>
+    <!--운동 완료 체크 -> 일정 업데이트-->
+    <update id="updateIsFinished" parameterType="map">
+        UPDATE workoutschedule ws
+            JOIN workouttypes wt ON ws.workoutId = wt.workoutId
+            JOIN memberinfo mi ON ws.memNo = mi.memNo
+            SET
+                ws.isFinished = #{isFinished},
+                ws.workoutTimeMin = #{workoutTimeMin},
+                ws.kcal = (wt.metValue * mi.memWeight * 1.05 * (workoutTimeMin / 60))
+          WHERE ws.scheduleId = #{scheduleId}
+            AND ws.memNo = #{memNo};
+    </update>
+    <!-- 운동 일정 삭제 -->
+    <delete id="deleteSchedule" parameterType="map">
+        DELETE FROM workoutschedule
+        WHERE scheduleId = #{scheduleId}
+          AND memNo = #{memNo};
+    </delete>
+</mapper>

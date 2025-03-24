@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <div>
       <div>
-        <img src="images/NoLoginState.png" alt="No login state" />
+        <img src="images/NoLoginState2.png" alt="No login state" />
       </div>
       <div className="flex justify-center mt-10 mb-20">
         <button

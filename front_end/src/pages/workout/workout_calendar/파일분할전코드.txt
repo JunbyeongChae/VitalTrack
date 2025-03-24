@@ -1,0 +1,357 @@
+//Context API 도입전 코드입니다.
+
+
+import React, {useEffect, useState} from 'react'
+import { motion } from 'framer-motion';
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from "@fullcalendar/interaction"
+import {Button, Form, Modal, Popover} from "react-bootstrap"; // needed for dayClick
+import "./style/WorkoutCalendar.css"
+
+const WorkoutCalendar = () => {
+
+    const [events, setEvents] = useState([])
+    const [show, setShow] = useState(false)
+    const [selectedEvent, setSelectedEvent] = useState(null)
+    const [selectedDate, setSelectedDate] = useState(null)
+    const [workoutDone, setWorkoutDone] = useState(false) //사용자가 운동 완료 체크할수있도록
+
+    const pastelColors = [
+        '#76c3c5', // Pastel Green
+        '#ff8d8d', // Pastel Red
+        '#f7bc52', // Pastel Orange
+        '#e6e648', // Pastel Yellow
+        '#a4c4ff', // Pastel Blue
+        '#ffbaf7', // Pastel Pink
+        '#c78dfe'  // Pastel Purple
+    ]
+    const [eventId, setEventId] = useState(0);
+    const [title, setTitle] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [allDay, setAllDay] = useState(false);
+    const [eventColor, setEventColor] = useState(pastelColors[0]);
+
+
+    const handleSave = () => {
+        const event = {
+            //id : eventId, //이벤트 수정하려면 id가 필요함
+            title,
+            start: allDay ? startDate : `${startDate}T${startTime}`,
+            end: allDay ? endDate : `${endDate}T${endTime}`,
+            color: eventColor,
+            allDay
+        };
+        setEvents([...events, event])
+        handleClose()
+    }
+    useEffect(() => {
+        if (selectedDate) {
+            dateClick({ dateStr: selectedDate});
+        }
+    }, [events]) // events가 변경될 때만 실행
+
+
+    const handleClose = ()=> {
+        setShow(false)
+        setAllDay(false)
+        setEventColor(pastelColors[0])
+        setTitle("")
+    }
+
+    //이벤트 수정
+/*    const handleEventChange = (changeInfo) => {
+        const updatedEvent = changeInfo.event;
+        const updatedEvents = events.map(event =>
+            event.id === updatedEvent.id
+                ? {
+                    ...event,
+                    title: updatedEvent.title,
+                    start: updatedEvent.start,
+                    end: updatedEvent.end,
+                    color: updatedEvent.backgroundColor,
+                }
+                : event
+        );
+        setEvents(updatedEvents); // 상태 업데이트
+    };*/
+
+    const addEvent = ()=> {
+        const currentHour = new Date().getHours()
+        setStartTime(currentHour < 10 ? `0${currentHour+1}:00` : `${currentHour+1}:00`); // hour를 startTime에 반영 (2자리로 표시)
+        setEndTime(currentHour < 10 ? `0${currentHour+2}:00` : `${currentHour+2}:00`); // hour를 startTime에 반영 (2자리로 표시)
+        setStartDate(selectedDate)
+        setEndDate(selectedDate)
+        setShow(true);
+    }
+
+    const dateClick = (info) => {
+        const clickedDate = info.dateStr;
+        setSelectedDate(clickedDate)
+        // 선택한 날짜에 해당하는 일정들 필터링
+        const eventsOnSelectedDate = events.filter(event => {
+            if (!event.start) return false; // start 값이 없으면 제외
+            const eventStart = new Date(event.start);
+            if (isNaN(eventStart.getTime())) return false; // 유효하지 않은 날짜 제외
+            return eventStart.toISOString().split('T')[0] === clickedDate;
+        }) //end of eventsOnSelectedDate
+
+        // 선택한 날짜에 해당하는 이벤트가 있다면 selectedEvent에 설정
+        if (eventsOnSelectedDate.length > 0) {
+            setSelectedEvent(eventsOnSelectedDate);
+        } else {
+            setSelectedEvent(null); // 선택한 날짜에 일정이 없으면 null로 설정
+        }
+    }
+
+    // 이벤트 클릭 -> 수정 모달 오픈
+    const eventClick = (event) => {
+        // event.title은 그대로 사용
+        setTitle(event.title);
+
+        // startTime, endTime은 event.start와 event.end에서 시간 정보를 추출해서 설정
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        // 시간을 두 자릿수로 맞추기 위해 'getHours'와 'getMinutes' 사용
+        const startTimeFormatted = `${start.getHours() < 10 ? '0' : ''}${start.getHours()}:${start.getMinutes() < 10 ? '0' : ''}${start.getMinutes()}`;
+        const endTimeFormatted = `${end.getHours() < 10 ? '0' : ''}${end.getHours()}:${end.getMinutes() < 10 ? '0' : ''}${end.getMinutes()}`;
+        setStartTime(startTimeFormatted);
+        setEndTime(endTimeFormatted);
+        // 날짜는 toISOString()으로 형식화하여 설정
+        setStartDate(start.toISOString().split('T')[0]);
+        setEndDate(end.toISOString().split('T')[0]);
+        // 색상 및 모달 표시 상태 설정
+        setEventColor(event.color);
+
+        setShow(true);
+    }
+
+    const calHeight = ()=>{
+        if(selectedDate){
+            return "calc(100vh - 400px)"
+        }else {
+            return "90vh"
+        }
+    }
+
+    return (
+        <>
+                <FullCalendar
+                    plugins={[dayGridPlugin, interactionPlugin]}
+                    initialView="dayGridMonth"
+                    headerToolbar={{
+                        start: '',
+                        center: 'title',
+                        end: 'today prev,next',
+                    }}
+                    locale="kr"
+                    dayMaxEvents={true} // when too many events in a day, show the popover
+                    events={events}
+                    height={calHeight()}
+                    dateClick={dateClick}
+                    selectable={true} // 날짜 선택 가능
+                    editable={true} // ✨ 이벤트 수정 가능하게 해야 eventChange 작동!
+                    /*eventChange={handleEventChange} // 여기서 핸들러 연결*/
+                    dayCellContent={(args) => {
+                        // 날짜에서 '일'을 제거한 숫자만 반환
+                        return args.date.getDate();
+                    }}
+                    eventContent={(eventInfo) => {
+                        return (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                pointerEvents: 'none' // 이벤트 위에서 커서 반응 없게
+                            }}>
+                                {/* 동그란 점 */}
+                                <div
+                                    style={{
+                                        backgroundColor: eventInfo.event.backgroundColor,
+                                        width: '10px',
+                                        height: '10px',
+                                        borderRadius: '50%',  // 동그란 모양
+                                        marginRight: '5px', // 타이틀과 색상 간격
+                                    }}
+                                />
+                                {/* 타이틀 */}
+                                <span>{eventInfo.event.title}</span>
+                            </div>
+                        );
+                    }}
+                />
+
+                {selectedDate && (
+                    <motion.div
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0, y: 20}}
+                        transition={{duration: 0.3, ease: 'easeInOut'}}
+                        className="fixed bottom-0 left-0.5 right-0.5 bg-white pl-6 pr-6  shadow-lg rounded-t-2xl w-3/5 h-[400px] border border-gray-300 box-border flex flex-col justify-between" // 테두리 추가
+                    >
+                        <div className="flex mt-5">
+                            <h2 className="text-center text-xl text-gray-900">
+                                {new Date(selectedDate).getFullYear()}년 {new Date(selectedDate).getMonth() + 1}월 {new Date(selectedDate).getDate()}일
+                                일정
+                            </h2>
+                            <button onClick={() => setSelectedDate(null)} className="text-xl ml-auto mr-3">
+                                <i className="fa-solid fa-xmark text-gray-600"></i>
+                            </button>
+                        </div>
+                        <div className="mt-6">
+                        {selectedEvent && selectedEvent.length > 0 ? (
+                            selectedEvent.map((event, index) => (
+                                <div key={index} className="flex items-center space-x-2 btn mt-2" onClick={()=>eventClick(event)}>
+                                    {/* 색상 표시 부분 */}
+                                    <div
+                                        style={{
+                                            backgroundColor: event.color,
+                                            width: '5px',
+                                            height: '40px',
+                                            borderRadius: '15%',
+                                            marginRight: '5px', // 타이틀과 색상 간격
+                                        }}
+                                    />
+                                    {/* 제목과 시간 정보 부분 */}
+                                    <div className="flex flex-col">
+                                        <p>{event.title}</p>
+                                        <p className="text-sm text-gray-500">
+                                            {new Date(event.start).toLocaleTimeString('ko-KR', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex items-center">
+                            <div
+                                style={{
+                                    backgroundColor: "#c3c3c3",
+                                    width: '3px',
+                                    height: '25px',
+                                    borderRadius: '15%',
+                                    marginRight: '10px',
+                                }}
+                            />
+                            <p className="text-gray-500 text-lg"> 일정이 없습니다.</p>
+                            </div>
+                            )}
+                        </div>
+                        <div className="flex ml-auto mt-auto mb-10">
+                            <button onClick={addEvent} className="text-teal-400 text-4xl">
+                                <i className="fa-solid fa-circle-plus"></i>
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+
+            {/*==================================일정추가 창 구현============================================*/}
+            <Modal show={show} onHide={handleClose} centered>
+
+            <Modal.Header closeButton className="custom-header">
+                        <Button variant="secondary" onClick={handleClose}>
+                            <i className="fa-solid fa-xmark"></i>
+                        </Button>
+                        <Modal.Title>운동 일정</Modal.Title>
+                        <Button variant="primary" onClick={handleSave}>
+                            <i className="fa-solid fa-check"></i>
+                        </Button>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="일정을 입력하세요."
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    style={{width: "100%", padding: "10px"}}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3 custom-form-group">
+                                <div className="date-time-box left-box">
+                                    <Form.Control
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                    {!allDay &&
+                                        <Form.Control
+                                            type="time"
+                                            value={startTime}
+                                            onChange={(e) => setStartTime(e.target.value)}
+                                            step="300" // 5분 단위 - 응 반영 안됨
+                                        />
+                                    }
+                                </div>
+                                <i className="fa-solid fa-angle-right"></i>
+                                <div className="date-time-box right-box">
+                                    <Form.Control
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                    {!allDay &&
+                                        <Form.Control
+                                            type="time"
+                                            value={endTime}
+                                            onChange={(e) => setEndTime(e.target.value)}
+                                            /*disabled={allDay}*/
+                                        />
+                                    }
+                                </div>
+                                <div>
+                                    <Button
+                                        variant={allDay ? "success" : "outline-secondary"}
+                                        onClick={() => {
+                                            setAllDay(!allDay);
+                                            setEndTime("");
+                                            setStartTime("");
+                                        }}
+                                        className={`${allDay ?
+                                            "bg-teal-400 text-white border-teal-400"
+                                            :
+                                            "bg-transparent text-gray-600 border-teal-300"}
+                                border-2 font-bold rounded-full text-sm w-20 h-9 text-center
+                            `}>
+                                        종일
+                                    </Button>
+                                </div>
+                            </Form.Group>
+
+
+                        </Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>색상 선택</Form.Label>
+                            <div className="flex gap-2 mt-2">
+                                {pastelColors.map((color) => (
+                                    <div
+                                        key={color}
+                                        className="color-option mr-2"
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            backgroundColor: color,
+                                            borderRadius: '50%',
+                                            border: eventColor === color ? '3px solid #000' : '1px solid #ccc',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => setEventColor(color)}
+                                    />
+                                ))}
+                            </div>
+                        </Form.Group>
+                    </Modal.Body>
+                </Modal>
+            </>
+
+            )
+            }
+
+            export default WorkoutCalendar

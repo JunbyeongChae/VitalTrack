@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import { Link } from 'react-router';
 import { getWeightChanges } from '../services/authLogic';
+import AirQuality from "../services/AirQuality";
+import AIHealthAnalysis from '../services/AIHealthAnalysis';
 
 const UserHome = () => {
   const [bmiStatus, setBmiStatus] = useState('');
@@ -122,6 +124,7 @@ const UserHome = () => {
             </div>
           </div>
         </div>
+        <AirQuality />
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -140,6 +143,8 @@ const UserHome = () => {
               </Link>
             </div>
             <div id="activityChart" className="h-80 mt-4"></div>
+           {/* <WoChart/>*/}
+            {/*WoChart 데이터를 어떻게 가져올까...!!*/}
           </div>
         </div>
       </div>
@@ -151,7 +156,7 @@ const UserHome = () => {
             <div className="mt-4 space-y-4">
               <div className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                <p className="ml-3 text-sm text-gray-500">달리기기 - 7:00 AM</p>
+                <p className="ml-3 text-sm text-gray-500">달리기 - 7:00 AM</p>
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
@@ -184,6 +189,7 @@ const UserHome = () => {
             </button>
           </div>
         </div>
+        <AIHealthAnalysis user={user} />
       </div>
     </main>
   );

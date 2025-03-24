@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebaseConfig';
 import { toast } from 'react-toastify';
-import { loginMember, getUserByEmail } from '../../services/authLogic';
+import { loginMember, oauthLogin } from '../../services/authLogic';
 
 // mySQL사용으로 전체 수정 : 채준병
 // 로그인 페이지
@@ -40,40 +40,19 @@ const Login = ({ setUser }) => {
     }
   };
 
+  // Google 로그인 처리 함수
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
-      // authLogic.js에서 사용자 정보 조회
-      const userData = await getUserByEmail(user.email);
-
+  
+      // JWT 포함된 사용자 정보 요청
+      const userData = await oauthLogin(user.email);
+  
       if (userData) {
-        localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
         navigate('/');
         toast.success(`${userData.memNick}님, 환영합니다!`);
-      } else {
-        // Toast가 닫힌 후에만 페이지 이동
-        toast.error(
-          <div>
-            회원정보를 찾을 수 없습니다.
-            <br />
-            클릭하면 회원가입으로 넘어갑니다.
-          </div>,
-          {
-            onClose: () => {
-              navigate('/signup', {
-                state: {
-                  email: user.email,
-                  name: user.displayName,
-                  uid: user.uid
-                }
-              });
-            },
-            autoClose: 3000 // 사용자가 닫지 않으면 3초 후 자동으로 닫힘
-          }
-        );
       }
     } catch (error) {
       toast.error(`Google 로그인 실패: ${error.message}`);
@@ -85,7 +64,7 @@ const Login = ({ setUser }) => {
       <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-20">
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">
-            <img src="../images/logo.png" alt="Logo" style={{ height: '200px' }} />
+            <img src="../images/logo2_login.png" alt="Logo" style={{ height: '200px' }} />
           </div>
 
           <form className="space-y-3" onSubmit={handleSubmit}>
@@ -95,7 +74,7 @@ const Login = ({ setUser }) => {
             </div>
             <div>
               <label className="block text-xl font-medium text-gray-700">비밀번호</label>
-              <input type="password" name="memPw" placeholder="Enter your password" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
+              <input type="password" name="memPw" placeholder="비밀번호를 입력하세요" value={formData.memPw} onChange={handleChange} className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xl" required />
             </div>
             <button type="submit" className=" text-xl w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-700 transition">
               로그인
