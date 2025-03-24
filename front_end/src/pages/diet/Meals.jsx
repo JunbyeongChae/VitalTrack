@@ -44,7 +44,6 @@ const Meals = () => {
             console.log("Fetching meals from:", url);
             const response = await fetch(url);
             const rawResponse = await response.text();
-            console.log("Raw API Response for meals:", rawResponse);
 
             if (!response.ok) {
                 throw new Error(`Failed to fetch client meals: ${rawResponse}`);

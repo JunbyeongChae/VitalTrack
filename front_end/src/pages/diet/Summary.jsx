@@ -75,7 +75,6 @@ const Summary = () => {
                 };
             }, {protein: 0, carbs: 0, fat: 0});
         };
-
         const breakfastMacros = calculateMealMacros(breakfastMeals);
         const lunchMacros = calculateMealMacros(lunchMeals);
         const dinnerMacros = calculateMealMacros(dinnerMeals);
@@ -88,7 +87,6 @@ const Summary = () => {
             fat: breakfastMacros.fat + lunchMacros.fat + dinnerMacros.fat + snackMacros.fat
         };
     };
-
     // Add this to your Summary component to check what's actually in your context
     useEffect(() => {
         console.log("Context data in Summary:", {
@@ -105,14 +103,9 @@ const Summary = () => {
 
     useEffect(() => {
         if (!calorieChartRef.current) return;
-
-        const consumedCalories = calculateConsumedCalories();
         const remainingCalories = Math.max(targetCalories - consumedCalories, 0);
-
         console.log('Rendering calorie chart using values:', {consumedCalories, remainingCalories});
-
         let calorieChart = echarts.getInstanceByDom(calorieChartRef.current);
-
         // If no chart instance, initialize one. Else, reuse it.
         if (!calorieChart) {
             calorieChart = echarts.init(calorieChartRef.current);
@@ -153,9 +146,6 @@ const Summary = () => {
                 },
             ],
         }, true); // `true` forces ECharts to replace the previous option entirely.
-        // Handle window resize events
-        // Immediately resize (you said there's already a resize() function you created; reuse it here.)
-        calorieChart.resize();
 
         // Optional: Re-resize on window resize as you're already handling this scenario
         window.addEventListener('resize', calorieChart.resize);
@@ -239,7 +229,7 @@ const Summary = () => {
         // cleanup timeout explicitly
         return () => clearTimeout(timeoutId);
 
-    }, []);
+    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate]);
 
     useEffect(() => {
         const fetchMealsAndWaterIntake = async () => {
