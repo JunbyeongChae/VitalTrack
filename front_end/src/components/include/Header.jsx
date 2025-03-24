@@ -22,10 +22,15 @@ const Header = ({ user, setUser }) => {
 
   // 새로고침해도 로그인 상태 유지
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    } else {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser && storedUser !== 'undefined') {
+        setCurrentUser(JSON.parse(storedUser));
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (e) {
+      console.error('localStorage user 파싱 실패:', e);
       setCurrentUser(null);
     }
   }, [user]); // user 값이 변경될 때마다 실행

@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build: ./front_end
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./back_end
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/vitaltrack
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: abcd1234
+
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: abcd1234
+      MYSQL_DATABASE: vitaltrack
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
