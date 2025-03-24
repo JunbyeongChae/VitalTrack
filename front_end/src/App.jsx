@@ -101,7 +101,7 @@ const App = () => {
           <Route path="/healthInfo/write" element={<InfoBoardWrite />} />
           <Route path="/healthInfo/:infoNo" element={<InfoBoardDetail />} />
           <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
-          <Route path="/nutrition" element={<Dashboard />} />
+          <Route path="/nutrition" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
           <Route path="/workout" exact={true} element={<WorkoutPage />}/>
         </Routes>
       </main>

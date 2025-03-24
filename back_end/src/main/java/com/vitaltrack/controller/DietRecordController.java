@@ -62,6 +62,33 @@ public class DietRecordController {
         }
     }
 
+    // Add this endpoint for fetching meals by member number and date
+    @GetMapping("/meals/{memNo}")
+    public List<DietRecordDao> getMealsByMemberAndDate(
+            @PathVariable int memNo,
+            @RequestParam(required = false) String date) {
+
+        LocalDate parsedDate = (date != null) ?
+                LocalDate.parse(date) :
+                LocalDate.now();
+
+        return dietRecordService.getMealsByMemberAndDate(memNo, parsedDate);
+    }
+
+    // Also add an endpoint for the macronutrients
+    @GetMapping("/meals/{memNo}/macronutrients")
+    public Map<String, Object> getMacronutrientsByMemberAndDate(
+            @PathVariable int memNo,
+            @RequestParam(required = false) String date) {
+
+        LocalDate parsedDate = (date != null) ?
+                LocalDate.parse(date) :
+                LocalDate.now();
+
+        return dietRecordService.getMacronutrientsByMemberAndDate(memNo, parsedDate);
+    }
+
+
     @GetMapping("/macronutrients/{memNo}")
     public ResponseEntity<?> getMacronutrientsByMemberNumber(@PathVariable int memNo,
                                                              @RequestParam(required = false) String date) {

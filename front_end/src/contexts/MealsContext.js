@@ -1,5 +1,4 @@
-// MealsContext.js
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react'; // Add useCallback
 
 export const MealsContext = createContext();
 
@@ -14,7 +13,8 @@ export const MealsProvider = ({ children }) => {
     const selectedDateString = localStorage.getItem('selectedDate');
     const selectedDate = selectedDateString ? selectedDateString.split(' ')[0] : new Date().toISOString().split('T')[0];
 
-    const loadClientMeals = async () => {
+    // Wrap with useCallback
+    const loadClientMeals = useCallback(async () => {
         try {
             setIsLoading(true);
             const userData = JSON.parse(localStorage.getItem("user"));
@@ -24,7 +24,14 @@ export const MealsProvider = ({ children }) => {
             }
 
             const { memNo } = userData;
-            const response = await fetch(`http://localhost:8000/api/meals/${memNo}?date=${selectedDate}`);
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`http://localhost:8000/api/meals/${memNo}?date=${selectedDate}`, {
+                headers: {
+                    'Authorization': `Bearer ${token || ''}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
             if (!response.ok) {
                 throw new Error(`Failed to fetch client meals: ${response.statusText}`);
@@ -70,11 +77,12 @@ export const MealsProvider = ({ children }) => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [selectedDate]); // Include selectedDate as dependency
 
     useEffect(() => {
         loadClientMeals();
-    }, [selectedDate]);
+    }, [loadClientMeals]);
+
 
     // Immutable methods to modify arrays dynamically
     const addMeal = (mealType, newMeal) => {
