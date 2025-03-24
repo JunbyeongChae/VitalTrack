@@ -15,6 +15,7 @@ import CounselWrite from './pages/counsel/CounselWrite';
 import CounselDetail from './pages/counsel/CounselDetail';
 import CounselUpdate from './pages/counsel/CounselUpdate';
 import CounselAdvisor from './pages/counsel/CounselAdvisor';
+import {MealsProvider} from "./contexts/MealsContext";
 import InfoBoardList from './pages/infoboard/InfoBoardList';
 import InfoBoardWrite from './pages/infoboard/InfoBoardWrite';
 import InfoBoardUpdate from './pages/infoboard/InfoBoardUpdate';
@@ -100,7 +101,7 @@ const App = () => {
           <Route path="/healthInfo/write" element={<InfoBoardWrite />} />
           <Route path="/healthInfo/:infoNo" element={<InfoBoardDetail />} />
           <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
-          <Route path="/nutrition" element={<Dashboard />} />
+          <Route path="/nutrition" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
           <Route path="/workout" exact={true} element={<WorkoutPage />}/>
         </Routes>
       </main>

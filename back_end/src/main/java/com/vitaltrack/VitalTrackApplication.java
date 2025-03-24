@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.vitaltrack.dao")
+@MapperScan({"com.vitaltrack.dao", "com.vitaltrack.mapper"})
 public class VitalTrackApplication {
 
   public static void main(String[] args) {

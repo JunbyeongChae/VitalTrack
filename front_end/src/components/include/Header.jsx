@@ -84,7 +84,7 @@ const Header = ({ user, setUser }) => {
             <button onClick={() => handleNavClick('/workout')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
               운동관리
             </button>
-            <button onClick={() => handleNavClick('/diet')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
+            <button onClick={() => handleNavClick('/nutrition')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">
               식단관리
             </button>
             <button onClick={() => handleNavClick('/adivsor')} className="text-lg font-semibold text-gray-600 hover:text-indigo-600 transition">

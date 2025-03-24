@@ -36,5 +36,9 @@ out/
 
 ### VS Code ###
 .vscode/
-### intelliJ ###
-.idea/
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
