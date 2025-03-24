@@ -38,6 +38,7 @@ const ScheduleModal = () => {
     const [workoutTypes, setWorkoutTypes] = useState([])
     const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
 
+    //운동 종목 가져오기 - 모달 목록
     useEffect(() => {
         // JSON 파일을 로드하여 운동 종목을 설정
         fetch('/workoutTypes.json') //위치: /public/workoutTypes.json
@@ -48,6 +49,7 @@ const ScheduleModal = () => {
             .catch((error) => console.error('운동 종목 불러오기 오류:', error));
     }, [])
 
+    //일정 수정인지, 등록인지 분류
     useEffect(() => {
         if(modalMode === 'insert') { //일정 추가
             addSchedule()
@@ -58,9 +60,10 @@ const ScheduleModal = () => {
     }, [modalMode])
     
     //일정 추가
-   const addSchedule = () => {
-        setStartTime(currentHour < 10 ? `0${currentHour+1}:00` : `${currentHour+1}:00`); // hour를 startTime에 반영 (2자리로 표시)
-        setEndTime(currentHour < 10 ? `0${currentHour+2}:00` : `${currentHour+2}:00`); // hour를 startTime에 반영 (2자리로 표시)
+    const addSchedule = () => {
+       //console.log(currentHour)
+        setStartTime(currentHour+1 < 10 ? `0${currentHour+1}:00` : `${currentHour+1}:00`); // hour를 startTime에 반영 (2자리로 표시)
+        setEndTime(currentHour+2 < 10 ? `0${currentHour+2}:00` : `${currentHour+2}:00`); // hour를 startTime에 반영 (2자리로 표시)
         setStartDate(selectedDate)
         setEndDate(selectedDate)
         setIsFinished(false)
@@ -70,7 +73,6 @@ const ScheduleModal = () => {
 
         setShowModal(true)
     }
-
     //일정 수정
     const updateSchedule = (schedule) => {
         setSelectedWorkoutType({label: schedule.title, value: schedule.extendedProps.workoutId})
@@ -93,9 +95,8 @@ const ScheduleModal = () => {
         setScheduleColor(schedule.color)
         setShowModal(true)
     }
-
-
-    //✔클릭
+    
+    //✔저장 클릭
     const handleSave = async () => {
         if(!selectedWorkoutType) {
             alert('운동 종목을 선택하세요!')
@@ -140,7 +141,6 @@ const ScheduleModal = () => {
         console.log(modalMode)
         handleClose()
     } //end of handleSave
-
 
     const handleClose = ()=> {
         setShowModal(false)
