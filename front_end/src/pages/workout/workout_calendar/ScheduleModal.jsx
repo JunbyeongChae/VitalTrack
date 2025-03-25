@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {insertScheduleDB, updateScheduleDB} from "../../../services/workoutLogic";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 
 const ScheduleModal = () => {
@@ -99,7 +100,7 @@ const ScheduleModal = () => {
     //✔저장 클릭
     const handleSave = async () => {
         if(!selectedWorkoutType) {
-            alert('운동 종목을 선택하세요!')
+            toast.warn('운동 종목을 선택하세요!')
             return
         }
         //새로운 일정 등록이니?
@@ -115,7 +116,7 @@ const ScheduleModal = () => {
            // console.log(newSchedule)
             const response = await insertScheduleDB(newSchedule)
             if(response) {
-                alert("✔운동 일정이 추가되었습니다!")
+                toast.success("운동 일정이 추가되었습니다!")
                 setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
             }
         }
@@ -134,7 +135,7 @@ const ScheduleModal = () => {
             //console.log(updSchedule)
             const response = await updateScheduleDB(updSchedule)
             if(response.status === 200) {
-                alert("✍운동 일정이 수정되었습니다!")
+                toast.success("운동 일정이 수정되었습니다!")
                 setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
             }
         }
