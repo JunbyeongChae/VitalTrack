@@ -10,7 +10,7 @@ public class CorsConfigurer implements WebMvcConfigurer{
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
-        .allowedOrigins("http://localhost:8000", "http://localhost:3000")
+        .allowedOrigins("http://localhost:8000", "http://localhost:3000", "https://vitaltrack-frontend.onrender.com")
         .allowedMethods("GET","POST","PUT","DELETE")
         .allowedHeaders("*")
         .allowCredentials(true)
