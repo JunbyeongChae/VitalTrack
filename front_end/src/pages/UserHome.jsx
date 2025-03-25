@@ -238,8 +238,8 @@ const UserHome = () => {
               <i className="fas fa-fire text-red-600"></i>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">운동칼로리</p>
-              <h3 className="text-lg font-semibold text-gray-900">2,231 kcal</h3>
+              <p className="text-sm font-medium text-gray-500">오늘 운동칼로리</p>
+              <h3 className="text-lg font-semibold text-gray-900">{lastWeekData.kcal[6]} kcal</h3>
             </div>
           </div>
         </div>
@@ -257,9 +257,6 @@ const UserHome = () => {
           <div className="p-6">
             <div className="flex items-center">
               <h2 className="text-lg font-medium text-gray-900">일주일 운동량</h2>
-              <Link to={'/workout'} className="ml-auto text-blue-500 hover:text-blue-700 border p-4">
-                운동 관리
-              </Link>
             </div>
             {lastWeekData.weekSchedules.length > 0 ?
                 <>
