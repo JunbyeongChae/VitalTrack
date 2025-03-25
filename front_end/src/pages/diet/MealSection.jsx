@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, {useCallback, useState} from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
+const MealSection = ({ title, meals, onAddMeal, onDeleteMeal }) => {
     const [selectedMeal, setSelectedMeal] = useState(null);
+
 
     const handleMealClick = (meal) => {
         setSelectedMeal(meal); // Open delete modal
@@ -67,8 +68,8 @@ const MealSection = ({ title, meals, onAddClick, onDeleteMeal }) => {
             </div>
             {/* Add Button */}
             <button
-                onClick={() => onAddClick(title)}
-                className="add-button bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 transition duration-200 flex items-center gap-2"
+                className="w-full mt-4 py-2 bg-green-500 text-white rounded-md flex items-center justify-center hover:bg-green-600 transition-colors"
+                onClick={() => onAddMeal(title)}
             >
                 <FontAwesomeIcon icon={faPlus} /> Add {title}
             </button>

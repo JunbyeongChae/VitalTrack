@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
 import * as echarts from "echarts";
-import {MealsContext} from "../../contexts/MealsContext";
+import {MealsContext, useMeals} from "../../contexts/MealsContext";
 import axios from "axios";
+import {format} from "date-fns";
 
 const Summary = () => {
     const {breakfastMeals, lunchMeals, dinnerMeals, snackMeals, loadClientMeals} = useContext(MealsContext);
@@ -10,6 +11,8 @@ const Summary = () => {
     const [meals, setMeals] = useState([]);
     const [waterIntake, setWaterIntake] = useState(0); // State to track water intake
     const maxWaterIntake = 8; // Maximum number of water glasses
+    const [summaryData, setSummaryData] = useState({});
+    const { refreshCounter } = useMeals();
 
     const userData = JSON.parse(localStorage.getItem('user')) || {};
     const [selectedDate, setSelectedDate] = useState(
@@ -153,10 +156,9 @@ const Summary = () => {
         // Cleanup listener on component unmount
         return () => {
             window.removeEventListener('resize', calorieChart.resize);
-            calorieChart.dispose(); // Dispose instance
         };
 
-    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, targetCalories]);
+    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, targetCalories, refreshCounter]);
 
     useEffect(() => {
         // explicitly define render function clearly (nested correctly)
@@ -168,7 +170,6 @@ const Summary = () => {
             // safely obtain current instance
             let nutritionChartInstance = echarts.getInstanceByDom(nutritionChartRef.current);
             if (nutritionChartInstance) {
-                echarts.dispose(nutritionChartRef.current);
             }
 
             nutritionChartInstance = echarts.init(nutritionChartRef.current);
@@ -229,7 +230,7 @@ const Summary = () => {
         // cleanup timeout explicitly
         return () => clearTimeout(timeoutId);
 
-    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate]);
+    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, refreshCounter]);
 
     useEffect(() => {
         const fetchMealsAndWaterIntake = async () => {
@@ -258,23 +259,48 @@ const Summary = () => {
             }
         };
         fetchMealsAndWaterIntake();
-    }, [selectedDate]);
+    }, [selectedDate, refreshCounter]);
 
     // Handle water intake changes
     const handleWaterIntakeChange = async (newWaterIntake) => {
-        try {
             setWaterIntake(newWaterIntake);
 
-            // Save to database
-            await axios.post('/api/diet/water-intake', {
-                memNo: memNo,
-                dietDate: currentDate,
-                waterIntake: newWaterIntake
-            });
-        } catch (error) {
-            console.error("Error saving water intake:", error);
-        }
-    };
+            try {
+                // Get user data
+                const userData = JSON.parse(localStorage.getItem("user"));
+                if (!userData || !userData.memNo) {
+                    console.error("User information not found");
+                    return;
+                }
+
+                // Get selected date or use current date
+                const selectedDate = localStorage.getItem("selectedDate");
+                const formattedDate = selectedDate
+                    ? format(new Date(selectedDate), 'yyyy-MM-dd')
+                    : format(new Date(), 'yyyy-MM-dd');
+
+                // Prepare payload for API
+                const payload = {
+                    memNo: userData.memNo,
+                    dietDate: formattedDate,
+                    waterIntake: newWaterIntake
+                };
+
+                // Make API call to update water intake in the database
+                const response = await axios.post(
+                    'http://localhost:8000/api/meals/water-intake',
+                    payload
+                );
+
+                console.log('Water intake updated successfully:', response.data);
+
+            } catch (error) {
+                console.error('Error saving water intake:', error);
+                // Optionally revert the UI if the update fails
+                // setWaterIntake(previousValue);
+            }
+        };
+
 
     // Water intake increase handler
     const increaseWaterIntake = () => {
@@ -291,9 +317,15 @@ const Summary = () => {
     };
 
     // Function to handle water intake reset
-    const handleResetWater = () => {
-        setWaterIntake(0);
+    const handleResetWater = async () => {
+        try {
+            // Call the same handler with 0
+            await handleWaterIntakeChange(0);
+        } catch (error) {
+            console.error('Error resetting water intake:', error);
+        }
     };
+
 
     return (
         <div className="bg-white w-full h-auto p-8 rounded-xl shadow-lg">

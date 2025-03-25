@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import MealSection from "./MealSection";
 import AddMealModal from "./AddMealModal";
-import Food from "../../Food";
+import { format } from 'date-fns';
 import axios from "axios";
+import { MealsContext } from '../../contexts/MealsContext';
 
 const Meals = () => {
     const [foods, setFoods] = useState([]); // State for food data
@@ -15,28 +16,44 @@ const Meals = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalSection, setModalSection] = useState(""); // Section name for the modal
     const [memNo, setMemNo] = useState(null); // Member number state
+    const [isLoading, setIsLoading] = useState(true); // Add loading state
+    const [error, setError] = useState(null); // Add error state
+
+    // Access the context for global state management
+    const mealsContext = useContext(MealsContext);
+
+    // Get selected date from localStorage
+    const selectedDate = localStorage.getItem("selectedDate");
+    const dateToSave = format(selectedDate, 'yyyy-MM-dd');
 
     // Extract loadClientMeals outside of useEffect so it can be called from multiple places
     const loadClientMeals = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
             // Get user data from localStorage
             const userData = JSON.parse(localStorage.getItem("user"));
             if (!userData || !userData.memNo) {
                 console.warn("No member number found for the logged-in user.");
+                setError("User information not found");
+                setIsLoading(false);
                 return;
             }
 
             const memNo = userData.memNo;
             setMemNo(memNo);
 
-            // Get selected date from localStorage
+            // Always use selectedDate from localStorage
             const selectedDate = localStorage.getItem("selectedDate");
-            let dateParam = "";
 
-            if (selectedDate) {
-                // Format date from "2025-03-20 12:00:00" to "2025-03-20"
-                dateParam = selectedDate.split(" ")[0];
-            }
+            // Default to current date in KST format if selectedDate doesn't exist
+            const dateParam = selectedDate
+                ? format(new Date(selectedDate), 'yyyy-MM-dd')
+                : (() => {
+                    const now = new Date();
+                    const kstDate = new Date(now.getTime() + 9 * 60 * 60000);
+                    return `${kstDate.getUTCFullYear()}-${String(kstDate.getUTCMonth() + 1).padStart(2, "0")}-${String(kstDate.getUTCDate()).padStart(2, "0")}`;
+                })();
 
             // Build URL with query parameter if date exists
             const url = `http://localhost:8000/api/meals/${memNo}${dateParam ? `?date=${dateParam}` : ""}`;
@@ -50,6 +67,8 @@ const Meals = () => {
             }
 
             const mealsResponse = JSON.parse(rawResponse);
+            console.log("Raw API response:", mealsResponse);
+
             const groupedMeals = { Breakfast: [], Lunch: [], Dinner: [], Snack: [] };
 
             mealsResponse.forEach((meal) => {
@@ -74,67 +93,52 @@ const Meals = () => {
 
             setSections(groupedMeals);
             console.log("Updated Sections:", groupedMeals);
+
+            // If we're part of a context system, notify the context that data has been updated
+            if (mealsContext && mealsContext.setMealsData) {
+                mealsContext.setMealsData(groupedMeals);
+            }
+
+            // Dispatch a custom event to notify other components
+            const reloadEvent = new CustomEvent('mealsReloaded', {
+                detail: {
+                    timestamp: new Date().getTime(),
+                    source: 'Meals.jsx',
+                    meals: groupedMeals
+                }
+            });
+            window.dispatchEvent(reloadEvent);
         } catch (error) {
             console.error("Error loading client meals:", error);
+            setError("Failed to load meals: " + error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    // Main useEffect for initial data loading
+    // Add event listener for date changes
     useEffect(() => {
-        const fetchFoodData = async () => {
-            try {
-                const response = await axios.get("http://localhost:8000/api/food-data");
-                const foodObjects = response.data.records.map((record) => new Food(record));
-                setFoods(foodObjects);
-            } catch (error) {
-                console.error("Error fetching food data:", error);
-            }
-        };
-
-        fetchFoodData();
-        loadClientMeals();
-    }, []);
-
-    // Add the storage event listener useEffect here
-    useEffect(() => {
-        // Function to handle date changes
         const handleDateChange = () => {
-            console.log("Date change detected, reloading meals");
+            console.log("Date change detected in Meals component");
             loadClientMeals();
         };
 
-        // Listen for our custom event
-        window.addEventListener("selectedDateChanged", handleDateChange);
+        // Listen for the custom event from DietCalendar
+        window.addEventListener('selectedDateChanged', handleDateChange);
 
-        // Set up initial handling of existing date in localStorage
-        const currentSelectedDate = localStorage.getItem("selectedDate");
-        if (currentSelectedDate) {
-            console.log("Initial date found in localStorage:", currentSelectedDate);
-        }
+        // Initial load of meals
+        loadClientMeals();
 
-        // Clean up event listener when component unmounts
+        // Clean up the event listener
         return () => {
-            window.removeEventListener("selectedDateChanged", handleDateChange);
+            window.removeEventListener('selectedDateChanged', handleDateChange);
         };
     }, []);
 
-// Also add this utility function to your component
-    const updateSelectedDate = (newDate) => {
-        localStorage.setItem("selectedDate", newDate);
-        // Dispatch custom event to notify components
-        window.dispatchEvent(new CustomEvent("selectedDateChanged"));
-    };
-
-    const openModal = (sectionName) => {
-        setModalSection(sectionName);
+    const onAddMeal = (section) => {
+        setModalSection(section);
         setIsModalOpen(true);
     };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setModalSection("");
-    };
-
 
     const saveMeal = async (meal) => {
         try {
@@ -142,16 +146,25 @@ const Meals = () => {
             const userData = JSON.parse(localStorage.getItem("user"));
             const memNo = userData?.memNo;
 
-            if (!memNo) {
-                console.error("Member number (memNo) is missing for this user.");
-                alert("User is not logged in or missing member number. Please log in again.");
-                return;
+            // Format the selected date
+            let dietDate;
+            if (selectedDate) {
+                // Parse the date string to a Date object
+                const parsedDate = new Date(selectedDate);
+                // Format it as YYYY-MM-DD
+                dietDate = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(parsedDate.getDate()).padStart(2, '0')}`;
+                console.log("Using selected date:", dietDate);
+            } else {
+                // Use current date as fallback
+                const now = new Date();
+                dietDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                console.log("No selected date found, using current date:", dietDate);
             }
 
             // Prepare the meal data to send to the API
             const mealData = {
                 memNo: memNo, // Member number
-                dietDate: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+                dietDate: dietDate,
                 mealType: modalSection, // The meal section (e.g., "Breakfast", "Lunch")
                 name: meal.name, // Name of the food
                 calories: meal.calories, // Number of calories
@@ -180,6 +193,7 @@ const Meals = () => {
 
             // Close the modal after success
             closeModal();
+
         } catch (error) {
             console.error("Error saving meal:", error);
             alert("Failed to save the meal. Please try again.");
@@ -191,60 +205,108 @@ const Meals = () => {
         await saveMeal(meal);
     };
 
-// Add this deleteMeal function to your Meals component
-    const handleDeleteMeal = async (recordId) => {
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setModalSection("");
+    };
+
+    // Handler for deleting meals
+    const handleDeleteMeal = async (mealId) => {
         try {
-            console.log("Deleting meal with ID:", recordId);
-            const response = await axios.delete(`http://localhost:8000/api/meals/${recordId}`);
+            // Call API to delete the meal
+            await axios.delete(`http://localhost:8000/api/meals/${mealId}`);
 
-            if (response.status === 200) {
-                // On successful deletion, update the state to remove the meal
-                const updatedSections = {...sections};
-
-                // Find and remove the meal from the appropriate section
-                Object.keys(updatedSections).forEach(section => {
-                    updatedSections[section] = updatedSections[section].filter(meal => meal.recordId !== recordId);
-                });
-
-                setSections(updatedSections);
-                console.log("Meal deleted successfully");
-            }
+            // Reload meals to update the UI
+            loadClientMeals();
         } catch (error) {
             console.error("Error deleting meal:", error);
             alert("Failed to delete meal. Please try again.");
         }
     };
 
-    return (
-        <div className="meals-page px-4 py-6">
-            <h1 className="text-xl font-bold mb-4">오늘의 식단</h1>
+    // Handler for adding a new meal and closing modal
+    const handleSaveMeal = async (mealData) => {
+        try {
+            // Format the meal data with the selected section (mealType)
+            const mealToSave = {
+                ...mealData,
+                mealType: modalSection,
+                memNo: memNo
+            };
 
-            <div className="meal-sections grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Meal sections */}
-                {Object.entries(sections).map(([sectionName, sectionMeals]) => (
-                    <MealSection
-                        key={sectionName}
-                        title={sectionName}
-                        meals={sectionMeals}
-                        onAddClick={() => openModal(sectionName)}
-                        onDeleteMeal={handleDeleteMeal} // Pass the delete handler
-                    />
-                ))}
+            // Save the meal
+            await axios.post('http://localhost:8000/api/meals', mealToSave);
+
+            // Close modal
+            setIsModalOpen(false);
+
+            // Reload meals to update the UI
+            loadClientMeals();
+        } catch (error) {
+            console.error("Error saving meal:", error);
+            alert("Failed to save meal. Please try again.");
+        }
+    };
+
+    return (
+        <div className="meals-container p-6">
+            <h1 className="text-2xl font-bold mb-6">My Meals</h1>
+
+            {/* Show loading state */}
+            {isLoading && (
+                <div className="text-center py-4">
+                    <p>Loading meals...</p>
+                </div>
+            )}
+
+            {/* Show error message */}
+            {error && (
+                <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
+
+            {/* Meal sections */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <MealSection
+                    title="Breakfast"
+                    meals={sections.Breakfast}
+                    onAddMeal={onAddMeal}
+                    onDeleteMeal={handleDeleteMeal}
+                />
+                <MealSection
+                    title="Lunch"
+                    meals={sections.Lunch}
+                    onAddMeal={onAddMeal}
+                    onDeleteMeal={handleDeleteMeal}
+                />
+                <MealSection
+                    title="Dinner"
+                    meals={sections.Dinner}
+                    onAddMeal={onAddMeal}
+                    onDeleteMeal={handleDeleteMeal}
+                />
+                <MealSection
+                    title="Snack"
+                    meals={sections.Snack}
+                    onAddMeal={onAddMeal}
+                    onDeleteMeal={handleDeleteMeal}
+                />
             </div>
 
             {/* Add Meal Modal */}
             {isModalOpen && (
                 <AddMealModal
                     isOpen={isModalOpen}
-                    onClose={closeModal}
+                    onClose={() => setIsModalOpen(false)}
+                    onSave={handleSaveMeal}
                     onAddMeal={addMealToSection}
-                    sectionName={modalSection}
-                    foodOptions={foods}
+                    sectionTitle={modalSection}
+                    foods={foods}
                 />
             )}
         </div>
     );
 };
-
 
 export default Meals;

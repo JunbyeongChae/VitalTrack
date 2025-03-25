@@ -21,14 +21,24 @@ const DietCalendar = () => {
 
     // Update localStorage and dispatch custom event when selectedDate changes
     useEffect(() => {
-        const formattedDate = formatDateToDB(selectedDate); // Convert to DB-compatible format
+        const formattedDate = formatDateToDB(selectedDate);
         localStorage.setItem("selectedDate", formattedDate);
 
-        // Dispatch the custom event to notify Meals component
-        window.dispatchEvent(new CustomEvent("selectedDateChanged"));
+        // Create a more detailed custom event with the date information
+        const dateChangeEvent = new CustomEvent("selectedDateChanged", {
+            detail: {
+                date: formattedDate,
+                source: 'useEffect',
+                timestamp: new Date().getTime()
+            }
+        });
+
+        // Dispatch the custom event to notify all components
+        window.dispatchEvent(dateChangeEvent);
 
         console.log("Date updated and event dispatched:", formattedDate);
     }, [selectedDate]);
+
 
     // Function to fetch data for the formatted selectedDate
     useEffect(() => {

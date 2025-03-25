@@ -24,7 +24,8 @@ const DateExplorer = ({ selectedDate, onDateChange }) => {
                 className="text-xl font-semibold cursor-pointer"
                 onClick={() => setModalOpen(true)} // Open modal
             >
-                {selectedDate.toISOString().split("T")[0]}
+                {`${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`}
+
             </span>
 
             <button

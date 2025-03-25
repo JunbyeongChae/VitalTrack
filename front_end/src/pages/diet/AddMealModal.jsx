@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useMeals } from '../../contexts/MealsContext'
+
 
 // Utility to normalize search text for better searching
 const normalizeText = (text) => {
@@ -9,6 +11,7 @@ const normalizeText = (text) => {
 };
 
 const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
+    const { refreshComponents } = useMeals(); // MealsContext에서 함수 가져오기
     const [searchQuery, setSearchQuery] = useState(""); // Input query
     const [searchResults, setSearchResults] = useState([]); // Fetched results
     const [recentSearches, setRecentSearches] = useState([]); // Recently searched queries
@@ -207,6 +210,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
                                             console.log("Meal Data:", meal); // Ensure full meal object is logged
 
                                             onAddMeal(meal); // Pass full object to onAddMeal
+
                                         }}
                                         className="text-sm font-medium text-blue-500 hover:text-blue-700"
                                     >
