@@ -26,7 +26,7 @@ export const MealsProvider = ({ children }) => {
       const { memNo } = userData;
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`http://localhost:8000/api/meals/${memNo}?date=${selectedDate}`, {
+      const response = await fetch(`${process.env.REACT_APP_SPRING_IP}api/meals/${memNo}?date=${selectedDate}`, {
         headers: {
           Authorization: `Bearer ${token || ''}`,
           'Content-Type': 'application/json'
