@@ -1,20 +1,18 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect,useState} from 'react'
 import {useScheduleContext} from "../Context";
 import {Button, Form, Modal} from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {insertScheduleDB, updateScheduleDB} from "../../../services/workoutLogic";
-import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
 
 const ScheduleModal = () => {
     const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
     const { memNo } = user
-    const navigate = useNavigate()
-    const {schedules, setSchedules, selectedDate, selectedSchedule,
-        modalMode, setModalMode, showModal, setShowModal, signal, setSignal} = useScheduleContext()
+    const {schedules, selectedDate, selectedSchedule,
+        modalMode, setModalMode, showModal, setShowModal, setSignal} = useScheduleContext()
     const pastelColors = [
         '#76c3c5', // Pastel Green
         '#ff8d8d', // Pastel Red
@@ -232,8 +230,10 @@ const ScheduleModal = () => {
                                 type="button"
                                 onClick={() => {
                                     setAllDay(!allDay);
-                                    setEndTime("");
-                                    setStartTime("");
+                                    if (!allDay) {
+                                        setEndTime("");
+                                        setStartTime("");
+                                    }
                                 }}
                                 className={`${allDay ?
                                     "bg-teal-400 text-white border-teal-400" :
