@@ -145,7 +145,7 @@ export const deleteUser = async (memEmail) => {
 
 // 아이디 중복 체크
 export const checkIdExists = async (memId) => {
-  const result = await authFetch(`api/auth/checkId?memId=${memId}`, {
+  const result = await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/checkId?memId=${memId}`, {
     method: 'GET'
   });
   return result;
@@ -163,7 +163,7 @@ export const checkEmailExists = async (email) => {
 
 // 체중 변화 데이터 조회
 export const getWeightChanges = async (memNo) => {
-  return await authFetch(`api/auth/getWeightChanges?memNo=${memNo}`, {
+  return await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/getWeightChanges?memNo=${memNo}`, {
     method: 'GET'
   });
 };
