@@ -39,7 +39,7 @@ const Meals = () => {
             }
 
             // Build URL with query parameter if date exists
-            const url = `http://localhost:8000/api/meals/${memNo}${dateParam ? `?date=${dateParam}` : ""}`;
+            const url = `${process.env.REACT_APP_SPRING_IP}api/meals/${memNo}${dateParam ? `?date=${dateParam}` : ""}`;
 
             console.log("Fetching meals from:", url);
             const response = await fetch(url);
@@ -84,7 +84,7 @@ const Meals = () => {
     useEffect(() => {
         const fetchFoodData = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/food-data");
+                const response = await axios.get(`${process.env.REACT_APP_SPRING_IP}api/food-data`);
                 const foodObjects = response.data.records.map((record) => new Food(record));
                 setFoods(foodObjects);
             } catch (error) {
@@ -165,7 +165,7 @@ const Meals = () => {
             console.log("Saving meal data:", mealData);
 
             // Make a POST request to save the meal
-            const response = await axios.post("http://localhost:8000/api/meals", mealData);
+            const response = await axios.post(`${process.env.REACT_APP_SPRING_IP}api/meals`, mealData);
 
             // Response should return the saved meal
             const savedMeal = response.data;
@@ -196,7 +196,7 @@ const Meals = () => {
     const handleDeleteMeal = async (recordId) => {
         try {
             console.log("Deleting meal with ID:", recordId);
-            const response = await axios.delete(`http://localhost:8000/api/meals/${recordId}`);
+            const response = await axios.delete(`${process.env.REACT_APP_SPRING_IP}api/meals/${recordId}`);
 
             if (response.status === 200) {
                 // On successful deletion, update the state to remove the meal

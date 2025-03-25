@@ -45,7 +45,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
         setIsLoading(true);
         try {
             const response = await axios.get(
-                "http://localhost:8000/api/foods/search",
+                `${process.env.REACT_APP_SPRING_IP}api/foods/search`,
                 {
                     params: { query: searchQuery },
                 }
