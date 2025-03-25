@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: vitaltrack-frontend
+    env: docker
+    dockerfilePath: front_end/Dockerfile
+    buildCommand: npm run build
+    startCommand: nginx -g 'daemon off;'
+    autoDeploy: true
+    plan: free
+    envVars:
+      - key: REACT_APP_SPRING_IP
+        value: https://vitaltrack-backend.onrender.com/
+
+  - type: web
+    name: vitaltrack-backend
+    env: docker
+    dockerfilePath: back_end/Dockerfile
+    autoDeploy: true
+    plan: free
