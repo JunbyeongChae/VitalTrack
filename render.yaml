@@ -5,7 +5,6 @@ services:
     plan: free
     dockerfilePath: front_end/Dockerfile
     buildCommand: npm install && npm run build
-    startCommand: nginx -g 'daemon off;'
     envVars:
       - key: REACT_APP_SPRING_IP
         value: https://vitaltrack-backend.onrender.com/
