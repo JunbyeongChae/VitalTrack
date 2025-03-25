@@ -1,7 +1,7 @@
 # 1단계: React 앱 빌드
 FROM node:18 AS build
 WORKDIR /app
-COPY . .
+COPY front_end/ .
 RUN npm install
 RUN npm run build
 

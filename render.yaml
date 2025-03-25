@@ -3,7 +3,7 @@ services:
     name: vitaltrack-frontend
     env: docker
     plan: free
-    dockerfilePath: front_end/Dockerfile
+    dockerfilePath: Dockerfile.frontend
     envVars:
       - key: REACT_APP_SPRING_IP
         value: https://vitaltrack-backend.onrender.com/
