@@ -20,7 +20,7 @@ const CounselWrite = () => {
   };
 
   const handleTitle = useCallback((e) => setTitle(e.target.value), []);
-  const handleContent = useCallback((e) => setContent(e.target.value), []);
+  const handleContent = useCallback((html) => setContent(html), []); 
 
   const boardInsert = async () => {
     console.log('boardInsert from CounselDBWrite');
