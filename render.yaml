@@ -16,7 +16,7 @@ services:
     dockerfilePath: back_end/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://your-mysql-host:3306/vitaltrack
+        value: jdbc:mysql://localhost:3306/vitaltrack
       - key: SPRING_DATASOURCE_USERNAME
         value: root
       - key: SPRING_DATASOURCE_PASSWORD
