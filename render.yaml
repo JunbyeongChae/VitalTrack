@@ -15,7 +15,7 @@ services:
     dockerfilePath: back_end/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: ${{MySQL.MYSQL_URL}}
+        value: jdbc:mysql://containers-us-west-xxx.railway.app:xxxx/railway
       - key: SPRING_DATASOURCE_USERNAME
         value: root
       - key: SPRING_DATASOURCE_PASSWORD
