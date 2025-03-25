@@ -1,65 +1,60 @@
 import React, {useEffect, useState} from 'react'
-import {motion} from "framer-motion";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction"
-import {Button, Form, Modal, Popover} from "react-bootstrap"; // needed for dayClick
 import "./style/WorkoutCalendar.css"
 import DateClick from "./DateClick";
 import {useScheduleContext} from "../Context";
-import axios from "axios";
-import {getScheduleList, getScheduleListDB} from "../../../services/workoutLogic";
+import {getScheduleListDB} from "../../../services/workoutLogic";
 
 const WorkoutCalendar = () => {
     const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
     const { memNo } = user
-    const {schedules, setSchedules, selectedDate, setSelectedDate,
-                dateSchedules, setDateSchedules, signal} = useScheduleContext()
+    const {schedules, setSchedules, selectedDate, setSelectedDate, signal} = useScheduleContext()
 
     useEffect( () => {
         scheduleList()
         if (selectedDate) { //signal로 재랜더링 되도 날짜선택은 유지 -> DateClik.jsx 창 오픈되어있도록 하고픔
             dateClick({ dateStr: selectedDate})
         }
-    }, [signal]) // schedules가 변경될 때만 실행 -> 넣었더니 무한재부팅....ㄴㅇㄱ 와이라노....
-
+    }, [signal]) // schedules가 변경될 때마다 signal 업데이트됨
 
     //전체 운동 일정 조회 - DB 경유
     const scheduleList = async () => {
         // /api -> 웹페이지 요청이 아닌 RESTful API 요청임을 명시
         const response = await getScheduleListDB({memNo})
-        const schedules = response.data;
+        let schedules = []
+        if(response){
+            schedules = response.data
+        }
 
-        const formattedSchedules = schedules.map((schedule) => {
-            // 'T'로 바꿔서 ISO 형식으로 변환
-            const formattedStart = schedule.scheduleStart.replace(" ", "T");  // start 날짜 변환
-            const formattedEnd = schedule.scheduleEnd.replace(" ", "T");  // end 날짜 변환
+            const formattedSchedules = schedules.map((schedule) => {
+                // 'T'로 바꿔서 ISO 형식으로 변환
+                const formattedStart = schedule.scheduleStart.replace(" ", "T");  // start 날짜 변환
+                const formattedEnd = schedule.scheduleEnd.replace(" ", "T");  // end 날짜 변환
 
-            return {
-                id: schedule.scheduleId, // 기존 이벤트의 id 그대로 사용
-                title: schedule.workoutName,
-                start: formattedStart,  // 변환된 start 날짜 사용
-                end: formattedEnd,  // 변환된 end 날짜 사용
-                color: schedule.color,
-                allDay: schedule.allDay,
-                extendedProps: {
-                    isFinished: schedule.isFinished,
-                    workoutId: schedule.workoutId,
-                    workoutTimeMin: schedule.workoutTimeMin,
-                    kcal : schedule.kcal
+                return {
+                    id: schedule.scheduleId, // 기존 이벤트의 id 그대로 사용
+                    title: schedule.workoutName,
+                    start: formattedStart,  // 변환된 start 날짜 사용
+                    end: formattedEnd,  // 변환된 end 날짜 사용
+                    color: schedule.color,
+                    allDay: schedule.allDay,
+                    extendedProps: {
+                        isFinished: schedule.isFinished,
+                        workoutId: schedule.workoutId,
+                        workoutTimeMin: schedule.workoutTimeMin,
+                        kcal : schedule.kcal
+                    }
                 }
-            }
-        })
-        setSchedules(formattedSchedules)
-    } //end of scheduleListDB
+            })
+            setSchedules(formattedSchedules)
+    } //end of scheduleList
 
     const dateClick = (info) => {
         const clickedDate = info.dateStr
-        //console.log(clickedDate) //2025-03-22
-        //console.log(typeof clickedDate) //String
         setSelectedDate(clickedDate)
     }
-
     const calHeight = ()=>{
         if(selectedDate){
             return "calc(100vh - 485px)"

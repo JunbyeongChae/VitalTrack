@@ -20,7 +20,6 @@ const DateClick = () => {
     useEffect(() => {
         // 선택한 날짜에 해당하는 일정들 필터링
         const filteredSchedules  = schedules.filter(schedule => {
-           // console.log(schedule.start) //"2025-03-22T05:00:00" string
             const startDate = schedule.start.split('T')[0]
             return startDate === selectedDate; //string & string
         }) //end of schedulesOnSelectedDate
@@ -32,8 +31,6 @@ const DateClick = () => {
             return startA - startB; // 오름차순 정렬
         });
 
-        //console.log(schedulesOnSelectedDate.length)
-
         // 선택한 날짜에 해당하는 이벤트가 있다면 dateSchedules에 설정
         if (sortedSchedules.length > 0) {
             setDateSchedules(sortedSchedules);
@@ -42,8 +39,7 @@ const DateClick = () => {
         }
     }, [schedules, selectedDate]); //setDateSchedules를 직접 호출하는 schedules, selectedDate를 의존성 배열로!!
 
-
-    // +버튼 클릭 -> 새 일정 등록 모달 오픈
+    // '+' 버튼 클릭 -> 새 일정 등록 모달 오픈
     const handleAddSchedule = () => setModalMode('insert')
     // 일정명 클릭 -> 수정 모달 오픈
     const scheduleClick = (schedule) => {
@@ -75,7 +71,6 @@ const DateClick = () => {
     const handleSave = async() => {
         // 시간을 분으로 변환하여 처리할 때
         const workoutTimeMin = (Number(hours) * 60) + Number(minutes)
-        //console.log(hours, minutes, workoutTimeMin)
 
         if (workoutTimeMin && !isNaN(workoutTimeMin)) {
             const upd_unFinishedSch = {
@@ -85,7 +80,6 @@ const DateClick = () => {
                 scheduleId: selectedSchedule.id
             }
             const response = await updateIsFinishedDB(upd_unFinishedSch)
-            //console.log(response.status)
             if(response.status === 200) {
                 setSignal(prev => prev + 1)
             }
@@ -101,7 +95,6 @@ const DateClick = () => {
             scheduleId: schedule.id,
             memNo: memNo
         })
-        //console.log(response.status)
         if(response.status === 200) {
             setSignal(prev => prev + 1)
         }
@@ -114,7 +107,6 @@ const DateClick = () => {
         setHours(0)
         setMinutes(0)
     }
-
 
     return (
     <>

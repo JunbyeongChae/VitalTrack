@@ -1,8 +1,10 @@
 #시작할때마다 이거 먼저 활성화!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 use vitaltrack; #(데이터베이스 이름) 
 
-
+select * from memberInfo;
 select * from workoutTypes;
+
+commit;
 
 CREATE TABLE workoutTypes (
 	workoutId INT AUTO_INCREMENT PRIMARY KEY,

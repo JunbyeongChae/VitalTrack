@@ -1,0 +1,10 @@
+{
+  "name": "My React App",
+  "short_name": "ReactApp",
+  "description": "A simple React application enhanced with Progressive Web App capabilities.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "orientation": "portrait"
+}

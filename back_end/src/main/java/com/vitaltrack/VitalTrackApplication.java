@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.vitaltrack"})
-@MapperScan("com.vitaltrack.dao")
+@MapperScan({"com.vitaltrack.dao", "com.vitaltrack.mapper"})
 public class VitalTrackApplication {
 
   public static void main(String[] args) {
