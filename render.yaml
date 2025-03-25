@@ -3,8 +3,7 @@ services:
     name: vitaltrack-frontend
     env: docker
     plan: free
-    dockerfilePath: Dockerfile
-    context: ./front_end
+    dockerfilePath: front_end/Dockerfile
     envVars:
       - key: REACT_APP_SPRING_IP
         value: https://vitaltrack-backend.onrender.com/
@@ -13,8 +12,7 @@ services:
     name: vitaltrack-backend
     env: docker
     plan: free
-    dockerfilePath: Dockerfile
-    context: ./back_end
+    dockerfilePath: back_end/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: ${{MySQL.MYSQL_URL}}
