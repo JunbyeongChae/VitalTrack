@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.vitaltrack'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '21'
+sourceCompatibility = '17'
 
 java {
 	toolchain {
