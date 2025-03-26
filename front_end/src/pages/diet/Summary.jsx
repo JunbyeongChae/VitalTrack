@@ -1,3 +1,5 @@
+/* 식단관리 페이지 상단 영양성분차트와 물 섭취량 표시 컴포넌트 */
+
 import React, {useContext, useEffect, useRef, useState} from "react";
 import * as echarts from "echarts";
 import {MealsContext, useMeals} from "../../contexts/MealsContext";
@@ -9,7 +11,7 @@ const Summary = () => {
     const calorieChartRef = useRef(null);
     const nutritionChartRef = useRef(null);
     const [meals, setMeals] = useState([]);
-    const [waterIntake, setWaterIntake] = useState(0); // State to track water intake
+    const [waterIntake, setWaterIntake] = useState(0);
     const maxWaterIntake = 8; // Maximum number of water glasses
     const [summaryData, setSummaryData] = useState({});
     const { refreshCounter } = useMeals();
@@ -19,12 +21,12 @@ const Summary = () => {
         localStorage.getItem('selectedDate')?.split(' ')[0] || new Date().toISOString().split('T')[0]
     );
 
-    // This effect listens for changes to localStorage date
+    // localStorage 변경일자 감지
     useEffect(() => {
         const checkDate = () => {
             const currentDate = localStorage.getItem('selectedDate')?.split(' ')[0];
             if (currentDate && currentDate !== selectedDate) {
-                setSelectedDate(currentDate);  // triggers re-render upon date change
+                setSelectedDate(currentDate);  // 날짜 변경시 리렌더링
             }
         };
 
@@ -33,15 +35,15 @@ const Summary = () => {
     }, [selectedDate]);
 
     useEffect(() => {
-        // When selected date changes, explicitly refresh meals as well
+        // 날짜가 변경되면 해당 일자에 따른 식단 표시
         loadClientMeals();
     }, [selectedDate, loadClientMeals]);
 
 
+    // 회원별 최소 영양성분, 최대 영양성분 계산을 위한 변수 설정
     const memNo = userData.memNo;
     const targetCalories = parseInt(userData.memKcal) || 2000;
     const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    // Extract minimum and maximum protein, carbs, and fat values
     const proteinMin = parseInt(userData.proteinMin) || 50;
     const proteinMax = parseInt(userData.proteinMax) || 100;
     const carbsMin = parseInt(userData.carbMin) || 100;
@@ -49,26 +51,25 @@ const Summary = () => {
     const fatMin = parseInt(userData.fatMin) || 40;
     const fatMax = parseInt(userData.fatMax) || 60;
 
-// Define target values (you can use max values or average of min/max)
+    // 목표 섭취량 설정
     const targetProtein = proteinMax;
     const targetCarbs = carbsMax;
     const targetFat = fatMax;
 
     const calculateConsumedCalories = () => {
-        // Calculate total calories from all meal categories
+        // 해당 일자에 등록된 모든 식사데이터로부터 영양성분(g)과 칼로리를 추출
         const breakfastCalories = breakfastMeals.reduce((sum, meal) => sum + meal.calories, 0);
         const lunchCalories = lunchMeals.reduce((sum, meal) => sum + meal.calories, 0);
         const dinnerCalories = dinnerMeals.reduce((sum, meal) => sum + meal.calories, 0);
         const snackCalories = snackMeals.reduce((sum, meal) => sum + meal.calories, 0);
 
-        // Sum all calories together
+        // 모든 칼로리를 합산
         const totalCalories = breakfastCalories + lunchCalories + dinnerCalories + snackCalories;
         return totalCalories;
     };
 
-    // Add this function to your Summary component
+    // 본 컴포넌트에 연산된 수치를 전송
     const calculateMacronutrients = () => {
-        // Calculate total macros from all meal categories
         const calculateMealMacros = (meals) => {
             return meals.reduce((total, meal) => {
                 return {
@@ -83,14 +84,14 @@ const Summary = () => {
         const dinnerMacros = calculateMealMacros(dinnerMeals);
         const snackMacros = calculateMealMacros(snackMeals);
 
-        // Sum up all macros
+        // 모든 영양성분(탄단지) 수치를 계산
         return {
             protein: breakfastMacros.protein + lunchMacros.protein + dinnerMacros.protein + snackMacros.protein,
             carbs: breakfastMacros.carbs + lunchMacros.carbs + dinnerMacros.carbs + snackMacros.carbs,
             fat: breakfastMacros.fat + lunchMacros.fat + dinnerMacros.fat + snackMacros.fat
         };
     };
-    // Add this to your Summary component to check what's actually in your context
+    // 컨텍스트로부터 가져온 식단데이터
     useEffect(() => {
         console.log("Context data in Summary:", {
             breakfast: breakfastMeals,
@@ -98,7 +99,6 @@ const Summary = () => {
             dinner: dinnerMeals,
             snack: snackMeals
         });
-        console.log("Calculated calories:", calculateConsumedCalories());
     }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals]);
 
     const consumedCalories = calculateConsumedCalories();
@@ -137,7 +137,7 @@ const Summary = () => {
                         },
                     ],
                     label: {
-                        show: false  // Hide labels on pie sections if you prefer
+                        show: true  // Hide labels on pie sections if you prefer
                     },
                     emphasis: {
                         itemStyle: {
@@ -161,13 +161,11 @@ const Summary = () => {
     }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, targetCalories, refreshCounter]);
 
     useEffect(() => {
-        // explicitly define render function clearly (nested correctly)
         const renderChart = () => {
             if (!nutritionChartRef.current) return;
 
             const macros = calculateMacronutrients();
 
-            // safely obtain current instance
             let nutritionChartInstance = echarts.getInstanceByDom(nutritionChartRef.current);
             if (nutritionChartInstance) {
             }
@@ -180,7 +178,7 @@ const Summary = () => {
                 yAxis: {type: "category", data: ["Protein", "Carbs", "Fat"]},
                 series: [
                     {
-                        name: "Consumed",
+                        name: "섭취량",
                         type: "bar",
                         data: [
                             macros.protein.toFixed(1),
@@ -191,14 +189,14 @@ const Summary = () => {
                         itemStyle: {color: "#4caf50"},
                     },
                     {
-                        name: "Mininum",
+                        name: "최소섭취량",
                         type: "bar",
                         data: [proteinMin, carbsMin, fatMin],
                         barWidth: "20%",
                         itemStyle: {color: "#e0e0e0"},
                     },
                     {
-                        name: "Target",
+                        name: "목표섭취량",
                         type: "bar",
                         data: [proteinMax, carbsMax, fatMax],
                         barWidth: "20%",
@@ -227,11 +225,11 @@ const Summary = () => {
 
         const timeoutId = setTimeout(renderChart, 0);
 
-        // cleanup timeout explicitly
         return () => clearTimeout(timeoutId);
 
     }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, refreshCounter]);
 
+    /* 물 섭취량 DB에서 가져오기 */
     useEffect(() => {
         const fetchMealsAndWaterIntake = async () => {
             try {
@@ -243,11 +241,10 @@ const Summary = () => {
 
                 const meals = response.data;
 
-                // Set meals data
                 setMeals(meals);
 
-                // Extract water intake from the first meal record
-                // If there are no meals, default to 0
+                // 식단기록에서 물 섭취량 자료를 추출
+                // 식단기록이 없을 경우 기본섭취량을 0으로 설정
                 if (meals && meals.length > 0 && meals[0].waterIntake !== null) {
                     setWaterIntake(meals[0].waterIntake);
                 } else {
@@ -261,65 +258,60 @@ const Summary = () => {
         fetchMealsAndWaterIntake();
     }, [selectedDate, refreshCounter]);
 
-    // Handle water intake changes
+    // 물 섭취량 추가
     const handleWaterIntakeChange = async (newWaterIntake) => {
             setWaterIntake(newWaterIntake);
 
             try {
-                // Get user data
+                // 회원정보 가져오기
                 const userData = JSON.parse(localStorage.getItem("user"));
                 if (!userData || !userData.memNo) {
                     console.error("User information not found");
                     return;
                 }
 
-                // Get selected date or use current date
+                // 선택된 날짜를 사용하거나 선택일자가 없을 경우 금일 날짜를 사용
                 const selectedDate = localStorage.getItem("selectedDate");
                 const formattedDate = selectedDate
                     ? format(new Date(selectedDate), 'yyyy-MM-dd')
                     : format(new Date(), 'yyyy-MM-dd');
 
-                // Prepare payload for API
+                // 물 섭취량 DB저장 및 불러오기를 위한 변수 설정
                 const payload = {
                     memNo: userData.memNo,
                     dietDate: formattedDate,
                     waterIntake: newWaterIntake
                 };
 
-                // Make API call to update water intake in the database
+                // 물 섭취량 DB 저장 API
                 const response = await axios.post(
                     'http://localhost:8000/api/meals/water-intake',
                     payload
                 );
 
-                console.log('Water intake updated successfully:', response.data);
-
             } catch (error) {
-                console.error('Error saving water intake:', error);
-                // Optionally revert the UI if the update fails
-                // setWaterIntake(previousValue);
+                console.error('물 섭취량 저장에 실패했습니다 :', error);
             }
         };
 
 
-    // Water intake increase handler
+    // 물 섭취량 증가 버튼
     const increaseWaterIntake = () => {
         if (waterIntake < maxWaterIntake) {
             handleWaterIntakeChange(waterIntake + 1);
         }
     };
 
-    // Water intake decrease handler
+    // 물 섭취량 감소 버튼
     const decreaseWaterIntake = () => {
         if (waterIntake > 0) {
             handleWaterIntakeChange(waterIntake - 1);
         }
     };
 
-    // Function to handle water intake reset
+    // 물 섭취량 리셋 버튼
     const handleResetWater = async () => {
         try {
-            // Call the same handler with 0
             await handleWaterIntakeChange(0);
         } catch (error) {
             console.error('Error resetting water intake:', error);

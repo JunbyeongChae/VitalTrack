@@ -19,19 +19,19 @@ const Meals = () => {
     const [isLoading, setIsLoading] = useState(true); // Add loading state
     const [error, setError] = useState(null); // Add error state
 
-    // Access the context for global state management
+    // MealsContext로부터 공급받은 데이터를 활용
     const mealsContext = useContext(MealsContext);
 
-    // Get selected date from localStorage
+    // localStorage에서 날짜를 가져옴
     const selectedDate = localStorage.getItem("selectedDate");
     const dateToSave = format(selectedDate, 'yyyy-MM-dd');
 
-    // Extract loadClientMeals outside of useEffect so it can be called from multiple places
+    // 사용자의 식단기록을 가져오는 함수
     const loadClientMeals = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            // Get user data from localStorage
+            // localStorage에서 유저데이터 가져오기
             const userData = JSON.parse(localStorage.getItem("user"));
             if (!userData || !userData.memNo) {
                 console.warn("No member number found for the logged-in user.");
@@ -43,10 +43,10 @@ const Meals = () => {
             const memNo = userData.memNo;
             setMemNo(memNo);
 
-            // Always use selectedDate from localStorage
+            // 항상 localStorage에 저장된 날짜를 사용
             const selectedDate = localStorage.getItem("selectedDate");
 
-            // Default to current date in KST format if selectedDate doesn't exist
+            // 만약 localStorage에 저장된 날짜가 없을 경우 KST(한국 표준시)를 사용
             const dateParam = selectedDate
                 ? format(new Date(selectedDate), 'yyyy-MM-dd')
                 : (() => {
@@ -55,7 +55,7 @@ const Meals = () => {
                     return `${kstDate.getUTCFullYear()}-${String(kstDate.getUTCMonth() + 1).padStart(2, "0")}-${String(kstDate.getUTCDate()).padStart(2, "0")}`;
                 })();
 
-            // Build URL with query parameter if date exists
+            // 회원번호, 날짜로 백엔드에서 식단기록을 가져오는 API
             const url = `http://localhost:8000/api/meals/${memNo}${dateParam ? `?date=${dateParam}` : ""}`;
 
             console.log("Fetching meals from:", url);
@@ -63,11 +63,10 @@ const Meals = () => {
             const rawResponse = await response.text();
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch client meals: ${rawResponse}`);
+                throw new Error(`식단 기록 불러오기를 실패했습니다. : ${rawResponse}`);
             }
 
             const mealsResponse = JSON.parse(rawResponse);
-            console.log("Raw API response:", mealsResponse);
 
             const groupedMeals = { Breakfast: [], Lunch: [], Dinner: [], Snack: [] };
 
@@ -87,19 +86,16 @@ const Meals = () => {
                         photo: null,
                     });
                 } else {
-                    console.warn(`Unexpected mealType: ${mealType}`, meal);
+                    console.warn(`식단 타입 오류 : ${mealType}`, meal);
                 }
             });
 
             setSections(groupedMeals);
-            console.log("Updated Sections:", groupedMeals);
 
-            // If we're part of a context system, notify the context that data has been updated
             if (mealsContext && mealsContext.setMealsData) {
                 mealsContext.setMealsData(groupedMeals);
             }
 
-            // Dispatch a custom event to notify other components
             const reloadEvent = new CustomEvent('mealsReloaded', {
                 detail: {
                     timestamp: new Date().getTime(),
@@ -109,27 +105,21 @@ const Meals = () => {
             });
             window.dispatchEvent(reloadEvent);
         } catch (error) {
-            console.error("Error loading client meals:", error);
-            setError("Failed to load meals: " + error.message);
+            console.error("식단 기록 로드에 실패하였습니다.", error);
+            setError("식단 기록 로드에 실패하였습니다." + error.message);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Add event listener for date changes
+    // DateExplorer의 날짜가 변경되었을 때 그 날짜에 대한 식단자료를 DB에서 가져옴
     useEffect(() => {
         const handleDateChange = () => {
-            console.log("Date change detected in Meals component");
             loadClientMeals();
         };
 
-        // Listen for the custom event from DietCalendar
         window.addEventListener('selectedDateChanged', handleDateChange);
-
-        // Initial load of meals
         loadClientMeals();
-
-        // Clean up the event listener
         return () => {
             window.removeEventListener('selectedDateChanged', handleDateChange);
         };
@@ -142,66 +132,59 @@ const Meals = () => {
 
     const saveMeal = async (meal) => {
         try {
-            // Get memNo from localStorage to send with each request
+            // 회원번호를 localStorage에서 가져옴
             const userData = JSON.parse(localStorage.getItem("user"));
             const memNo = userData?.memNo;
 
-            // Format the selected date
+            // 선택일자 표시 형식 변경 (DB저장을 위함)
             let dietDate;
             if (selectedDate) {
-                // Parse the date string to a Date object
                 const parsedDate = new Date(selectedDate);
-                // Format it as YYYY-MM-DD
+                // YYYY-MM-DD
                 dietDate = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(parsedDate.getDate()).padStart(2, '0')}`;
-                console.log("Using selected date:", dietDate);
             } else {
-                // Use current date as fallback
+                // 상기 프로세스 실패시 현재 날짜를 가져옴
                 const now = new Date();
                 dietDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-                console.log("No selected date found, using current date:", dietDate);
             }
 
-            // Prepare the meal data to send to the API
+            // mealData를 DB로 전송하기 위한 변수 설정
             const mealData = {
-                memNo: memNo, // Member number
+                memNo: memNo, // 회원번호
                 dietDate: dietDate,
-                mealType: modalSection, // The meal section (e.g., "Breakfast", "Lunch")
-                name: meal.name, // Name of the food
-                calories: meal.calories, // Number of calories
-                memo: meal.memo || "", // Optional memo
+                mealType: modalSection, // 아침/점심/저녁/간식 여부 체크
+                name: meal.name, // 식품명
+                calories: meal.calories, // 칼로리
+                memo: meal.memo || "",
                 protein: meal.protein || 0,
-                carbs: meal.carbs || 0, // Note: Ensure field names match between frontend and backend
+                carbs: meal.carbs || 0,
                 fat: meal.fat || 0
             };
 
-            console.log("Saving meal data:", mealData);
-
-            // Make a POST request to save the meal
+            // 식단 기록을 위해 백엔드 서버에 POST 전송 보내기
             const response = await axios.post("http://localhost:8000/api/meals", mealData);
 
-            // Response should return the saved meal
+            // 식단 저장
             const savedMeal = response.data;
-            console.log("Saved meal:", savedMeal);
+            console.log("식단이 저장되었습니다:", savedMeal);
 
-            // Update the state to include the newly added meal
+            // 새로운 식단을 표시하기 위해 상태 업데이트
             setSections((prevSections) => ({
                 ...prevSections,
                 [modalSection]: [...prevSections[modalSection], savedMeal],
             }));
 
-            console.log(`Meal added successfully:`, savedMeal);
-
-            // Close the modal after success
+            // 성공시 모달 닫기
             closeModal();
+            window.location.reload();
 
         } catch (error) {
-            console.error("Error saving meal:", error);
-            alert("Failed to save the meal. Please try again.");
+            console.error("식단 저장에 실패했습니다:", error);
+            alert("식단 저장에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
     const addMealToSection = async (meal) => {
-        console.log(`Adding meal to section: ${modalSection}`, meal);
         await saveMeal(meal);
     };
 
@@ -210,52 +193,52 @@ const Meals = () => {
         setModalSection("");
     };
 
-    // Handler for deleting meals
+    // 식단 삭제
     const handleDeleteMeal = async (mealId) => {
         try {
-            // Call API to delete the meal
+            // 식단 삭제를 위한 API 호출
             await axios.delete(`http://localhost:8000/api/meals/${mealId}`);
 
-            // Reload meals to update the UI
+            // 식단 삭제 후 식단자료를 다시 로드
             loadClientMeals();
         } catch (error) {
-            console.error("Error deleting meal:", error);
-            alert("Failed to delete meal. Please try again.");
+            console.error("식단 자료 삭제에 실패했습니다:", error);
+            alert("식단 자료 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
-    // Handler for adding a new meal and closing modal
+    // 모달 창에서 식단자료 검색 후 추가시 바로 DB에 저장되는 함수
     const handleSaveMeal = async (mealData) => {
         try {
-            // Format the meal data with the selected section (mealType)
+            // 식단자료 DB저장을 위한 데이터 가공
             const mealToSave = {
                 ...mealData,
                 mealType: modalSection,
                 memNo: memNo
             };
 
-            // Save the meal
+            // 식단 저장 API
             await axios.post('http://localhost:8000/api/meals', mealToSave);
 
-            // Close modal
+            // 모달 닫기
             setIsModalOpen(false);
 
-            // Reload meals to update the UI
+            // 저장 결과 출력을 위해 컴포넌트 리렌더링
             loadClientMeals();
         } catch (error) {
-            console.error("Error saving meal:", error);
-            alert("Failed to save meal. Please try again.");
+            console.error("식단 자료 삭제에 실패했습니다:", error);
+            alert("식단 자료 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
     return (
         <div className="meals-container p-6">
-            <h1 className="text-2xl font-bold mb-6">My Meals</h1>
+            <h1 className="text-2xl font-bold mb-6">나의 식단 추가</h1>
 
             {/* Show loading state */}
             {isLoading && (
                 <div className="text-center py-4">
-                    <p>Loading meals...</p>
+                    <p>로딩중...</p>
                 </div>
             )}
 
@@ -269,25 +252,25 @@ const Meals = () => {
             {/* Meal sections */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <MealSection
-                    title="Breakfast"
+                    title="아침"
                     meals={sections.Breakfast}
                     onAddMeal={onAddMeal}
                     onDeleteMeal={handleDeleteMeal}
                 />
                 <MealSection
-                    title="Lunch"
+                    title="점심"
                     meals={sections.Lunch}
                     onAddMeal={onAddMeal}
                     onDeleteMeal={handleDeleteMeal}
                 />
                 <MealSection
-                    title="Dinner"
+                    title="저녁"
                     meals={sections.Dinner}
                     onAddMeal={onAddMeal}
                     onDeleteMeal={handleDeleteMeal}
                 />
                 <MealSection
-                    title="Snack"
+                    title="간식"
                     meals={sections.Snack}
                     onAddMeal={onAddMeal}
                     onDeleteMeal={handleDeleteMeal}

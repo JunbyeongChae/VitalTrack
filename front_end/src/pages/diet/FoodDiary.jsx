@@ -6,7 +6,8 @@ const DiaryEntry = ({ title, time, calories, protein, carbs, fat }) => {
         <div className="flex justify-between items-center p-4">
             {/* Left Section: Food details */}
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"
+                >🥗</div>
                 <div>
                     <div className="text-sm font-semibold">{title}</div>
                     <div className="text-xs text-gray-500">{time}</div>
@@ -100,7 +101,7 @@ const FoodDiary = () => {
                         />
                     ))
                 ) : (
-                    <div className="p-4 text-center text-gray-500">No meals recorded for today</div>
+                    <div className="p-4 text-center text-gray-500">이 날짜에 저장된 식단 기록이 없습니다!</div>
                 )}
             </div>
         </div>
