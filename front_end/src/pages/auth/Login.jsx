@@ -53,6 +53,10 @@ const Login = ({ setUser }) => {
         setUser(userData);
         navigate('/');
         toast.success(`${userData.memNick}님, 환영합니다!`);
+      }else if(userData === null){
+        toast.warn('회원가입이 필요합니다.');
+        toast.info('회원가입 페이지로 이동합니다.');
+        navigate('/signup');
       }
     } catch (error) {
       toast.error(`Google 로그인 실패: ${error.message}`);
