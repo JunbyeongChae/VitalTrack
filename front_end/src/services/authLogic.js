@@ -87,8 +87,13 @@ export const oauthLogin = async (email) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '구글 로그인 실패');
+      let errorMessage = '구글 로그인 실패';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+      }
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();

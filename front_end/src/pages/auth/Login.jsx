@@ -59,7 +59,11 @@ const Login = ({ setUser }) => {
         navigate('/signup');
       }
     } catch (error) {
-      toast.error(`Google 로그인 실패: ${error.message}`);
+      if (error.message.includes('구글 로그인 실패')) {
+        toast.error('구글 로그인 실패: 서버와의 통신에 문제가 발생했습니다.');
+      } else {
+        toast.error(`Google 로그인 실패: ${error.message}`);
+      }
     }
   };
 
