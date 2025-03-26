@@ -20,7 +20,11 @@ const CounselWrite = () => {
   };
 
   const handleTitle = useCallback((e) => setTitle(e.target.value), []);
+<<<<<<< HEAD
   const handleContent = useCallback((html) => setContent(html), []); 
+=======
+  const handleContent = useCallback((html) => setContent(html), []); // 수정된 부분
+>>>>>>> a6001b9b29fc83130fd82880a9d7a202e68d6dd3
 
   const boardInsert = async () => {
     console.log('boardInsert from CounselDBWrite');

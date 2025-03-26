@@ -10,6 +10,8 @@ COPY back_end/src/ ./src/
 COPY back_end/gradlew .
 COPY back_end/gradle.properties* .
 
+RUN chmod +x gradlew
+
 # 테스트는 제외하고 빌드
 RUN ./gradlew build -x test --no-daemon
 
