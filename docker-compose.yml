@@ -1,6 +1,8 @@
 services:
   frontend:
-    build: ./front_end
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
     ports:
       - "3000:80"
     depends_on:
