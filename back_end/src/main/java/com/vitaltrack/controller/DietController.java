@@ -74,7 +74,6 @@ public class DietController {
   public List<Map<String, Object>> searchFoods(@RequestParam(name = "query") String query) throws IOException {
     // Load FoodData.json from resources folder
     Resource resource = new ClassPathResource("data/FoodData20250312.json");
-    File file = resource.getFile();
 
     // Create a list to store matching records
     List<Map<String, Object>> matchingRecords = new ArrayList<>();
@@ -85,7 +84,7 @@ public class DietController {
     // Use Jackson Streaming API to read and filter records
     JsonFactory jsonFactory = new JsonFactory();
     ObjectMapper objectMapper = new ObjectMapper(); // ObjectMapper for deserialization
-    try (JsonParser parser = jsonFactory.createParser(file)) {
+    try (JsonParser parser = jsonFactory.createParser(resource.getInputStream())) {
       parser.setCodec(objectMapper); // Bind the parser to the ObjectMapper
 
       // Traverse the JSON structure token by token
