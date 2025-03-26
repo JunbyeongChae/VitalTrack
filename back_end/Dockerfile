@@ -1,3 +1,4 @@
+#D:\VitalTrack-JunbyeongChae\back_end\Dockerfile
 # 1단계: Build stage
 FROM gradle:7.4.2-jdk17 AS builder
 WORKDIR /build

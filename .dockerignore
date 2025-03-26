@@ -1,5 +1,5 @@
+# D:\VitalTrack-JunbyeongChae\.dockerignore
 front_end/node_modules
 front_end/build
 .git
 Dockerfile.frontend
-nginx.conf
