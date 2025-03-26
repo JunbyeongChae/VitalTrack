@@ -82,8 +82,7 @@ const Header = ({ user, setUser }) => {
                   closeToast();
                   toast.success('세션이 1시간 연장되었습니다.');
                 }}
-                className="text-blue-500 hover:underline mt-2"
-              >
+                className="text-blue-500 hover:underline mt-2">
                 세션 연장하기
               </button>
             </div>
@@ -98,7 +97,6 @@ const Header = ({ user, setUser }) => {
           localStorage.removeItem('expiresAt');
           setUser(null);
           setCurrentUser(null);
-          toast.error('세션이 만료되어 로그아웃되었습니다.');
           navigate('/login');
         }, remainingMs);
       }
@@ -115,21 +113,25 @@ const Header = ({ user, setUser }) => {
     };
   }, [navigate, setUser]);
 
-    // 🔁 페이지 이동 시 세션 만료 상태를 UI에 반영
-    useEffect(() => {
-      const expiresAt = localStorage.getItem('expiresAt');
-      const storedUser = localStorage.getItem('user');
-      const isExpired = !expiresAt || Date.now() > Number(expiresAt);
-      const hasUser = !!storedUser;
-  
-      if (isExpired || !hasUser) {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('expiresAt');
-        setUser(null);
-        setCurrentUser(null);
+  // 🔁 페이지 이동 시 세션 만료 상태를 UI에 반영
+  useEffect(() => {
+    const expiresAt = localStorage.getItem('expiresAt');
+    const storedUser = localStorage.getItem('user');
+    const isExpired = !expiresAt || Date.now() > Number(expiresAt);
+    const hasUser = !!storedUser;
+
+    if (isExpired || !hasUser) {
+      // 진짜 로그인된 상태였을 때만 알림
+      if (storedUser && expiresAt) {
+        toast.error('세션이 만료되어 로그아웃되었습니다.');
       }
-    }, [location.pathname, setUser]);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('expiresAt');
+      setUser(null);
+      setCurrentUser(null);
+    }
+  }, [location.pathname, setUser]);
 
   // 로그아웃 처리
   const handleLogout = async () => {
