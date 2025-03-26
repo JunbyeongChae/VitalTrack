@@ -91,9 +91,9 @@ const Login = ({ setUser }) => {
 
           <div className="text-center text-gray-600 text-sm mt-1">
             계정이 없으신가요?{' '}
-            <a href="/signup" className="text-indigo-600 hover:underline">
+            <button onClick={() => navigate('/signup')}  className="text-indigo-600 hover:underline">
               회원가입
-            </a>
+            </button>
           </div>
         </div>
       </main>

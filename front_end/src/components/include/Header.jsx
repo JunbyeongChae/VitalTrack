@@ -113,7 +113,7 @@ const Header = ({ user, setUser }) => {
     };
   }, [navigate, setUser]);
 
-  // 🔁 페이지 이동 시 세션 만료 상태를 UI에 반영
+  // 페이지 이동 시 세션 만료 상태를 UI에 반영
   useEffect(() => {
     const expiresAt = localStorage.getItem('expiresAt');
     const storedUser = localStorage.getItem('user');
