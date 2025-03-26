@@ -1,3 +1,5 @@
+/* 숨김 처리된 페이지 */
+
 import Button from "../../styles/FormStyles";
 
 const Header = () => {

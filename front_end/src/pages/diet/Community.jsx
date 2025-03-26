@@ -1,3 +1,5 @@
+/* 임시로 숨김처리된 컴포넌트 (우측 사이드바) */
+
 import React from 'react';
 
 const Root = () => {

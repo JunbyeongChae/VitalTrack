@@ -1,27 +1,28 @@
+/* 식단관리 페이지 우측 상단 일자를 클릭하면 날짜를 선택할 수 있는 모달이 표시됨 */
+
 import React, { useState, useEffect } from "react";
 
 const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
-    // States for year, month, day, and view mode
     const [year, setYear] = useState(selectedDate.getFullYear());
     const [month, setMonth] = useState(selectedDate.getMonth());
     const [days, setDays] = useState([]); // Days in the selected month
     const [viewMode, setViewMode] = useState("month"); // 'month' or 'day'
 
-    // Helper function to generate days for a given month and year
+    // 해당 월의 날짜를 표시
     const generateDays = (month, year) => {
         const daysInMonth = new Date(year, month + 1, 0).getDate(); // Number of days in the month
         return Array.from({ length: daysInMonth }, (_, i) => i + 1); // [1, 2, ..., daysInMonth]
     };
 
-    // Update the days when month or year changes
+    // 일자를 선택하면 그에 따라 연, 월이 설정됨
     useEffect(() => {
         setDays(generateDays(month, year));
     }, [month, year]);
 
-    // Handle month navigation
+    // 월 선택기
     const handlePrevMonth = () => {
         if (month === 0) {
-            // If current month is January, move to December of the previous year
+            // 현재가 1월이면 돌아가기 버튼을 눌렀을 때 작년 12월이 표시됨
             setMonth(11);
             setYear((prevYear) => prevYear - 1);
         } else {
@@ -31,7 +32,7 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
 
     const handleNextMonth = () => {
         if (month === 11) {
-            // If current month is December, move to January of the next year
+            // 현재가 12월이면 앞으로 가기 버튼을 눌렀을 때 다음년도 1월이 표시됨
             setMonth(0);
             setYear((prevYear) => prevYear + 1);
         } else {
@@ -39,15 +40,15 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
         }
     };
 
-    // Handle date selection (finalize selection directly on day click)
+    // 일자를 클릭했을 때의 이벤트
     const handleDateSelection = (day) => {
-        // Set the date and ensure the time is fixed in local time
-        const newDate = new Date(year, month, day, 12, 0, 0); // Set time to noon to avoid timezone issues
-        onDateChange(newDate); // Send the corrected date back to the parent
-        onClose(); // Close the modal
+        // 일자 클릭시 날짜와 시간대가 지정됨
+        const newDate = new Date(year, month, day, 12, 0, 0);
+        onDateChange(newDate);
+        onClose();
     };
 
-    // Go back to Month View from Day View
+    // 월별 보기로 넘어가는 기능
     const handleBack = () => setViewMode("month");
 
     // 일자를 변경하더라도 modal을 켤 때마다 항상 오늘 날짜로 돌아옴
@@ -60,7 +61,6 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
         }
     }, [isOpen]);
 
-    // Close modal if isOpen is false
     if (!isOpen) return null;
 
     return (
@@ -88,15 +88,15 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
                     </button>
                 </div>
 
-                {/* Month View */}
+                {/* 월별 보기  */}
                 {viewMode === "month" && (
                     <div className="grid grid-cols-3 gap-2 mb-6">
                         {Array.from({ length: 12 }, (_, i) => (
                             <button
                                 key={i}
                                 onClick={() => {
-                                    setMonth(i); // Set the selected month
-                                    setViewMode("day"); // Switch to day view
+                                    setMonth(i);
+                                    setViewMode("day");
                                 }}
                                 className={`p-2 rounded-lg ${
                                     month === i ? "bg-blue-500 text-white" : "bg-gray-200"
@@ -108,10 +108,10 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
                     </div>
                 )}
 
-                {/* Day View */}
+                {/* 일별 보기 */}
                 {viewMode === "day" && (
                     <>
-                        {/* Month and Year Header with Navigation */}
+                        {/* 월, 연도 선택시 헤더부분 */}
                         <div className="flex items-center justify-center text-lg font-medium mb-4">
                             <button
                                 onClick={handlePrevMonth}
@@ -132,7 +132,7 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
                             </button>
                         </div>
 
-                        {/* Days in Calendar */}
+                        {/* 캘린더 안 일자선택부분 */}
                         <div className="grid grid-cols-7 gap-2 mb-6 text-center">
                             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                                 <span key={day} className="font-medium">
@@ -142,12 +142,12 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
                             {Array.from({ length: new Date(year, month, 1).getDay() }).map(
                                 (_, i) => (
                                     <div key={i} />
-                                ) // Empty slots for days before the month's start
+                                )
                             )}
                             {days.map((day) => (
                                 <button
                                     key={day}
-                                    onClick={() => handleDateSelection(day)} // Select and confirm instantly
+                                    onClick={() => handleDateSelection(day)}
                                     className={`p-2 rounded-lg ${
                                         day === selectedDate.getDate() &&
                                         month === selectedDate.getMonth() &&
@@ -164,13 +164,13 @@ const DateModal = ({ isOpen, selectedDate, onClose, onDateChange }) => {
                     </>
                 )}
 
-                {/* Cancel Button */}
+                {/* 취소 버튼 */}
                 <div className="flex mt-6 justify-center">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-400 text-white font-medium rounded-lg"
                     >
-                        Cancel
+                        취소
                     </button>
                 </div>
             </div>
