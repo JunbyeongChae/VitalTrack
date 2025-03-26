@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { toast } from 'react-toastify';
 
 const Header = ({ user, setUser }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentUser, setCurrentUser] = useState(user); // 즉시 UI 반영을 위해 별도 상태 관리
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 상태
   const [timeLeft, setTimeLeft] = useState(null); // 세션 남은 시간 상태 추가
@@ -42,25 +43,93 @@ const Header = ({ user, setUser }) => {
     }
   }, [user]); // user 값이 변경될 때마다 실행
 
-  // 세션 만료까지 남은 시간 1초마다 업데이트
+  // 🔄 세션 만료 및 연장 처리
   useEffect(() => {
-    const updateRemainingTime = () => {
+    let warned = false;
+    let extendTimeoutId = null;
+    let intervalId = null;
+
+    const checkSession = () => {
       const expiresAt = localStorage.getItem('expiresAt');
-      if (expiresAt) {
-        const remainingMs = Number(expiresAt) - Date.now();
-        if (remainingMs > 0) {
-          const minutes = Math.floor(remainingMs / 60000);
-          const seconds = Math.floor((remainingMs % 60000) / 1000);
-          setTimeLeft(`세션 남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`);
-        } else {
-          setTimeLeft(null);
-        }
+      if (!expiresAt) return;
+
+      const remainingMs = Number(expiresAt) - Date.now();
+
+      if (remainingMs <= 0) {
+        clearInterval(intervalId);
+        if (extendTimeoutId) clearTimeout(extendTimeoutId);
+        toast.warn('세션이 만료되었습니다. 다시 로그인해주세요.');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiresAt');
+        setUser(null);
+        setCurrentUser(null);
+        navigate('/login');
+        return;
       }
+
+      if (remainingMs <= 60000 && !warned) {
+        warned = true;
+        toast.info(
+          ({ closeToast }) => (
+            <div>
+              <p>1분 후 세션이 만료됩니다.</p>
+              <button
+                onClick={() => {
+                  const newExpiresAt = Date.now() + 1000 * 60 * 60;
+                  localStorage.setItem('expiresAt', newExpiresAt.toString());
+                  warned = false;
+                  closeToast();
+                  toast.success('세션이 1시간 연장되었습니다.');
+                }}
+                className="text-blue-500 hover:underline mt-2"
+              >
+                세션 연장하기
+              </button>
+            </div>
+          ),
+          { autoClose: false, toastId: 'session-expire-warning' }
+        );
+
+        extendTimeoutId = setTimeout(() => {
+          toast.dismiss('session-expire-warning');
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          localStorage.removeItem('expiresAt');
+          setUser(null);
+          setCurrentUser(null);
+          toast.error('세션이 만료되어 로그아웃되었습니다.');
+          navigate('/login');
+        }, remainingMs);
+      }
+
+      const minutes = Math.floor(remainingMs / 60000);
+      const seconds = Math.floor((remainingMs % 60000) / 1000);
+      setTimeLeft(`세션 남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`);
     };
-    updateRemainingTime();
-    const interval = setInterval(updateRemainingTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+
+    intervalId = setInterval(checkSession, 1000);
+    return () => {
+      clearInterval(intervalId);
+      if (extendTimeoutId) clearTimeout(extendTimeoutId);
+    };
+  }, [navigate, setUser]);
+
+    // 🔁 페이지 이동 시 세션 만료 상태를 UI에 반영
+    useEffect(() => {
+      const expiresAt = localStorage.getItem('expiresAt');
+      const storedUser = localStorage.getItem('user');
+      const isExpired = !expiresAt || Date.now() > Number(expiresAt);
+      const hasUser = !!storedUser;
+  
+      if (isExpired || !hasUser) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiresAt');
+        setUser(null);
+        setCurrentUser(null);
+      }
+    }, [location.pathname, setUser]);
 
   // 로그아웃 처리
   const handleLogout = async () => {
