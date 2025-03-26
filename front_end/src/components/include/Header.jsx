@@ -117,17 +117,19 @@ const Header = ({ user, setUser }) => {
   useEffect(() => {
     const expiresAt = localStorage.getItem('expiresAt');
     const storedUser = localStorage.getItem('user');
-    const isExpired = !expiresAt || Date.now() > Number(expiresAt);
+    const isExpired = expiresAt && Date.now() > Number(expiresAt);
     const hasUser = !!storedUser;
 
-    if (isExpired || !hasUser) {
-      // 진짜 로그인된 상태였을 때만 알림
-      if (storedUser && expiresAt) {
-        toast.error('세션이 만료되어 로그아웃되었습니다.');
-      }
+    if (isExpired) {
+      // 세션이 만료된 경우에만 알림
+      toast.error('세션이 만료되어 로그아웃되었습니다.');
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       localStorage.removeItem('expiresAt');
+      setUser(null);
+      setCurrentUser(null);
+    } else if (!hasUser) {
+      // 유저 정보가 없으면 상태 초기화 (알림 없음)
       setUser(null);
       setCurrentUser(null);
     }

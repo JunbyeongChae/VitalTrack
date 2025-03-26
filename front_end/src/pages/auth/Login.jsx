@@ -49,18 +49,15 @@ const Login = ({ setUser }) => {
       // JWT 포함된 사용자 정보 요청
       const userData = await oauthLogin(user.email);
   
-      if (userData) {
-        setUser(userData);
-        navigate('/');
-        toast.success(`${userData.memNick}님, 환영합니다!`);
-      }else if(userData === null){
+      setUser(userData);
+      navigate('/');
+      toast.success(`${userData.memNick}님, 환영합니다!`);
+    } catch (error) {
+      // 이메일이 존재하지 않아서 404로 떨어진 경우
+      if (error.message.includes('해당 이메일로 등록된 사용자가 없습니다.')) {
         toast.warn('회원가입이 필요합니다.');
         toast.info('회원가입 페이지로 이동합니다.');
-        navigate('/signup');
-      }
-    } catch (error) {
-      if (error.message.includes('구글 로그인 실패')) {
-        toast.error('구글 로그인 실패: 서버와의 통신에 문제가 발생했습니다.');
+        navigate('/signup', { state: { email: auth.currentUser.email, name: auth.currentUser.displayName } });
       } else {
         toast.error(`Google 로그인 실패: ${error.message}`);
       }
