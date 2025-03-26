@@ -3,10 +3,10 @@ FROM gradle:7.4.2-jdk17 AS builder
 WORKDIR /build
 
 # 캐시 활용을 위해 의존성 관련 파일만 먼저 복사
-COPY build.gradle .
-COPY settings.gradle .
+COPY ../build.gradle .
+COPY ../settings.gradle .
+COPY ../gradle/ ./gradle/
 COPY gradle.properties* .
-COPY gradle/ ./gradle/
 
 # 의존성 캐시
 RUN gradle dependencies || true

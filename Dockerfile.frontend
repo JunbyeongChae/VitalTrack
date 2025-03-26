@@ -1,5 +1,5 @@
 # 1단계: React 앱 빌드
-FROM node:18 AS build
+FROM node:18 AS builder
 WORKDIR /app
 
 # package.json만 먼저 복사해서 의존성 캐시 활용
