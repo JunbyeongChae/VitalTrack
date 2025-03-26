@@ -249,7 +249,7 @@ const UserHome = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">오늘 운동칼로리</p>
-              <h3 className="text-lg font-semibold text-gray-900">{lastWeekData.kcal[6]} kcal</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{lastWeekData.kcal[6]?.toLocaleString()} kcal</h3>
             </div>
           </div>
         </div>

@@ -66,7 +66,7 @@ const Login = ({ setUser }) => {
 
   return (
     <>
-      <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-10">
+      <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-6">
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">
             <img src="../images/logo2_login.png" alt="Logo" style={{ height: '200px' }} />
