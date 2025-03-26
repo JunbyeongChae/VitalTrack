@@ -43,13 +43,8 @@ const Meals = () => {
       const memNo = userData.memNo;
       setMemNo(memNo);
 
-<<<<<<< HEAD
-            // Build URL with query parameter if date exists
-            const url = `${process.env.REACT_APP_SPRING_IP}api/meals/${memNo}${dateParam ? `?date=${dateParam}` : ""}`;
-=======
       // 항상 localStorage에 저장된 날짜를 사용
       const selectedDate = localStorage.getItem('selectedDate');
->>>>>>> a6001b9b29fc83130fd82880a9d7a202e68d6dd3
 
       // 만약 localStorage에 저장된 날짜가 없을 경우 KST(한국 표준시)를 사용
       const dateParam = selectedDate
@@ -95,21 +90,7 @@ const Meals = () => {
         }
       });
 
-<<<<<<< HEAD
-    // Main useEffect for initial data loading
-    useEffect(() => {
-        const fetchFoodData = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_SPRING_IP}api/food-data`);
-                const foodObjects = response.data.records.map((record) => new Food(record));
-                setFoods(foodObjects);
-            } catch (error) {
-                console.error("Error fetching food data:", error);
-            }
-        };
-=======
       setSections(groupedMeals);
->>>>>>> a6001b9b29fc83130fd82880a9d7a202e68d6dd3
 
       if (mealsContext && mealsContext.setMealsData) {
         mealsContext.setMealsData(groupedMeals);
@@ -187,33 +168,10 @@ const Meals = () => {
         memo: ''
       };
 
-<<<<<<< HEAD
-            // Make a POST request to save the meal
-            const response = await axios.post(`${process.env.REACT_APP_SPRING_IP}api/meals`, mealData);
-
-            // Response should return the saved meal
-            const savedMeal = response.data;
-            console.log("Saved meal:", savedMeal);
-
-            // Update the state to include the newly added meal
-            setSections((prevSections) => ({
-                ...prevSections,
-                [modalSection]: [...prevSections[modalSection], savedMeal],
-            }));
-
-            console.log(`Meal added successfully:`, savedMeal);
-
-            // Close the modal after success
-            closeModal();
-        } catch (error) {
-            console.error("Error saving meal:", error);
-            alert("Failed to save the meal. Please try again.");
-=======
       // 식단 기록을 위해 백엔드 서버에 POST 전송 보내기
       const response = await axios.post(`${process.env.REACT_APP_SPRING_IP}api/meals`, mealData, {
         headers: {
           Authorization: `Bearer ${token}`
->>>>>>> a6001b9b29fc83130fd82880a9d7a202e68d6dd3
         }
       });
 
@@ -221,19 +179,11 @@ const Meals = () => {
       const savedMeal = response.data;
       console.log('식단이 저장되었습니다:', savedMeal);
 
-<<<<<<< HEAD
-// Add this deleteMeal function to your Meals component
-    const handleDeleteMeal = async (recordId) => {
-        try {
-            console.log("Deleting meal with ID:", recordId);
-            const response = await axios.delete(`${process.env.REACT_APP_SPRING_IP}api/meals/${recordId}`);
-=======
       // 새로운 식단을 표시하기 위해 상태 업데이트
       setSections((prevSections) => ({
         ...prevSections,
         [modalSection]: [...prevSections[modalSection], savedMeal]
       }));
->>>>>>> a6001b9b29fc83130fd82880a9d7a202e68d6dd3
 
       // 성공시 모달 닫기
       closeModal();
