@@ -116,18 +116,30 @@ const Mypage = ({ user, setUser }) => {
       return;
     }
 
+    // ✅ 변경 여부 검사
+    const isChanged = Object.keys(formData).some((key) => {
+      return formData[key] !== '' && formData[key] !== userData[key];
+    });
+
+    if (!isChanged) {
+      toast.info('변경된 항목이 없습니다.');
+      return;
+    }
+
     try {
       const result = await updateUser(formData);
 
       if (result.status === 'success') {
         toast.success(result.message);
 
-        // ✅ 최신 사용자 정보 재요청
+        // 최신 사용자 정보 다시 불러오기
         const response = await getUserByEmail(user.memEmail);
         const updatedUser = response.member;
-
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser); // UI 상태도 갱신
+        setUser(updatedUser);
+
+        // 화면 갱신까지 수행
+        await fetchUserData();
       } else {
         toast.warn(result.message);
       }
