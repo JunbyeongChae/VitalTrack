@@ -225,7 +225,9 @@ const UserHome = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">현재 체중</p>
-              <h3 className="text-lg font-semibold text-gray-900">{localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memWeight : 'N/A'} kg</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {localStorage.getItem('user') ? parseFloat(JSON.parse(localStorage.getItem('user')).memWeight).toLocaleString() : 'N/A'} kg
+              </h3>
             </div>
           </div>
         </div>
@@ -237,7 +239,7 @@ const UserHome = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">BMI</p>
               <h3 className="text-lg font-semibold text-gray-900">
-                {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memBmi : 'N/A'} - {bmiStatus}
+                {localStorage.getItem('user') ? parseFloat(JSON.parse(localStorage.getItem('user')).memBmi).toLocaleString() : 'N/A'} - {bmiStatus}
               </h3>
             </div>
           </div>
@@ -249,7 +251,7 @@ const UserHome = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">오늘 운동칼로리</p>
-              <h3 className="text-lg font-semibold text-gray-900">{lastWeekData.kcal[6]} kcal</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{lastWeekData.kcal[6].toLocaleString()} kcal</h3>
             </div>
           </div>
         </div>
@@ -323,7 +325,7 @@ const UserHome = () => {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-500">Calories</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'} / {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'}
+                  {localStorage.getItem('user') ? parseFloat(JSON.parse(localStorage.getItem('user')).memKcal).toLocaleString() : 'N/A'} / {localStorage.getItem('user') ? parseFloat(JSON.parse(localStorage.getItem('user')).memKcal).toLocaleString() : 'N/A'}
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">

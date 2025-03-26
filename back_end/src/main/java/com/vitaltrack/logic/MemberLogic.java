@@ -97,7 +97,7 @@ public class MemberLogic {
     // 업데이트할 데이터 설정
     member.setMemBmi(bmi);
     member.setMemKcal(calorie);
-    
+
     // 비밀번호가 수정된 경우에만 암호화하여 저장
     if (member.getMemPw() != null && !member.getMemPw().isBlank()) {
       String hashedPw = BCrypt.hashpw(member.getMemPw(), BCrypt.gensalt());
@@ -136,6 +136,8 @@ public class MemberLogic {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
 
+    log.info("storedPw: " + storedPw);
+    
     if (isPlainText) {
       String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt());
       member.setMemPw(hashedPw);
