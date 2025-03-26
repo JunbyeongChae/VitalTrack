@@ -31,7 +31,7 @@ public class DietController {
 
     // Optimized search endpoint using Jackson Streaming API
     @GetMapping("/foods/search")
-    public List<Map<String, Object>> searchFoods(@RequestParam String query) throws IOException {
+    public List<Map<String, Object>> searchFoods(@RequestParam(name = "query") String query) throws IOException {
         // Load FoodData.json from resources folder
         Resource resource = new ClassPathResource("data/FoodData20250312.json");
         File file = resource.getFile();

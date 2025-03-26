@@ -12,7 +12,7 @@ const normalizeText = (text) => {
     return text ? text.normalize("NFC").toLowerCase() : "";
 };
 
-const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
+const AddMealModal = ({ isOpen, onClose, onAddMeal, mealType }) => {
     const { refreshComponents } = useMeals(); // MealsContext에서 함수 가져오기
     const [searchQuery, setSearchQuery] = useState(""); // 검색어
     const [searchResults, setSearchResults] = useState([]); // 검색결과
@@ -21,6 +21,16 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
     const [isComposing, setIsComposing] = useState(false); // 한글입력 IME 동작여부 확인
 
     const RECENT_SEARCHES_KEY = "recentSearches";
+
+    const convertToEnumMealType = (korType) => {
+      switch (korType) {
+        case "아침": return "Breakfast";
+        case "점심": return "Lunch";
+        case "저녁": return "Dinner";
+        case "간식": return "Snack";
+        default: return null;
+      }
+    };
 
     // Save search query to localStorage
     const saveToLocalStorage = (query) => {
@@ -50,7 +60,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
         setIsLoading(true);
         try {
             const response = await axios.get(
-                "http://localhost:8000/api/foods/search",
+                `${process.env.REACT_APP_SPRING_IP}api/foods/search`,
                 {
                     params: { query: searchQuery },
                 }
@@ -211,7 +221,7 @@ const AddMealModal = ({ isOpen, onClose, onAddMeal }) => {
 
                                             console.log("Meal Data:", meal); // Ensure full meal object is logged
 
-                                            onAddMeal(meal); // Pass full object to onAddMeal
+                                            onAddMeal(meal, convertToEnumMealType(mealType)); // Pass full object to onAddMeal
 
                                         }}
                                         className="text-sm font-medium text-blue-500 hover:text-blue-700"
