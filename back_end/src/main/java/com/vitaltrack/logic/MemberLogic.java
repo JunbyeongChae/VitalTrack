@@ -118,10 +118,22 @@ public class MemberLogic {
     if (member == null) {
       throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
     }
-    // 비밀번호 비교를 BCrypt로 변경
-    if (!BCrypt.checkpw(password, member.getMemPw())) {
+
+    String storedPw = member.getMemPw();
+    boolean isPlainText = !storedPw.startsWith("$2a$");
+    boolean match = isPlainText ? storedPw.equals(password) : BCrypt.checkpw(password, storedPw);
+
+    if (!match) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
+
+    if (isPlainText) {
+      String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt());
+      member.setMemPw(hashedPw);
+      memberDao.updateMember(member);
+      log.info("기존 평문 비밀번호를 Bcrypt로 암호화하여 저장 완료");
+    }
+
     return member;
   }
 

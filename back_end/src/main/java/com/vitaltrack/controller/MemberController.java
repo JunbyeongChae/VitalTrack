@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -68,12 +69,15 @@ public class MemberController {
     try {
       int updatedRows = memberLogic.updateUser(member);
       if (updatedRows > 0) {
-        return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
+        // ✅ JSON 형식으로 응답
+        return ResponseEntity.ok(Map.of("status", "success", "message", "회원 정보가 업데이트되었습니다."));
       } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of("status", "fail", "message", "회원 정보를 찾을 수 없습니다."));
       }
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 업데이트 실패: " + e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("status", "error", "message", "회원 정보 업데이트 실패: " + e.getMessage()));
     }
   }
 
@@ -82,17 +86,25 @@ public class MemberController {
     String email = request.get("memEmail");
     String inputPw = request.get("memPw");
 
-    // 이메일로 사용자 조회
     MemberInfo member = memberLogic.findByEmail(email);
     if (member == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(Map.of("success", false, "message", "존재하지 않는 이메일입니다."));
     }
 
-    // 비밀번호 검증
-    if (!member.getMemPw().equals(inputPw)) {
+    String storedPw = member.getMemPw();
+    boolean isPlainText = !storedPw.startsWith("$2a$");
+    boolean match = isPlainText ? storedPw.equals(inputPw) : BCrypt.checkpw(inputPw, storedPw);
+
+    if (!match) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
           .body(Map.of("success", false, "message", "비밀번호가 일치하지 않습니다."));
+    }
+
+    if (isPlainText) {
+      String hashedPw = BCrypt.hashpw(inputPw, BCrypt.gensalt());
+      member.setMemPw(hashedPw);
+      memberLogic.updateUser(member); // 암호화 후 저장
     }
 
     return ResponseEntity.ok(Map.of("success", true));

@@ -173,3 +173,9 @@ export const isSessionExpired = () => {
   const expiresAt = localStorage.getItem('expiresAt');
   return !expiresAt || Date.now() > Number(expiresAt);
 };
+
+export const getUserByEmail = async (email) => {
+  return await authFetch(`${process.env.REACT_APP_SPRING_IP}api/auth/getUserByEmail?email=${email}`, {
+    method: 'GET'
+  });
+};

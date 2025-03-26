@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateUser, checkPassword, deleteUser } from '../../services/authLogic'; // 기존 주석 유지
+import { updateUser, checkPassword, deleteUser, getUserByEmail } from '../../services/authLogic'; // 기존 주석 유지
 import { toast } from 'react-toastify';
 
 const Mypage = ({ user, setUser }) => {
@@ -117,10 +117,22 @@ const Mypage = ({ user, setUser }) => {
     }
 
     try {
-      await updateUser(formData);
-      toast.success('회원 정보가 업데이트되었습니다.');
+      const result = await updateUser(formData);
+
+      if (result.status === 'success') {
+        toast.success(result.message);
+
+        // ✅ 최신 사용자 정보 재요청
+        const response = await getUserByEmail(user.memEmail);
+        const updatedUser = response.member;
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser); // UI 상태도 갱신
+      } else {
+        toast.warn(result.message);
+      }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || '회원 정보 수정 중 오류 발생');
       console.log(error.message);
     }
   };
