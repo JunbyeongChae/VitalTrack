@@ -4,7 +4,7 @@ export const getScheduleListDB = async(params)=>{
     try {
         //console.log('Request Params:', params);  // params 값 확인
         const response = await axios.get('api/workout/getScheduleList', { params }); // axios.get('/api/workout/getScheduleList?memNo='+memNo)
-        //console.log(response.data)
+        //console.log(response)
         return response
     } catch (error) {
         console.error('Error fetching schedules:', error)

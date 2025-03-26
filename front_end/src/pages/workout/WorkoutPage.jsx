@@ -1,50 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import WorkoutCalendar from "./workout_calendar/WorkoutCalendar";
 import WorkoutChartBox from "./WorkoutChartBox";
 import WorkoutSummary from "./WorkoutSummary";
-import {ScheduleProvider} from "./Context";
 
 const WorkoutPage = () => {
-
-    const [mockDataLoaded, setMockDataLoaded] = useState(false);
-    const [userWorkouts, setUserWorkouts] = useState([]);
-
-    useEffect(() => {
-        const fetchWorkoutData = async () => {
-            try {
-                const response = await fetch("/public/workoutTypes.json");
-                const workoutTypes = await response.json();
-
-                // 사용자의 운동 데이터가 없을 경우, 목업 데이터 추가
-                const mockSchedule = [
-                    {
-                        scheduleId: 1,
-                        workoutId: 1,
-                        scheduleStart: new Date().toISOString(),
-                        scheduleEnd: new Date().toISOString(),
-                        color: "#FF5733",
-                        allDay: false,
-                        isFinished: true,
-                        workoutTimeMin: 30,
-                        kcal: 200,
-                        memNo: 1
-                    }
-                ];
-
-                const userWorkouts = await workoutTypes();
-                if (userWorkouts.length === 0) {
-                    setUserWorkouts(mockSchedule);
-                }
-
-                setMockDataLoaded(true);
-            } catch (error) {
-                console.error("운동 데이터 로딩 실패:", error);
-            }
-        };
-
-        fetchWorkoutData();
-    }, []);
-
 
 
   //일자별 운동칼로리 - 막대 그래프 -> WorkoutChartBox.jsx
@@ -54,7 +13,6 @@ const WorkoutPage = () => {
     return (
 
         <div className="flex">
-            <ScheduleProvider>
                 <div className="workout-calendar w-3/5 p-5 box-border ml-5">
                     <WorkoutCalendar/>
                 </div>
@@ -62,7 +20,6 @@ const WorkoutPage = () => {
                     <WorkoutSummary/>
                     <WorkoutChartBox />
                 </div>
-            </ScheduleProvider>
         </div>
     )
 }
