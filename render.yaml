@@ -2,7 +2,7 @@ services:
   - type: web
     name: vitaltrack-frontend
     env: docker
-    plan: free
+    plan: starter
     dockerfilePath: Dockerfile.frontend
     envVars:
       - key: REACT_APP_SPRING_IP
@@ -11,7 +11,7 @@ services:
   - type: web
     name: vitaltrack-backend
     env: docker
-    plan: free
+    plan: starter
     dockerfilePath: back_end/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
