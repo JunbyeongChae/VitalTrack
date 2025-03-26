@@ -1,40 +1,67 @@
 package com.vitaltrack.controller;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.vitaltrack.model.WaterIntakeRequest;
-import com.vitaltrack.service.DietRecordService;
+import com.vitaltrack.logic.DietRecordLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.vitaltrack.dao.DietRecordDao;
-import com.vitaltrack.service.DietRecordService;
 
 @RestController
 @RequestMapping("/api/meals")
 public class DietRecordController {
-    private final DietRecordService dietRecordService;
+    private final DietRecordLogic dietRecordLogic;
 
     @Autowired
-    public DietRecordController(DietRecordService dietRecordService) {
-        this.dietRecordService = dietRecordService;
+    public DietRecordController(DietRecordLogic dietRecordLogic) {
+        this.dietRecordLogic = dietRecordLogic;
     }
 
     @PostMapping
     public ResponseEntity<DietRecordDao> saveMeal(@RequestBody DietRecordDao dietRecord) {
         try {
-            DietRecordDao savedRecord = dietRecordService.saveDietRecord(dietRecord);
+            DietRecordDao savedRecord = dietRecordLogic.saveDietRecord(dietRecord);
             return ResponseEntity.status(201).body(savedRecord); // 201 Created
         } catch (Exception e) {
             System.err.println("Error saving meal: " + e.getMessage());
             return ResponseEntity.internalServerError().build(); // 500 Internal Server Error
         }
     } //end of PostMapping
+
+    @PostMapping("/water-intake")
+    public ResponseEntity<?> updateWaterIntake(@RequestBody WaterIntakeRequest request) {
+        try {
+            // Extract data from request
+            int memNo = request.getMemNo();
+            String dietDate = request.getDietDate();
+            int waterIntake = request.getWaterIntake();
+
+            // Call the service method
+            dietRecordLogic.updateWaterIntake(memNo, dietDate, waterIntake);
+
+            // Return success response
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Water intake updated successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Handle errors
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", "Failed to update water intake: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 
     // GET: /api/meals/{memNo}
     @GetMapping("/{memNo}")
@@ -47,11 +74,11 @@ public class DietRecordController {
 
             if (date != null && !date.isEmpty()) {
                 // Parse the date string from the request parameter
-                LocalDate parsedDate = LocalDate.parse(date);
-                meals = dietRecordService.getMealsByMemberAndDate(memNo, parsedDate);
+                LocalDate parsedDate = LocalDate.parse(date).atStartOfDay(ZoneId.of("Asia/Seoul")).toLocalDate();
+                meals = dietRecordLogic.getMealsByMemberAndDate(memNo, parsedDate);
             } else {
                 // Fallback to current date if no date provided
-                meals = dietRecordService.getMealsByMemberAndDate(memNo, LocalDate.now());
+                meals = dietRecordLogic.getMealsByMemberAndDate(memNo, LocalDate.now());
             }
 
             return ResponseEntity.ok(meals);
@@ -69,10 +96,10 @@ public class DietRecordController {
             @RequestParam(required = false) String date) {
 
         LocalDate parsedDate = (date != null) ?
-                LocalDate.parse(date) :
+                LocalDate.parse(date).atStartOfDay(ZoneId.of("Asia/Seoul")).toLocalDate() :
                 LocalDate.now();
 
-        return dietRecordService.getMealsByMemberAndDate(memNo, parsedDate);
+        return dietRecordLogic.getMealsByMemberAndDate(memNo, parsedDate);
     }
 
     // Also add an endpoint for the macronutrients
@@ -82,10 +109,10 @@ public class DietRecordController {
             @RequestParam(required = false) String date) {
 
         LocalDate parsedDate = (date != null) ?
-                LocalDate.parse(date) :
+                LocalDate.parse(date).atStartOfDay(ZoneId.of("Asia/Seoul")).toLocalDate() :
                 LocalDate.now();
 
-        return dietRecordService.getMacronutrientsByMemberAndDate(memNo, parsedDate);
+        return dietRecordLogic.getMacronutrientsByMemberAndDate(memNo, parsedDate);
     }
 
 
@@ -94,10 +121,10 @@ public class DietRecordController {
                                                              @RequestParam(required = false) String date) {
         try {
             // Get the date parameter or default to today
-            LocalDate targetDate = date != null ? LocalDate.parse(date) : LocalDate.now();
+            LocalDate targetDate = date != null ? LocalDate.parse(date).atStartOfDay(ZoneId.of("Asia/Seoul")).toLocalDate() : LocalDate.now();
 
             // Get all meals for the member on the specified date
-            List<DietRecordDao> meals = dietRecordService.getMealsByMemberAndDate(memNo, targetDate);
+            List<DietRecordDao> meals = dietRecordLogic.getMealsByMemberAndDate(memNo, targetDate);
 
             // Calculate consumed macronutrients
             double totalProtein = 0.0;
@@ -137,45 +164,19 @@ public class DietRecordController {
                     .body("Failed to fetch macronutrient data: " + e.getMessage());
         }
     }
-    @PostMapping("/water-intake")
-    public ResponseEntity<?> updateWaterIntake(@RequestBody WaterIntakeRequest request) {
-        try {
-            // Extract data from request
-            int memNo = request.getMemNo();
-            String dietDate = request.getDietDate();
-            int waterIntake = request.getWaterIntake();
-
-            // Call the service method
-            dietRecordService.updateWaterIntake(memNo, dietDate, waterIntake);
-
-            // Return success response
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "success");
-            response.put("message", "Water intake updated successfully");
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // Handle errors
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to update water intake: " + e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
 
     @DeleteMapping("/{recordId}")
     public ResponseEntity<?> deleteMeal(@PathVariable int recordId) {
         try {
             // Check if the meal exists
-            boolean exists = dietRecordService.checkIfMealExists(recordId);
+            boolean exists = dietRecordLogic.checkIfMealExists(recordId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Meal not found with ID: " + recordId);
             }
 
             // Delete the meal
-            boolean deleted = dietRecordService.deleteMeal(recordId);
+            boolean deleted = dietRecordLogic.deleteMeal(recordId);
 
             if (deleted) {
                 return ResponseEntity.ok("Meal deleted successfully");

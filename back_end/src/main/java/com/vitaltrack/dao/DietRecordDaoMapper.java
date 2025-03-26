@@ -1,4 +1,4 @@
-package com.vitaltrack.mapper;
+package com.vitaltrack.dao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,10 +6,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.vitaltrack.dao.DietRecordDao;
-
 @Mapper
-public interface DietRecordMapper {
+public interface DietRecordDaoMapper {
     // Existing methods
     void insertDietRecord(DietRecordDao dietRecord);
     List<DietRecordDao> findDietRecordsByMemNo(int memNo);
