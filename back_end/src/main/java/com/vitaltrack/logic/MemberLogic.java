@@ -97,6 +97,15 @@ public class MemberLogic {
     // 업데이트할 데이터 설정
     member.setMemBmi(bmi);
     member.setMemKcal(calorie);
+    
+    // 비밀번호가 수정된 경우에만 암호화하여 저장
+    if (member.getMemPw() != null && !member.getMemPw().isBlank()) {
+      String hashedPw = BCrypt.hashpw(member.getMemPw(), BCrypt.gensalt());
+      member.setMemPw(hashedPw);
+    } else {
+      // 비밀번호가 전달되지 않았다면 기존 비밀번호 유지
+      member.setMemPw(existingMember.getMemPw());
+    }
 
     // 회원 정보 저장
     int result = memberDao.updateMember(member);
