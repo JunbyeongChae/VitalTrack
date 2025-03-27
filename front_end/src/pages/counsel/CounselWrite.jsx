@@ -55,7 +55,7 @@ const CounselWrite = () => {
           <CounselSidebar />
         </div>
 
-        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto"> {/* 수정 내용: 작성 패널 반응형 처리 */}
+        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto"> {/* 수정 내용: 작성 패널 반응형 처리 */}
           <h1 className="text-2xl font-semibold text-[#7c9473]"> 상담 작성</h1>
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">

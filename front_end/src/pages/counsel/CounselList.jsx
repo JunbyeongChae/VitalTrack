@@ -51,54 +51,56 @@ const CounselList = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6"> {/* 수정 내용: 반응형 레이아웃 대응 추가 */}
-        <div className="w-full md:w-1/4"> {/* 수정 내용: 모바일 w-full, PC w-1/4 */}
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6">
+        {' '}
+        {/* 수정 내용: 반응형 레이아웃 대응 추가 */}
+        <div className="w-full md:w-1/4">
+          {' '}
+          {/* 수정 내용: 모바일 w-full, PC w-1/4 */}
           <CounselSidebar />
         </div>
-        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]"> {/* 수정 내용: 반응형 여백, 너비 설정 */}
+        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]">
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473]">영양상담 게시판</h1>
-            <div className="flex flex-wrap gap-2"> {/* 수정 내용: 버튼/입력창 감싸는 영역 반응형 개선 */}
-              <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" id="keyword" />
-              <button onClick={boardSearch} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
+          </div>
+
+          {/* 수정 내용: InfoBoardList 검색창 스타일 적용 */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+              <input type="text" placeholder="검색어를 입력하세요" className="w-full sm:w-auto flex-1 p-2 border border-gray-400 rounded-md" id="keyword" />
+              <button onClick={boardSearch} className="px-4 py-2 bg-[#93ac90] text-white rounded-md hover:bg-[#7c9473] transition-all shadow-md">
                 검색
               </button>
-              <button onClick={() => navigate('/counsel/write')} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
+              <button onClick={() => navigate('/counsel/write')} className="px-4 py-2 bg-[#93ac90] text-white rounded-md hover:bg-[#7c9473] transition-all shadow-md">
                 글쓰기
               </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto"> {/* 수정 내용: 테이블이 모바일에서 넘치지 않도록 처리 */}
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-[#d7e3c7] text-[#5f7a60]">
-              <tr>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[10%]">번호</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[40%]">제목</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성자</th>
-                <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성일</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.length === 0 ? (
+          <div className="overflow-x-auto">
+            {' '}
+            {/* 수정 내용: 테이블이 모바일에서 넘치지 않도록 처리 */}
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-[#d7e3c7] text-[#5f7a60]">
                 <tr>
-                  <td colSpan="4" className="text-center text-[#7c9473]">
-                    게시글이 없습니다.
-                  </td>
+                  <th className="p-3 border-b border-[#c2c8b0] text-center w-[10%]">번호</th>
+                  <th className="p-3 border-b border-[#c2c8b0] text-center w-[40%]">제목</th>
+                  <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성자</th>
+                  <th className="p-3 border-b border-[#c2c8b0] text-center w-[15%]">작성일</th>
                 </tr>
-              ) : (
-                currentItems.map((board, index) => (
-                  <CounselItem
-                    key={index}
-                    board={board}
-                    page={currentPage}
-                    index={index}
-                    itemsPerPage={itemsPerPage}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentItems.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center text-[#7c9473]">
+                      게시글이 없습니다.
+                    </td>
+                  </tr>
+                ) : (
+                  currentItems.map((board, index) => <CounselItem key={index} board={board} page={currentPage} index={index} itemsPerPage={itemsPerPage} />)
+                )}
+              </tbody>
+            </table>
           </div>
 
           <div className="flex justify-center mt-4">

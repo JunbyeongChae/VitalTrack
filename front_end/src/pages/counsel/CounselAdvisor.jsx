@@ -13,7 +13,7 @@ const CounselAdvisor = () => {
           {/* 수정 내용: 사이드바 반응형 처리 */}
           <CounselSidebar />
         </div>
-        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]">
+        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]">
           {' '}
           {/* 수정 내용: 본문 패널 반응형 처리 */}
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">

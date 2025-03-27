@@ -84,7 +84,7 @@ const CounselUpdate = () => {
           {/* 수정 내용: 사이드바 반응형 너비 처리 */}
           <Sidebar />
         </div>
-        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto">
+        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto">
           {' '}
           {/* 수정 내용: 본문 패널 반응형 처리 */}
           <h1 className="text-2xl font-semibold text-[#7c9473] text-center"> 게시물 수정</h1>

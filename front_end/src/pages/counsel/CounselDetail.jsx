@@ -152,16 +152,22 @@ const CounselDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6"> {/* 수정 내용: 반응형 레이아웃 (모바일 세로, PC 가로) */}
-        <div className="w-full md:w-1/4"> {/* 수정 내용: 사이드바 너비 반응형 대응 */}
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6">
+        {' '}
+        {/* 수정 내용: 반응형 레이아웃 (모바일 세로, PC 가로) */}
+        <div className="w-full md:w-1/4">
+          {' '}
+          {/* 수정 내용: 사이드바 너비 반응형 대응 */}
           <CounselSidebar />
         </div>
-
-        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]"> {/* 수정 내용: 본문 패널 반응형 설정 */}
-          <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
-            {/* 게시글 제목 및 버튼 정렬 */}
-            <h1 className="text-3xl font-semibold text-[#7c9473] pb-4">{board.counselTitle || '로딩 중...'}</h1>
-            <div className="flex flex-wrap gap-2"> {/* 수정 내용: 버튼 그룹이 모바일에서도 줄바꿈 가능하게 */}
+        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]">
+          {' '}
+          {/* 수정 내용: 본문 패널 반응형 설정 */}
+          <div className="border-b pb-4 mb-4 border-[#c2c8b0]">
+            {' '}
+            {/* 수정 내용: 제목과 버튼 분리하여 InfoBoard 스타일 적용 */}
+            <h1 className="text-3xl font-semibold text-[#7c9473] mb-4">{board.counselTitle || '로딩 중...'}</h1>
+            <div className="flex flex-wrap gap-2">
               <button onClick={() => navigate('/counsel')} className="px-6 py-2 bg-[#ACA7AF] text-white font-semibold rounded-lg hover:bg-[#A190AB] transition-all shadow-md">
                 목록
               </button>
@@ -173,20 +179,21 @@ const CounselDetail = () => {
               </button>
             </div>
           </div>
-
           {/* 작성자 및 날짜 표시 */}
-          <div className="flex justify-between items-center text-[#5f7a60] mt-4 mb-6 text-sm sm:text-base"> {/* 수정 내용: 작은 화면에서 글씨 크기 대응 */}
+          <div className="flex justify-between items-center text-[#5f7a60] mt-4 mb-6 text-sm sm:text-base">
+            {' '}
+            {/* 수정 내용: 작은 화면에서 글씨 크기 대응 */}
             <div>
               <span className="font-semibold">작성자 :</span> {board.memNick || '알 수 없음'}
               <span className="ml-4 font-semibold">작성일 :</span> {board.counselDate || '날짜 없음'}
             </div>
           </div>
-
           {/* 게시글 내용 */}
-          <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0] overflow-x-auto"> {/* 수정 내용: 내용 박스 모바일 대응 */}
+          <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0] overflow-x-auto">
+            {' '}
+            {/* 수정 내용: 내용 박스 모바일 대응 */}
             <div className="text-lg text-[#5f7a60] whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: board.counselContent || '내용을 불러오는 중입니다.' }} />
           </div>
-
           {/* 댓글 섹션 */}
           <div className="mt-8">
             <h2 className="text-2xl font-semibold text-[#7c9473] mb-4">답변</h2>
@@ -194,7 +201,9 @@ const CounselDetail = () => {
               {comments.map((comment) => (
                 <div key={comment.answerId} className="p-3 border-b border-gray-300">
                   {/* 작성자 및 작성일 정보 */}
-                  <div className="text-gray-500 mb-2 text-sm sm:text-base"> {/* 수정 내용: 작은 화면 대응 */}
+                  <div className="text-gray-500 mb-2 text-sm sm:text-base">
+                    {' '}
+                    {/* 수정 내용: 작은 화면 대응 */}
                     <span className="font-semibold">작성자 : </span>
                     {comment.memNick}
                     <span className="font-semibold"> | </span>
@@ -214,7 +223,9 @@ const CounselDetail = () => {
                       <div className="mb-2 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: comment.answerContent }} />
                       {/* 수정/삭제 버튼 */}
                       {comment.memNo === user.memNo && (
-                        <div className="flex flex-wrap gap-2"> {/* 수정 내용: 버튼 줄바꿈 가능하게 */}
+                        <div className="flex flex-wrap gap-2">
+                          {' '}
+                          {/* 수정 내용: 버튼 줄바꿈 가능하게 */}
                           <button onClick={() => startEditing(comment.answerId, comment.answerContent)} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
                             수정
                           </button>
