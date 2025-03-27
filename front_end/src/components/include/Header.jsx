@@ -13,7 +13,9 @@ const Header = ({ user, setUser }) => {
 
   // 네비게이션 클릭 핸들러
   const handleNavClick = (path) => {
-    if (!user) {
+    // 로그인 없이 접근 가능한 경로 예외 처리
+    const publicRoutes = ['/', '/login', '/signup'];
+    if (!user && !publicRoutes.includes(path)) {
       toast.error('로그인이 필요합니다.', { position: 'top-center' });
       navigate('/login');
     } else {

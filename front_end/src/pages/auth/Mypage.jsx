@@ -24,8 +24,6 @@ const Mypage = ({ user, setUser }) => {
   const [bmiStatus, setBmiStatus] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const todayDate = new Date().toISOString().split('T')[0];
-
   // 생년월일 선택용 배열 생성
   const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -191,10 +189,9 @@ const Mypage = ({ user, setUser }) => {
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
       <div className="relative mb-4">
         <h2 className="text-2xl font-bold text-center">{userData?.memNick}님의 회원 정보</h2>
-        <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">{todayDate}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="bg-gray-100 p-4 rounded-lg">
           {/* 이메일 */}
           <div className="mb-4">
