@@ -15,7 +15,6 @@ export const MealsProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-
         // 특정 컴포넌트만 리프레시하는 함수
         const refreshComponents = useCallback((componentsToRefresh) => {
             setRefreshTriggers(prev => {

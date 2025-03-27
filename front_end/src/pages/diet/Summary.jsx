@@ -7,19 +7,23 @@ import axios from "axios";
 import {format} from "date-fns";
 
 const Summary = () => {
+    const {refreshTriggers} = useContext(MealsContext);
     const {breakfastMeals, lunchMeals, dinnerMeals, snackMeals, loadClientMeals} = useContext(MealsContext);
     const calorieChartRef = useRef(null);
     const nutritionChartRef = useRef(null);
     const [meals, setMeals] = useState([]);
     const [waterIntake, setWaterIntake] = useState(0);
     const maxWaterIntake = 8; // Maximum number of water glasses
-    const [summaryData, setSummaryData] = useState({});
-    const { refreshCounter } = useMeals();
 
     const userData = JSON.parse(localStorage.getItem('user')) || {};
     const [selectedDate, setSelectedDate] = useState(
         localStorage.getItem('selectedDate')?.split(' ')[0] || new Date().toISOString().split('T')[0]
     );
+
+    useEffect(() => {
+        loadClientMeals();
+    }, [refreshTriggers.summary]);
+
 
     // localStorage 변경일자 감지
     useEffect(() => {
@@ -158,7 +162,7 @@ const Summary = () => {
             window.removeEventListener('resize', calorieChart.resize);
         };
 
-    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, targetCalories, refreshCounter]);
+    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, targetCalories]);
 
     useEffect(() => {
         const renderChart = () => {
@@ -227,7 +231,7 @@ const Summary = () => {
 
         return () => clearTimeout(timeoutId);
 
-    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate, refreshCounter]);
+    }, [breakfastMeals, lunchMeals, dinnerMeals, snackMeals, selectedDate]);
 
     /* 물 섭취량 DB에서 가져오기 */
     useEffect(() => {
@@ -256,43 +260,43 @@ const Summary = () => {
             }
         };
         fetchMealsAndWaterIntake();
-    }, [selectedDate, refreshCounter]);
+    }, [selectedDate]);
 
     // 물 섭취량 추가
     const handleWaterIntakeChange = async (newWaterIntake) => {
-            setWaterIntake(newWaterIntake);
+        setWaterIntake(newWaterIntake);
 
-            try {
-                // 회원정보 가져오기
-                const userData = JSON.parse(localStorage.getItem("user"));
-                if (!userData || !userData.memNo) {
-                    console.error("User information not found");
-                    return;
-                }
-
-                // 선택된 날짜를 사용하거나 선택일자가 없을 경우 금일 날짜를 사용
-                const selectedDate = localStorage.getItem("selectedDate");
-                const formattedDate = selectedDate
-                    ? format(new Date(selectedDate), 'yyyy-MM-dd')
-                    : format(new Date(), 'yyyy-MM-dd');
-
-                // 물 섭취량 DB저장 및 불러오기를 위한 변수 설정
-                const payload = {
-                    memNo: userData.memNo,
-                    dietDate: formattedDate,
-                    waterIntake: newWaterIntake
-                };
-
-                // 물 섭취량 DB 저장 API
-                const response = await axios.post(
-                    `${process.env.REACT_APP_SPRING_IP}api/meals/water-intake`,
-                    payload
-                );
-
-            } catch (error) {
-                console.error('물 섭취량 저장에 실패했습니다 :', error);
+        try {
+            // 회원정보 가져오기
+            const userData = JSON.parse(localStorage.getItem("user"));
+            if (!userData || !userData.memNo) {
+                console.error("User information not found");
+                return;
             }
-        };
+
+            // 선택된 날짜를 사용하거나 선택일자가 없을 경우 금일 날짜를 사용
+            const selectedDate = localStorage.getItem("selectedDate");
+            const formattedDate = selectedDate
+                ? format(new Date(selectedDate), 'yyyy-MM-dd')
+                : format(new Date(), 'yyyy-MM-dd');
+
+            // 물 섭취량 DB저장 및 불러오기를 위한 변수 설정
+            const payload = {
+                memNo: userData.memNo,
+                dietDate: formattedDate,
+                waterIntake: newWaterIntake
+            };
+
+            // 물 섭취량 DB 저장 API
+            const response = await axios.post(
+                `${process.env.REACT_APP_SPRING_IP}api/meals/water-intake`,
+                payload
+            );
+
+        } catch (error) {
+            console.error('물 섭취량 저장에 실패했습니다 :', error);
+        }
+    };
 
 
     // 물 섭취량 증가 버튼
