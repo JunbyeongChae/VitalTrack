@@ -76,29 +76,38 @@ const CounselUpdate = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex">
-        <Sidebar />
-        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6 h-auto">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6">
+        {' '}
+        {/* 수정 내용: 반응형 레이아웃 대응 (모바일 세로, PC 가로) */}
+        <div className="w-full md:w-1/4">
+          {' '}
+          {/* 수정 내용: 사이드바 반응형 너비 처리 */}
+          <Sidebar />
+        </div>
+        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto">
+          {' '}
+          {/* 수정 내용: 본문 패널 반응형 처리 */}
           <h1 className="text-2xl font-semibold text-[#7c9473] text-center"> 게시물 수정</h1>
-
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">
             {/* 제목 */}
             <input type="text" value={title} onChange={(e) => handleTitle(e.target.value)} className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" placeholder="제목을 입력하세요" required />
 
             {/* 작성자 */}
-            <div className="flex gap-4">
-              <input type="text" value={memNick} readOnly className="w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
+            <div className="flex gap-4 flex-wrap">
+              {' '}
+              {/* 수정 내용: 모바일에서 줄바꿈 가능하게 처리 */}
+              <input type="text" value={memNick} readOnly className="w-full sm:w-1/2 min-w-[200px] p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
             </div>
 
             {/* 내용 */}
             <CounselTiptapEditor value={content} handleContent={handleContent} editorRef={editorRef} />
 
             {/* 버튼 영역 */}
-            <div className="flex justify-end gap-4 mt-6">
-              <button onClick={boardUpdate} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2">
+            <div className="flex flex-wrap justify-end gap-4 mt-6">
+              <button onClick={boardUpdate} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm">
                 수정 완료
               </button>
-              <button onClick={handleCancel} className="px-8 py-3 bg-[#e5d8bf] text-[#5f7a60] text-base font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-sm mx-2">
+              <button onClick={handleCancel} className="px-8 py-3 bg-[#e5d8bf] text-[#5f7a60] text-base font-semibold rounded-lg hover:bg-[#d7c7a8] transition-all shadow-sm">
                 취소
               </button>
             </div>

@@ -14,13 +14,20 @@ const CounselItem = ({ board, page, index, itemsPerPage }) => {
   return (
     <tr>
       <td className="p-3 border-b border-[#c2c8b0] text-center">{rowNumber}</td>
-      <td className="p-3 border-b border-[#c2c8b0] text-left">
-        <Link to={`/counsel/${counselNo}?page=${page}`} className="text-blue-500 hover:underline">
+      <td className="p-3 border-b border-[#c2c8b0] text-left max-w-[160px] sm:max-w-none truncate"> {/* 수정 내용: 모바일에서 글자 넘침 방지 */}
+        <Link
+          to={`/counsel/${counselNo}?page=${page}`}
+          className="text-blue-500 hover:underline break-words"
+        >
           {counselTitle}
         </Link>
       </td>
-      <td className="p-3 border-b border-[#c2c8b0] text-center">{memNick}</td>
-      <td className="p-3 border-b border-[#c2c8b0] text-center">{counselDate}</td>
+      <td className="p-3 border-b border-[#c2c8b0] text-center text-sm sm:text-base"> {/* 수정 내용: 글씨 크기 반응형 조정 */}
+        {memNick}
+      </td>
+      <td className="p-3 border-b border-[#c2c8b0] text-center text-sm sm:text-base"> {/* 수정 내용: 글씨 크기 반응형 조정 */}
+        {counselDate}
+      </td>
     </tr>
   );
 };

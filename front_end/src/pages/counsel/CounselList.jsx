@@ -51,12 +51,14 @@ const CounselList = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex">
-        <CounselSidebar className="w-1/4" />
-        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6"> {/* 수정 내용: 반응형 레이아웃 대응 추가 */}
+        <div className="w-full md:w-1/4"> {/* 수정 내용: 모바일 w-full, PC w-1/4 */}
+          <CounselSidebar />
+        </div>
+        <div className="w-full md:w-3/4 mt-6 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]"> {/* 수정 내용: 반응형 여백, 너비 설정 */}
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473]">영양상담 게시판</h1>
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2"> {/* 수정 내용: 버튼/입력창 감싸는 영역 반응형 개선 */}
               <input type="text" placeholder="검색어를 입력하세요" className="border p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-[#93ac90] bg-white border-[#a8b18f] text-[#5f7a60]" id="keyword" />
               <button onClick={boardSearch} className="bg-[#93ac90] text-white px-4 py-2 rounded-lg hover:bg-[#7c9473] transition-all shadow-md">
                 검색
@@ -67,6 +69,7 @@ const CounselList = () => {
             </div>
           </div>
 
+          <div className="overflow-x-auto"> {/* 수정 내용: 테이블이 모바일에서 넘치지 않도록 처리 */}
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#d7e3c7] text-[#5f7a60]">
               <tr>
@@ -84,10 +87,19 @@ const CounselList = () => {
                   </td>
                 </tr>
               ) : (
-                currentItems.map((board, index) => <CounselItem key={index} board={board} page={currentPage} index={index} itemsPerPage={itemsPerPage} />)
+                currentItems.map((board, index) => (
+                  <CounselItem
+                    key={index}
+                    board={board}
+                    page={currentPage}
+                    index={index}
+                    itemsPerPage={itemsPerPage}
+                  />
+                ))
               )}
             </tbody>
           </table>
+          </div>
 
           <div className="flex justify-center mt-4">
             <nav className="flex items-center space-x-1">
