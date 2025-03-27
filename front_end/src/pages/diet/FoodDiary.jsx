@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, { useContext } from "react";
 import { MealsContext } from "../../contexts/MealsContext";
 
 const DiaryEntry = ({ title, time, calories, protein, carbs, fat }) => {
@@ -28,23 +28,9 @@ const DiaryEntry = ({ title, time, calories, protein, carbs, fat }) => {
 };
 
 const FoodDiary = () => {
-    // Access meal data and functions from context
-    const {
-        refreshTriggers,
-        breakfastMeals,
-        lunchMeals,
-        dinnerMeals,
-        snackMeals,
-        loadClientMeals
-    } = useContext(MealsContext);
+    // Access meal data from context
+    const { breakfastMeals, lunchMeals, dinnerMeals, snackMeals } = useContext(MealsContext);
 
-    // 리프레시 트리거가 변경될 때마다 데이터를 다시 로드
-    useEffect(() => {
-        // Context의 loadClientMeals 함수를 호출
-        loadClientMeals();
-    }, [refreshTriggers.foodDiary, loadClientMeals]);
-
-    // 기존 코드...
     // Format meal data for display
     const formatMealTime = (mealType) => {
         switch(mealType) {

@@ -19,6 +19,9 @@ const Meals = () => {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null); // Add error state
 
+  // MealsContext로부터 공급받은 데이터를 활용
+  const mealsContext = useContext(MealsContext);
+
   // localStorage에서 날짜를 가져옴
   const selectedDate = localStorage.getItem('selectedDate');
   const dateToSave = selectedDate ? format(parseISO(selectedDate), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
@@ -45,8 +48,8 @@ const Meals = () => {
 
       // 만약 localStorage에 저장된 날짜가 없을 경우 KST(한국 표준시)를 사용
       const dateParam = selectedDate
-          ? format(new Date(selectedDate), 'yyyy-MM-dd')
-          : (() => {
+        ? format(new Date(selectedDate), 'yyyy-MM-dd')
+        : (() => {
             const now = new Date();
             const kstDate = new Date(now.getTime() + 9 * 60 * 60000);
             return `${kstDate.getUTCFullYear()}-${String(kstDate.getUTCMonth() + 1).padStart(2, '0')}-${String(kstDate.getUTCDate()).padStart(2, '0')}`;
@@ -86,7 +89,12 @@ const Meals = () => {
           console.warn(`식단 타입 오류 : ${mealType}`, meal);
         }
       });
+
       setSections(groupedMeals);
+
+      if (mealsContext && mealsContext.setMealsData) {
+        mealsContext.setMealsData(groupedMeals);
+      }
 
       const reloadEvent = new CustomEvent('mealsReloaded', {
         detail: {
@@ -121,9 +129,6 @@ const Meals = () => {
     setModalSection(section);
     setIsModalOpen(true);
   };
-
-  // MealsContext로부터 공급받은 데이터를 활용
-  const { refreshComponents } = useContext(MealsContext);
 
   const saveMeal = async (selectedFood, selectedMealType, selectedDate) => {
     console.log("👉 선택된 식사 종류:", selectedMealType);
@@ -174,21 +179,15 @@ const Meals = () => {
       const savedMeal = response.data;
       console.log('식단이 저장되었습니다:', savedMeal);
 
-/*      // 새로운 식단을 표시하기 위해 상태 업데이트
+      // 새로운 식단을 표시하기 위해 상태 업데이트
       setSections((prevSections) => ({
         ...prevSections,
         [modalSection]: [...prevSections[modalSection], savedMeal]
-      }));*/
+      }));
 
       // 성공시 모달 닫기
       closeModal();
-/*      window.location.reload();*/
-      // 식단 데이터 다시 로드
-      // MealsContext의 refreshComponents 함수를 사용하여
-      loadClientMeals();
-      // summary와 foodDiary 컴포넌트만 리렌더링하도록 트리거
-      refreshComponents(['summary', 'foodDiary']);
-
+      window.location.reload();
     } catch (error) {
       console.error('식단 저장에 실패했습니다:', error);
       alert('식단 저장에 실패했습니다. 다시 시도해주세요.');
@@ -212,7 +211,6 @@ const Meals = () => {
 
       // 식단 삭제 후 식단자료를 다시 로드
       loadClientMeals();
-      refreshComponents(['summary', 'foodDiary']);
     } catch (error) {
       console.error('식단 자료 삭제에 실패했습니다:', error);
       alert('식단 자료 삭제에 실패했습니다. 다시 시도해주세요.');
@@ -244,30 +242,30 @@ const Meals = () => {
   };
 
   return (
-      <div className="meals-container p-6">
-        <h1 className="text-2xl font-bold mb-6">나의 식단 추가</h1>
+    <div className="meals-container p-6">
+      <h1 className="text-2xl font-bold mb-6">나의 식단 추가</h1>
 
-        {/* Show loading state */}
-        {isLoading && (
-            <div className="text-center py-4">
-              <p>로딩중...</p>
-            </div>
-        )}
-
-        {/* Show error message */}
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-
-        {/* Meal sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <MealSection title="아침" meals={sections.Breakfast} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
-          <MealSection title="점심" meals={sections.Lunch} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
-          <MealSection title="저녁" meals={sections.Dinner} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
-          <MealSection title="간식" meals={sections.Snack} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
+      {/* Show loading state */}
+      {isLoading && (
+        <div className="text-center py-4">
+          <p>로딩중...</p>
         </div>
+      )}
 
-        {/* Add Meal Modal */}
-        {isModalOpen && <AddMealModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveMeal} onAddMeal={addMealToSection} sectionTitle={modalSection} foods={foods} mealType={modalSection}/>}
+      {/* Show error message */}
+      {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
+
+      {/* Meal sections */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MealSection title="아침" meals={sections.Breakfast} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
+        <MealSection title="점심" meals={sections.Lunch} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
+        <MealSection title="저녁" meals={sections.Dinner} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
+        <MealSection title="간식" meals={sections.Snack} onAddMeal={onAddMeal} onDeleteMeal={handleDeleteMeal} />
       </div>
+
+      {/* Add Meal Modal */}
+      {isModalOpen && <AddMealModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveMeal} onAddMeal={addMealToSection} sectionTitle={modalSection} foods={foods} mealType={modalSection}/>}
+    </div>
   );
 };
 
