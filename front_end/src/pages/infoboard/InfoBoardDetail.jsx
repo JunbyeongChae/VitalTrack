@@ -158,15 +158,33 @@ const InfoBoardDetail = () => {
 
   const convertYoutubeLinksToIframe = (htmlContent) => {
     if (!htmlContent || typeof htmlContent !== 'string') return '';
-    const youtubeWatchRegex = /https?:\/\/www\.youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/g;
-    const youtubeShortRegex = /https?:\/\/youtu\.be\/([A-Za-z0-9_-]{11})(?:\?.*)?/g; // 뒤에 ?si= 제거
 
-    try {
-      return htmlContent.replace(youtubeWatchRegex, (match, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`).replace(youtubeShortRegex, (match, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`);
-    } catch (err) {
-      console.error('유튜브 변환 중 오류 발생:', err);
-      return htmlContent;
-    }
+    const youtubeWatchRegex = /https?:\/\/www\.youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/g;
+    const youtubeShortRegex = /https?:\/\/youtu\.be\/([A-Za-z0-9_-]{11})(?:\?.*)?/g;
+
+    return htmlContent
+      .replace(
+        youtubeWatchRegex,
+        (match, videoId) => `
+        <div style="position:relative;width:100%;padding-bottom:56.25%;">
+          <iframe src="https://www.youtube.com/embed/${videoId}" 
+                  frameborder="0" allowfullscreen 
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;">
+          </iframe>
+        </div>
+      `
+      )
+      .replace(
+        youtubeShortRegex,
+        (match, videoId) => `
+        <div style="position:relative;width:100%;padding-bottom:56.25%;">
+          <iframe src="https://www.youtube.com/embed/${videoId}" 
+                  frameborder="0" allowfullscreen 
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;">
+          </iframe>
+        </div>
+      `
+      );
   };
 
   return (
@@ -177,10 +195,10 @@ const InfoBoardDetail = () => {
 
         {/* ✅ 반응형 너비 적용 */}
         <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:mt-0 md:ml-6">
-          <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
+          <div className="border-b pb-4 mb-4 border-[#c2c8b0]">
             {/* 게시글 제목 및 버튼 정렬 */}
-            <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+            <h1 className="text-3xl font-semibold text-[#7c9473] mb-4">{board.infoTitle || '로딩 중...'}</h1>
+            <div className="flex flex-wrap gap-2">
               <button onClick={() => navigate('/healthInfo')} className="px-6 py-2 bg-[#ACA7AF] text-white font-semibold rounded-lg hover:bg-[#A190AB] transition-all shadow-md">
                 목록
               </button>
@@ -209,7 +227,7 @@ const InfoBoardDetail = () => {
           {/* 게시글 내용 */}
           <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0]">
             <div
-              className="text-lg text-[#5f7a60] whitespace-pre-wrap [&>iframe]:w-full [&>iframe]:aspect-video [&>iframe]:rounded-lg"
+              className="text-lg text-[#5f7a60] whitespace-pre-wrap [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:absolute [&>iframe]:top-0 [&>iframe]:left-0 [&>iframe]:rounded-lg"
               dangerouslySetInnerHTML={{
                 __html: convertYoutubeLinksToIframe(board?.infoContent || '')
               }}
