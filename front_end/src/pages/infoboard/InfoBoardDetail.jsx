@@ -52,7 +52,6 @@ const InfoBoardDetail = () => {
         toast.success('게시글이 삭제되었습니다.'); // 삭제 성공 메시지 추가
         navigate('/healthInfo');
       } catch (error) {
-        console.error('게시글 삭제 실패:', error);
         toast.error('게시글 삭제 중 오류가 발생했습니다.'); // 오류 메시지 추가
       }
     }
@@ -70,7 +69,6 @@ const InfoBoardDetail = () => {
     }
 
     const formattedComment = newComment.replace(/\n/g, '<br>');
-
     const commentData = {
       infoNo: parseInt(infoNo),
       memNo: memNo,
@@ -138,7 +136,6 @@ const InfoBoardDetail = () => {
       }
     } catch (error) {
       toast.error('댓글 수정 중 오류 발생.');
-      console.log('댓글 수정 오류:', error);
     }
   };
 
@@ -161,7 +158,6 @@ const InfoBoardDetail = () => {
 
   const convertYoutubeLinksToIframe = (htmlContent) => {
     if (!htmlContent || typeof htmlContent !== 'string') return '';
-
     const youtubeWatchRegex = /https?:\/\/www\.youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/g;
     const youtubeShortRegex = /https?:\/\/youtu\.be\/([A-Za-z0-9_-]{11})(?:\?.*)?/g; // 뒤에 ?si= 제거
 
@@ -175,9 +171,12 @@ const InfoBoardDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex">
+      {/* ✅ 반응형 적용: flex-col → md:flex-row */}
+      <div className="w-full max-w-5xl flex flex-col md:flex-row">
         <InfoSidebar selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
-        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6">
+
+        {/* ✅ 반응형 너비 적용 */}
+        <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:mt-0 md:ml-6">
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             {/* 게시글 제목 및 버튼 정렬 */}
             <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
@@ -234,7 +233,7 @@ const InfoBoardDetail = () => {
                   {editingCommentId === comment.commentId ? (
                     <div className="flex flex-col">
                       <textarea value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} className="w-full p-2 rounded-lg h-40" />
-                      <button onClick={handleUpdateComment} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md">
+                      <button onClick={handleUpdateComment} className="px-4 py-2 bg-[#7c9473] text-white font-semibold rounded-lg hover:bg-[#93ac90] transition-all shadow-md mt-2">
                         수정완료
                       </button>
                     </div>

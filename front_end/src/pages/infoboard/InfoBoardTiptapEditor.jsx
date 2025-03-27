@@ -75,26 +75,23 @@ const InfoBoardTiptapEditor = ({ value, handleContent }) => {
 
       try {
         const res = await uploadImageDB(formData);
-        console.log("이미지 업로드 응답:", res.data);
         if (res.data) {
           const url = `${process.env.REACT_APP_SPRING_IP}api/infoboard/imageGet?imageName=${res.data}`;
-          console.log("이미지 URL:", url);
           editor.chain().focus().setImage({ src: url }).run();
         } else {
           toast.warn('이미지 업로드 실패');
         }
       } catch (error) {
         toast.error('이미지 업로드 중 오류:' + error);
-        console.log(error);
       }
     };
     input.click();
   };
 
   return (
-    <div>
-      {/* 툴바 */}
-      <div className="flex flex-wrap space-x-2 mb-4">
+    <div className="w-full">
+      {/* ✅ 툴바 반응형 처리 */}
+      <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-4 overflow-x-auto">
         <select onChange={(e) => setFontSize(e.target.value)} title="폰트 크기 조절" className="font-size-select">
           <option value="">크기 선택</option>
           <option value="12px">12px</option>
@@ -122,8 +119,8 @@ const InfoBoardTiptapEditor = ({ value, handleContent }) => {
         </button>
       </div>
 
-      {/* 에디터 */}
-      <div onClick={() => editor?.commands.focus()} className="editor-wrapper">
+      {/* ✅ 에디터 반응형 처리 */}
+      <div onClick={() => editor?.commands.focus()} className="editor-wrapper w-full overflow-x-auto min-h-[200px]">
         <EditorContent editor={editor} className="editor-container" />
       </div>
     </div>
