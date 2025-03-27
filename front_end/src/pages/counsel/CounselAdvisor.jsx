@@ -23,7 +23,7 @@ const CounselAdvisor = () => {
             <img
               src="/images/advisor.png"
               alt="영양사 면허"
-              className="rounded-lg shadow-md w-full sm:w-auto max-w-xs" // 수정 내용: 모바일 화면에서 이미지 너비 제한
+              className="rounded-lg shadow-md w-full sm:w-[400px] max-w-full" // 수정 내용: PC에서 보기 좋은 너비 보정
             />
           </div>
         </div>
