@@ -182,7 +182,9 @@ const Header = ({ user, setUser }) => {
           </div>
         </div>
         {/* 오른쪽: 로그인 상태에 따른 버튼 UI 변경 */}
-        <div className="flex items-center space-x-4">
+        {/* 오른쪽: 데스크탑 전용 세션시간 및 버튼 */}
+        <div className="hidden md:flex items-center space-x-4">
+          {currentUser && timeLeft && <span className="text-sm text-gray-500">{timeLeft}</span>}
           {!currentUser ? (
             <>
               <button onClick={() => navigate('/login')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition">
@@ -194,8 +196,6 @@ const Header = ({ user, setUser }) => {
             </>
           ) : (
             <>
-              {/* 닉네임 앞에 남은 시간 표시 */}
-              {timeLeft && <span className="text-sm text-gray-500 mr-3">({timeLeft})</span>}
               <button onClick={() => handleNavClick('/mypage')} className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition">
                 {currentUser.memNick}님
               </button>
@@ -205,8 +205,7 @@ const Header = ({ user, setUser }) => {
             </>
           )}
         </div>
-        
-        {/* 모바일: 햄버거 메뉴 오른쪽 끝 (✅ 수정됨) */}
+        {/* 모바일: 햄버거 메뉴 오른쪽 끝 */}
         <div className="md:hidden flex items-center ml-auto">
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700 focus:outline-none text-3xl">
             {isMobileMenuOpen ? <>&times;</> : <>&#9776;</>}
@@ -214,7 +213,7 @@ const Header = ({ user, setUser }) => {
         </div>
       </div>
 
-      {/* ✅ 모바일 메뉴 (좌우 여백 추가) */}
+      {/* 모바일 메뉴 (좌우 여백 추가) */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 shadow-md w-full px-4">
           <div className="flex flex-col items-start space-y-3 p-4 w-full">
@@ -250,7 +249,12 @@ const Header = ({ user, setUser }) => {
               </>
             ) : (
               <>
-                <button onClick={() => handleNavClick('/mypage')} className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition">
+                <button
+                  onClick={() => {
+                    handleNavClick('/mypage');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-sm sm:text-base md:text-lg font-medium text-gray-700 hover:text-indigo-600 transition">
                   {currentUser.memNick}님
                 </button>
                 <button
