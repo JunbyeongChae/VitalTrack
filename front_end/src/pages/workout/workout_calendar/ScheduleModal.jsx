@@ -7,7 +7,6 @@ import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons"
 import {insertScheduleDB, updateScheduleDB} from "../../../services/workoutLogic";
 import {toast} from "react-toastify";
 
-
 const ScheduleModal = () => {
     const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
     const { memNo } = user
@@ -153,33 +152,18 @@ const ScheduleModal = () => {
 
   return (
     <>
-        <Modal show={showModal} onHide={handleClose} centered>
-
+        <Modal show={showModal} onHide={handleClose} centered fullscreen="sm-down"> {/* 수정 내용: 모바일 화면에서 꽉 차게 설정 */}
             <Modal.Header closeButton className="custom-header">
-                <Button
-                    variant="primary"
-                    onClick={handleClose}
-                    className="border-0 p-0"
-                >
-                    <FontAwesomeIcon
-                        icon={faXmark}
-                        className="border-0"
-                    />
+            <Button variant="primary" onClick={handleClose} className="border-0 p-0">
+            <FontAwesomeIcon icon={faXmark} className="border-0" />
                 </Button>
                 <Modal.Title>운동 일정</Modal.Title>
-                <Button
-                    variant="primary"
-                    onClick={handleSave}
-                    className="border-0 p-0"
-                >
-                    <FontAwesomeIcon
-                        icon={faCheck}
-                        className="border-0"
-                    />
+                <Button variant="primary" onClick={handleSave} className="border-0 p-0">
+                <FontAwesomeIcon icon={faCheck} className="border-0" />
                 </Button>
             </Modal.Header>
 
-            <Modal.Body>
+            <Modal.Body className="overflow-x-hidden">
                 <Form>
                     <Form.Group className="mb-3">
                         <CreatableSelect
@@ -193,37 +177,15 @@ const ScheduleModal = () => {
                             }))}
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3 custom-form-group">
-                        <div className="date-time-box left-box">
-                            <Form.Control
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                            />
-                            {!allDay &&
-                                <Form.Control
-                                    type="time"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                    step="300" // 5분 단위 - 응 반영 안됨
-                                />
-                            }
+                    <Form.Group className="mb-3 flex flex-col gap-3"> {/* 수정 내용: 모바일에서 세로 정렬 및 여백 조정 */}
+              <div className="flex flex-col gap-2">
+              <Form.Control type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              {!allDay && <Form.Control type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} step="300" />}
                         </div>
-                        <FontAwesomeIcon icon={faAngleRight}/>
-                        <div className="date-time-box right-box">
-                            <Form.Control
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                            {!allDay &&
-                                <Form.Control
-                                    type="time"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
-                                    /*disabled={allDay}*/
-                                />
-                            }
+                        <FontAwesomeIcon icon={faAngleRight} className="self-center"/>
+              <div className="flex flex-col gap-2">
+              <Form.Control type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              {!allDay && <Form.Control type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />}
                         </div>
                         <div>
                             <button
@@ -238,18 +200,16 @@ const ScheduleModal = () => {
                                 className={`${allDay ?
                                     "bg-teal-400 text-white border-teal-400" :
                                     "bg-transparent text-gray-600 border-teal-300"
-                                } border-2 font-bold rounded-full text-sm w-20 h-9 text-center`}
+                                  } border-2 font-bold rounded-full text-sm w-full sm:w-20 h-9 text-center`} // 수정 내용: 모바일에서 버튼 너비 100%
                             >
                                 종일
                             </button>
                         </div>
                     </Form.Group>
 
-
-                </Form>
                 <Form.Group className="mb-3">
                     <Form.Label>색상 선택</Form.Label>
-                    <div className="flex gap-2 mt-2 items-center">
+                    <div className="flex gap-2 mt-2 flex-wrap items-center">
                         {pastelColors.map((color) => (
                             <div
                                 key={color}
@@ -267,6 +227,7 @@ const ScheduleModal = () => {
                         ))}
                     </div>
                 </Form.Group>
+                </Form>
             </Modal.Body>
         </Modal>
     </>

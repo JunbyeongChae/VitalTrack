@@ -64,15 +64,6 @@ const WorkoutCalendar = () => {
 
   return (
     <>
-      {/* 수정 내용: 상단 제목, 설명, 버튼 추가 */}
-      <div className="px-4">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">📅 나의 운동 캘린더</h2>
-        <p className="text-sm text-gray-500 mb-4">운동 일정을 확인하고 클릭해서 상세 정보도 관리해보세요!</p>
-        <button onClick={() => setSelectedDate(new Date().toISOString().slice(0, 10))} className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-          + 운동 일정 등록
-        </button>
-      </div>
-
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -84,7 +75,7 @@ const WorkoutCalendar = () => {
         locale="kr"
         dayMaxEvents={true} // when too many schedules in a day, show the popover
         events={schedules}
-        height={calHeight()} // 수정 내용: 반응형 height 적용
+        height={calHeight()}
         dateClick={dateClick}
         selectable={true} // 날짜 선택 가능
         editable={true}
@@ -100,7 +91,7 @@ const WorkoutCalendar = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                pointerEvents: 'none', // 수정 내용: 오타 수정 (pointerSchedules -> pointerEvents)
+                pointerSchedules: 'none', // 이벤트 위에서 커서 반응 없게
                 overflow: 'hidden', // 칸 넘어가는 글자 숨김
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis', // 글자 초과시 "..." 처리
