@@ -48,12 +48,12 @@ const WorkoutPage = () => {
   //오늘 한 운동 - 운동명 및 칼로리
   //최근 한 운동 - 운동명 및 칼로리
   return (
-    <div className="flex">
+    <div className="flex flex-col md:flex-row min-h-screen"> {/* ✅ 반응형 + 전체 높이 설정 */}
       <ScheduleProvider>
-        <div className="workout-calendar w-3/5 p-5 box-border ml-5">
+        <div className="workout-calendar w-full md:w-3/5 p-5 box-border md:ml-5"> {/* ✅ 반응형 너비 조정 */}
           <WorkoutCalendar />
         </div>
-        <div className="w-2/5 h-[90%] p-5 mr-5">
+        <div className="w-full md:w-2/5 h-full p-5 md:mr-5 flex flex-col gap-6"> {/* ✅ gap으로 간격 조정 */}
           <WorkoutSummary />
           <WorkoutChartBox />
         </div>

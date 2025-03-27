@@ -78,76 +78,73 @@ const WorkoutSummary = () => {
 
 
     return (
-        <>
-            <div className="workoutSummary flex flex-1 justify-between items-center space-x-6">
-
-                <div className="workout-box_title flex flex-col items-center justify-center flex-1 w-full">
-
-                    <div className="flex text-center items-baseline">
-                        <h3 className="text-lg font-bold">최근 운동 </h3>
-                        {/*<h3 className="text-sm ml-2"> {lastWoDay}</h3>*/}
-                    </div>
-                    <div
-                        className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md">
-                        {lastWorkout && Object.keys(lastWorkout).length>0 ? (
-                            <>
-                                <div className="flex items-center justify-center gap-4">
-                                    <div className="flex flex-col items-center justify-center">
-                                        <FontAwesomeIcon icon={faPersonRunning} className="text-teal-500 text-5xl"/>
-                                        <div className="text-teal-500 font-bold mt-1">{lastWorkout.extendedProps.kcal} kcal</div>
-                                    </div>
-                                    <div className="flex flex-col items-left justify-start">
-                                        <div className="font-bold">{lastWorkout.title}</div>
-                                        <div className="text-[#323232]">
-                                            {String(Math.floor(lastWorkout.extendedProps.workoutTimeMin / 60)).padStart(2, '0')}:
-                                            {String(lastWorkout.extendedProps.workoutTimeMin % 60).padStart(2, '0')}
-                                            :00
-                                        </div>
-                                        <h3 className="text-sm text-gray-400 mt-1"> {lastWoDay}</h3>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <p className="text-center text-sm text-gray-500">완료한 운동이 없습니다.</p>
-                        )}
-                    </div>
-
-                </div>
-
-                <div className="workout-box_title flex flex-col items-center justify-center flex-1 w-full ">
-
-                    <div className="flex text-center items-baseline">
-                        <h3 className="text-center text-lg font-bold">예정 운동</h3>
-                    </div>
-                    <div
-                        className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md ">
-                        {futureWorkout && Object.keys(futureWorkout).length>0 ? (
-                            <>
-                                <div className="flex items-center justify-center gap-4">
-                                    <FontAwesomeIcon icon={faFlagCheckered} className="text-gray-400 mr-4 text-6xl"  />
-                                    <div className="flex flex-col items-left justify-center">
-                                        <div className="font-bold">{futureWorkout.title}</div>
-                                        <div className="text-sm text-[#323232]">{dayDiff}</div>
-                                        <div
-                                            className="flex flex-row justify-between items-center text-sm text-gray-400 mt-1">
-                                            <div>{futureWoDay}</div>
-                                            <FontAwesomeIcon icon={faClock}/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-center text-sm text-gray-500" >운동 계획이 없습니다!<br/></p>
-                                <p className="text-center text-sm text-gray-500" >일정을 등록해보세요.</p>
-                            </>
-                        )}
-                    </div>
-                </div>
-
+      <>
+        <div className="workoutSummary flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-6">
+          {' '}
+          {/* 수정 내용: 모바일 수직 정렬 반응형 처리 */}
+          <div className="workout-box_title flex flex-col items-center justify-center w-full md:w-1/2">
+            <div className="flex text-center items-baseline">
+            <h3 className="text-base md:text-lg font-bold">최근 운동 </h3>
+              {/*<h3 className="text-sm ml-2"> {lastWoDay}</h3>*/}
             </div>
-        </>
-    )
+            <div className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md">
+              {lastWorkout && Object.keys(lastWorkout).length > 0 ? (
+                <>
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="flex flex-col items-center justify-center">
+                      <FontAwesomeIcon icon={faPersonRunning} className="text-teal-500 text-4xl md:text-5xl" />
+                      <div className="text-teal-500 font-bold mt-1 text-sm md:text-base">{lastWorkout.extendedProps.kcal} kcal</div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start text-sm md:text-base">
+                      <div className="font-bold">{lastWorkout.title}</div>
+                      <div className="text-[#323232]">
+                      {String(Math.floor(lastWorkout.extendedProps.workoutTimeMin / 60)).padStart(2, '0')}:
+                      {String(lastWorkout.extendedProps.workoutTimeMin % 60).padStart(2, '0')}
+                        :00
+                      </div>
+                      <h3 className="text-xs text-gray-400 mt-1">{lastWoDay}</h3>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-center text-sm text-gray-500">완료한 운동이 없습니다.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="workout-box_title flex flex-col items-center justify-center w-full md:w-1/2">
+            <div className="flex text-center items-baseline">
+            <h3 className="text-base md:text-lg font-bold">예정 운동</h3>
+            </div>
+            <div className="workout-box content-center border border-gray-300 rounded-3xl p-5 w-full h-32 shadow-md">
+              {futureWorkout && Object.keys(futureWorkout).length > 0 ? (
+                <>
+                  <div className="flex items-center justify-center gap-4">
+                  <FontAwesomeIcon icon={faFlagCheckered} className="text-gray-400 text-4xl md:text-6xl" />
+                  <div className="flex flex-col items-start justify-center text-sm md:text-base">
+                      <div className="font-bold">{futureWorkout.title}</div>
+                      <div className="text-[#323232]">{dayDiff}</div>
+                      <div className="flex flex-row justify-between items-center text-xs text-gray-400 mt-1">
+                        <div>{futureWoDay}</div>
+                        <FontAwesomeIcon icon={faClock} className="ml-2"/>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-center text-sm text-gray-500">
+                    운동 계획이 없습니다!
+                    <br />
+                  </p>
+                  <p className="text-center text-sm text-gray-500">일정을 등록해보세요.</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    );
 }
 
 export default WorkoutSummary
