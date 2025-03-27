@@ -183,9 +183,10 @@ const CounselDetail = () => {
           <div className="flex justify-between items-center text-[#5f7a60] mt-4 mb-6 text-sm sm:text-base">
             {' '}
             {/* 수정 내용: 작은 화면에서 글씨 크기 대응 */}
-            <div>
+            <div className="text-gray-500 mb-2 flex flex-col sm:flex-row sm:items-center sm:space-x-2 break-words">
               <span className="font-semibold">작성자 :</span> {board.memNick || '알 수 없음'}
-              <span className="ml-4 font-semibold">작성일 :</span> {board.counselDate || '날짜 없음'}
+              <span className="font-semibold hidden sm:inline">|</span>
+              <span className="font-semibold">작성일 :</span> {board.counselDate || '날짜 없음'}
             </div>
           </div>
           {/* 게시글 내용 */}
