@@ -218,7 +218,7 @@ const Header = ({ user, setUser }) => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 shadow-md w-full px-4">
           <div className="flex flex-col items-start space-y-3 p-4 w-full">
-            {['/', '/healthInfo', '/workout', '/diet', '/counsel'].map((path, idx) => (
+            {['/', '/healthInfo', '/workout', '/diet', '/adivsor'].map((path, idx) => (
               <button
                 key={idx}
                 onClick={() => {
