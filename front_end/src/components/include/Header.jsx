@@ -140,6 +140,8 @@ const Header = ({ user, setUser }) => {
     try {
       await signOut(auth);
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('expiresAt');
       setUser(null);
       setCurrentUser(null); // UI 즉시 반영
       toast.success('로그아웃하였습니다.');
@@ -179,12 +181,6 @@ const Header = ({ user, setUser }) => {
             </button>
           </div>
         </div>
-        {/* 모바일 햄버거 메뉴 버튼 */}
-        <div className="md:hidden">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700 focus:outline-none text-3xl">
-            {isMobileMenuOpen ? <>&times;</> : <>&#9776;</>}
-          </button>
-        </div>
         {/* 오른쪽: 로그인 상태에 따른 버튼 UI 변경 */}
         <div className="flex items-center space-x-4">
           {!currentUser ? (
@@ -208,6 +204,13 @@ const Header = ({ user, setUser }) => {
               </button>
             </>
           )}
+        </div>
+        
+        {/* 모바일: 햄버거 메뉴 오른쪽 끝 (✅ 수정됨) */}
+        <div className="md:hidden flex items-center ml-auto">
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700 focus:outline-none text-3xl">
+            {isMobileMenuOpen ? <>&times;</> : <>&#9776;</>}
+          </button>
         </div>
       </div>
 
