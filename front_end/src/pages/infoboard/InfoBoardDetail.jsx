@@ -179,10 +179,8 @@ const InfoBoardDetail = () => {
         <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:mt-0 md:ml-6">
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             {/* 게시글 제목 및 버튼 정렬 */}
-            <div>
-              <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
-            </div>
-            <div className="flex space-x-2">
+            <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
               <button onClick={() => navigate('/healthInfo')} className="px-6 py-2 bg-[#ACA7AF] text-white font-semibold rounded-lg hover:bg-[#A190AB] transition-all shadow-md">
                 목록
               </button>
