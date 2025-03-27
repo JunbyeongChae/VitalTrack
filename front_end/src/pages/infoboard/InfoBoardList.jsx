@@ -61,7 +61,7 @@ const InfoBoardList = () => {
         <InfoSidebar selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
 
         {/* ✅ 반응형 처리: w-full md:w-3/4 적용 */}
-        <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:ml-6">
+        <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] md:ml-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473] mb-2 sm:mb-0">건강 관리 게시판</h1>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">

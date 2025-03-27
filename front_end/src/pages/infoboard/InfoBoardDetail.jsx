@@ -179,7 +179,9 @@ const InfoBoardDetail = () => {
         <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:mt-0 md:ml-6">
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             {/* 게시글 제목 및 버튼 정렬 */}
-            <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
+            <div>
+              <h1 className="text-3xl font-semibold text-[#7c9473]">{board.infoTitle || '로딩 중...'}</h1>
+            </div>
             <div className="flex space-x-2">
               <button onClick={() => navigate('/healthInfo')} className="px-6 py-2 bg-[#ACA7AF] text-white font-semibold rounded-lg hover:bg-[#A190AB] transition-all shadow-md">
                 목록
@@ -209,7 +211,7 @@ const InfoBoardDetail = () => {
           {/* 게시글 내용 */}
           <div className="bg-white p-6 rounded-lg shadow-md border border-[#c2c8b0]">
             <div
-              className="text-lg text-[#5f7a60] whitespace-pre-wrap"
+              className="text-lg text-[#5f7a60] whitespace-pre-wrap [&>iframe]:w-full [&>iframe]:aspect-video [&>iframe]:rounded-lg"
               dangerouslySetInnerHTML={{
                 __html: convertYoutubeLinksToIframe(board?.infoContent || '')
               }}
@@ -223,12 +225,10 @@ const InfoBoardDetail = () => {
               {comments.map((comment) => (
                 <div key={comment.commentId} className="p-3 border-b border-gray-300">
                   {/* 고유 key 추가 */}
-                  <div className="text-gray-500 mb-2 ">
-                    <span className="font-semibold">작성자 : </span>
-                    {comment.memNick}
-                    <span className="font-semibold"> | </span>
-                    <span className="font-semibold">작성일 : </span>
-                    {comment.commentDate}
+                  <div className="text-gray-500 mb-2 flex flex-col sm:flex-row sm:items-center sm:space-x-2 break-words">
+                    <span className="font-semibold">작성자 :</span> {comment.memNick}
+                    <span className="font-semibold hidden sm:inline">|</span>
+                    <span className="font-semibold">작성일 :</span> {comment.commentDate}
                   </div>
                   {editingCommentId === comment.commentId ? (
                     <div className="flex flex-col">
