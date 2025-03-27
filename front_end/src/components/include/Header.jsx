@@ -182,7 +182,6 @@ const Header = ({ user, setUser }) => {
           </div>
         </div>
         {/* 오른쪽: 로그인 상태에 따른 버튼 UI 변경 */}
-        {/* 오른쪽: 데스크탑 전용 세션시간 및 버튼 */}
         <div className="hidden md:flex items-center space-x-4">
           {currentUser && timeLeft && <span className="text-sm text-gray-500">{timeLeft}</span>}
           {!currentUser ? (
@@ -205,7 +204,7 @@ const Header = ({ user, setUser }) => {
             </>
           )}
         </div>
-        {/* 모바일: 햄버거 메뉴 오른쪽 끝 */}
+        {/* 모바일: 햄버거 버튼 */}
         <div className="md:hidden flex items-center ml-auto">
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700 focus:outline-none text-3xl">
             {isMobileMenuOpen ? <>&times;</> : <>&#9776;</>}
@@ -213,7 +212,7 @@ const Header = ({ user, setUser }) => {
         </div>
       </div>
 
-      {/* 모바일 메뉴 (좌우 여백 추가) */}
+      {/* 모바일 메뉴 (햄버거 내부) */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 shadow-md w-full px-4">
           <div className="flex flex-col items-start space-y-3 p-4 w-full">
