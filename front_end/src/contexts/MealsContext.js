@@ -3,7 +3,7 @@ import React, {createContext, useState, useEffect, useCallback, useContext} from
 export const MealsContext = createContext();
 
 export const MealsProvider = ({ children }) => {
-    const [refreshTriggers, setRefreshTriggers] = useState({
+    const [ refreshTriggers, setRefreshTriggers] = useState({
         meals: 0,
         summary: 0,
         foodDiary: 0
@@ -14,7 +14,6 @@ export const MealsProvider = ({ children }) => {
     const [snackMeals, setSnackMeals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
 
         // 특정 컴포넌트만 리프레시하는 함수
         const refreshComponents = useCallback((componentsToRefresh) => {
@@ -36,7 +35,6 @@ export const MealsProvider = ({ children }) => {
                 return newTriggers;
             });
         }, []);
-
 
     const selectedDateString = localStorage.getItem('selectedDate');
     const selectedDate = selectedDateString ? selectedDateString.split(' ')[0] : new Date().toISOString().split('T')[0];
