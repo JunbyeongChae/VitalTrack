@@ -1,19 +1,18 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect,useState} from 'react'
 import {useScheduleContext} from "../Context";
 import {Button, Form, Modal} from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleRight, faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {insertScheduleDB, updateScheduleDB} from "../../../services/workoutLogic";
-import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 
 const ScheduleModal = () => {
     const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
     const { memNo } = user
-    const navigate = useNavigate()
-    const {schedules, setSchedules, selectedDate, selectedSchedule,
-        modalMode, setModalMode, showModal, setShowModal, signal, setSignal} = useScheduleContext()
+    const {schedules, selectedDate, selectedSchedule,
+        modalMode, setModalMode, showModal, setShowModal, setSignal} = useScheduleContext()
     const pastelColors = [
         '#76c3c5', // Pastel Green
         '#ff8d8d', // Pastel Red
@@ -38,6 +37,7 @@ const ScheduleModal = () => {
     const [workoutTypes, setWorkoutTypes] = useState([])
     const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
 
+    //운동 종목 가져오기 - 모달 목록
     useEffect(() => {
         // JSON 파일을 로드하여 운동 종목을 설정
         fetch('/workoutTypes.json') //위치: /public/workoutTypes.json
@@ -48,6 +48,7 @@ const ScheduleModal = () => {
             .catch((error) => console.error('운동 종목 불러오기 오류:', error));
     }, [])
 
+    //일정 수정인지, 등록인지 분류
     useEffect(() => {
         if(modalMode === 'insert') { //일정 추가
             addSchedule()
@@ -58,9 +59,10 @@ const ScheduleModal = () => {
     }, [modalMode])
     
     //일정 추가
-   const addSchedule = () => {
-        setStartTime(currentHour < 10 ? `0${currentHour+1}:00` : `${currentHour+1}:00`); // hour를 startTime에 반영 (2자리로 표시)
-        setEndTime(currentHour < 10 ? `0${currentHour+2}:00` : `${currentHour+2}:00`); // hour를 startTime에 반영 (2자리로 표시)
+    const addSchedule = () => {
+       //console.log(currentHour)
+        setStartTime(currentHour+1 < 10 ? `0${currentHour+1}:00` : `${currentHour+1}:00`); // hour를 startTime에 반영 (2자리로 표시)
+        setEndTime(currentHour+2 < 10 ? `0${currentHour+2}:00` : `${currentHour+2}:00`); // hour를 startTime에 반영 (2자리로 표시)
         setStartDate(selectedDate)
         setEndDate(selectedDate)
         setIsFinished(false)
@@ -70,7 +72,6 @@ const ScheduleModal = () => {
 
         setShowModal(true)
     }
-
     //일정 수정
     const updateSchedule = (schedule) => {
         setSelectedWorkoutType({label: schedule.title, value: schedule.extendedProps.workoutId})
@@ -93,12 +94,11 @@ const ScheduleModal = () => {
         setScheduleColor(schedule.color)
         setShowModal(true)
     }
-
-
-    //✔클릭
+    
+    //✔저장 클릭
     const handleSave = async () => {
         if(!selectedWorkoutType) {
-            alert('운동 종목을 선택하세요!')
+            toast.warn('운동 종목을 선택하세요!')
             return
         }
         //새로운 일정 등록이니?
@@ -114,7 +114,7 @@ const ScheduleModal = () => {
            // console.log(newSchedule)
             const response = await insertScheduleDB(newSchedule)
             if(response) {
-                alert("✔운동 일정이 추가되었습니다!")
+                toast.success("운동 일정이 추가되었습니다!")
                 setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
             }
         }
@@ -133,14 +133,13 @@ const ScheduleModal = () => {
             //console.log(updSchedule)
             const response = await updateScheduleDB(updSchedule)
             if(response.status === 200) {
-                alert("✍운동 일정이 수정되었습니다!")
+                toast.success("운동 일정이 수정되었습니다!")
                 setSignal(prev => prev + 1); // 🔥 스케줄 변경 시그널 발생!
             }
         }
         console.log(modalMode)
         handleClose()
     } //end of handleSave
-
 
     const handleClose = ()=> {
         setShowModal(false)
@@ -231,8 +230,10 @@ const ScheduleModal = () => {
                                 type="button"
                                 onClick={() => {
                                     setAllDay(!allDay);
-                                    setEndTime("");
-                                    setStartTime("");
+                                    if (!allDay) {
+                                        setEndTime("");
+                                        setStartTime("");
+                                    }
                                 }}
                                 className={`${allDay ?
                                     "bg-teal-400 text-white border-teal-400" :

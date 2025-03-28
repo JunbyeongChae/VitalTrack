@@ -2,7 +2,6 @@ import React from 'react'
 import WorkoutCalendar from "./workout_calendar/WorkoutCalendar";
 import WorkoutChartBox from "./WorkoutChartBox";
 import WorkoutSummary from "./WorkoutSummary";
-import {ScheduleProvider} from "./Context";
 
 const WorkoutPage = () => {
 
@@ -14,7 +13,6 @@ const WorkoutPage = () => {
     return (
 
         <div className="flex">
-            <ScheduleProvider>
                 <div className="workout-calendar w-3/5 p-5 box-border ml-5">
                     <WorkoutCalendar/>
                 </div>
@@ -22,7 +20,6 @@ const WorkoutPage = () => {
                     <WorkoutSummary/>
                     <WorkoutChartBox />
                 </div>
-            </ScheduleProvider>
         </div>
     )
 }

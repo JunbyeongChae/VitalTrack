@@ -1,3 +1,5 @@
+/* 식단관리 페이지에서 사용하는 모달에 대한 전역 설정 */
+
 import React from "react";
 
 const Modal = ({ onClose, title, children }) => {
@@ -10,7 +12,7 @@ const Modal = ({ onClose, title, children }) => {
                     className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
                     onClick={onClose}
                 >
-                    Close
+                    닫기
                 </button>
             </div>
         </div>

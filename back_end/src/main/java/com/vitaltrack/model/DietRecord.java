@@ -3,10 +3,13 @@ package com.vitaltrack.model;
 import lombok.Data;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Data
 public class DietRecord {
     private int recordId;              // Primary Key
     private int memNo;                 // Foreign Key to memberinfo table
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dietDate;        // Date of the meal
     private MealType mealType;         // Enum for meal type (아침, 점심, 저녁, 간식)
     private String name;             // Name of the food

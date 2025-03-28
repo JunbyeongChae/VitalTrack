@@ -5,15 +5,9 @@ import WoChart from "./WoChart";
 import {useScheduleContext} from "./Context";
 
 const WorkoutChartBox = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const { memNo } = user
-  const { schedules } = useScheduleContext()
-  const [lastWeekDays, setLastWeekDays] = useState([]);
-  const [lastWeekTerm, setLastWeekTerm] = useState([]);
-  const [lastWeekDB, setLastWeekDB] = useState([]);
-  const [lastWeekKcal, setLastWeekKcal] = useState([]);
-  const [kcalMean, setKcalMean] = useState(0);
+  const { schedules, lastWeekData, setLastWeekData } = useScheduleContext()
 
+  //지난 7일간 운동량 - DB로부터 계산
   const getLast7Workouts = async () => {
     const lastWeek = schedules
         .filter(sc => {
@@ -26,20 +20,21 @@ const WorkoutChartBox = () => {
 
           return startDate >= sevenDaysAgo && startDate <= now && sc.extendedProps.isFinished === true;
         }) // 조건 적용
-        .sort((a, b) => new Date(a.start) -new Date(b.start)) // scheduleStart 기준 내림차순 정렬
-   // const response = await getLast7WorkoutsDB({memNo: memNo})
-    setLastWeekDB(lastWeek || [])
+        .sort((a, b) => new Date(a.start) - new Date(b.start)) // scheduleStart 기준 내림차순 정렬
+    // const response = await getLast7WorkoutsDB({memNo: memNo})
+    setLastWeekData(prev => ({ ...prev, weekSchedules: lastWeek || [] }))
     //console.log(response.data)
     //return lastWeek
   }
-
+  // 2. schedules가 업데이트되면 지난 7일간 운동량 조회
   useEffect(() => {
-    if (!schedules || schedules.length === 0) return; // 데이터 불러와야 실행하도록
+    //schedules이 삭제되서 빈배열이 돼도 실행함
+    if (schedules === undefined || schedules === null) return; // 데이터가 undefined 또는 null이면 종료
     getLast7Workouts()
-  }, [schedules]);
-
+  }, [schedules]) // schedules 변경될 때마다 실행
+  // 3. 지난 7일간 운동량 차트 데이터 세팅
   useEffect(() => {
-    if (lastWeekDB.length === 0) return; // 데이터가 없으면 실행 안 함
+    if (lastWeekData.weekSchedules.length === 0) return; // 데이터가 없으면 실행 안 함
 
     const today = new Date();
     const newDays = [];
@@ -47,7 +42,7 @@ const WorkoutChartBox = () => {
     const newKcal = [];
 
     // lastWeekDB 데이터를 미리 날짜별로 매핑하여 효율적인 비교
-    const lastWeekMap = lastWeekDB.reduce((acc, item) => {
+    const lastWeekMap = lastWeekData.weekSchedules.reduce((acc, item) => {
       const scheduleDate = new Date(item.start).toLocaleDateString('ko-KR', { weekday: 'short' });
       acc[scheduleDate] = item.extendedProps.kcal; // 날짜를 key로 사용하여 칼로리를 매핑
       return acc;
@@ -70,33 +65,30 @@ const WorkoutChartBox = () => {
         totalKcal += kcal;
         activeDays += 1;
       }
-
-
       if (i === 6 || i === 0) {
         newTerms.push(day.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }));
       }
     } // end of for()
 
     // 운동한 날이 있다면 평균을 계산
-    const averageKcal = activeDays > 0 ? totalKcal / activeDays : 0;
+    const averageKcal = activeDays > 0 ? totalKcal / activeDays : 0
 
-    setLastWeekDays(newDays)
-    setLastWeekTerm(newTerms)
-    setLastWeekKcal(newKcal) // 칼로리 배열 업데이트
-    setKcalMean(averageKcal)
-  }, [lastWeekDB]);
+    setLastWeekData(prev => ({
+      ...prev,
+      yoils: newDays,
+      term: newTerms,
+      kcal: newKcal,
+      kcalMean: averageKcal
+    }))
+  }, [lastWeekData.weekSchedules])
 
   return (
       <>
           <div className="workout-box items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-144 mt-6 shadow-md">
             <h2 className="text-center text-lg font-bold text-gray-900">일주일 운동량</h2>
-            {lastWeekDB.length > 0 ?
+            {lastWeekData.weekSchedules.length > 0 ?
                 <>
-                <div className="text-right text-sm mt-5 mr-5 text-[#323232]">{lastWeekTerm[0]} ~ {lastWeekTerm[1]}</div>
-                <div
-                    className="text-right text-lg font-bold mr-5 mt-2 text-teal-500">평균 {kcalMean.toFixed(0)} kcal</div>
-            {/*            <div id="activityChartWO" className="h-80"></div>*/}
-              <WoChart lastWeekDays={lastWeekDays} lastWeekKcal={lastWeekKcal}/>
+                  <WoChart />
                 </>
           :
           <p className="text-center mt-4 text-gray-500">지난주 운동량이 없습니다.</p>

@@ -22,6 +22,7 @@ import InfoBoardUpdate from './pages/infoboard/InfoBoardUpdate';
 import InfoBoardDetail from './pages/infoboard/InfoBoardDetail';
 import { isSessionExpired } from './services/authLogic';
 import WorkoutPage from './pages/workout/WorkoutPage';
+import {ScheduleProvider} from "./pages/workout/Context";
 
 const App = () => {
   const [user, setUser] = useState(null); // 로그인 상태 관리
@@ -84,11 +85,14 @@ const App = () => {
   }, [navigate, performLogout]);
   return (
     <>
+
+    <ScheduleProvider>
       <ToastContainer position="top-left" theme="colored" autoClose={3000} hideProgressBar closeOnClick pauseOnFocusLoss={false} pauseOnHover style={{ zIndex: 9999 }} />
       <Header user={user} setUser={setUser} />
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={user ? <UserHome user={user} /> : <Home />} />
+            <Route path="/" element={user ? <UserHome user={user} /> : <Home />} />
+            <Route path="/workout" exact={true} element={<WorkoutPage />}/>
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/mypage" element={<Mypage user={user} setUser={setUser} />} />
@@ -102,10 +106,10 @@ const App = () => {
           <Route path="/healthInfo/:infoNo" element={<InfoBoardDetail />} />
           <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
           <Route path="/nutrition" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
-          <Route path="/workout" exact={true} element={<WorkoutPage />}/>
         </Routes>
       </main>
       <Footer />
+    </ScheduleProvider>
     </>
   );
 };
