@@ -1,3 +1,4 @@
+/* 식단 검색기능 */
 package com.vitaltrack.controller;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -77,6 +78,37 @@ public class DietController {
             }
         }
 
+        // Sort matching records by relevance to query
+        matchingRecords.sort((record1, record2) -> {
+            String foodName1 = record1.get("식품명").toString().toLowerCase();
+            String foodName2 = record2.get("식품명").toString().toLowerCase();
+
+            // 1. Exact match gets highest priority
+            if (foodName1.equals(normalizedQuery) && !foodName2.equals(normalizedQuery)) {
+                return -1;
+            }
+            if (!foodName1.equals(normalizedQuery) && foodName2.equals(normalizedQuery)) {
+                return 1;
+            }
+
+            // 2. Starts with query gets second priority
+            if (foodName1.startsWith(normalizedQuery) && !foodName2.startsWith(normalizedQuery)) {
+                return -1;
+            }
+            if (!foodName1.startsWith(normalizedQuery) && foodName2.startsWith(normalizedQuery)) {
+                return 1;
+            }
+
+            // 3. Compare by index of query in the food name (earlier is better)
+            int index1 = foodName1.indexOf(normalizedQuery);
+            int index2 = foodName2.indexOf(normalizedQuery);
+            if (index1 != index2) {
+                return Integer.compare(index1, index2);
+            }
+
+            // 4. If all else is equal, sort alphabetically
+            return foodName1.compareTo(foodName2);
+        });
         return matchingRecords;
     }
 }

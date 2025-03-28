@@ -301,7 +301,7 @@ const UserHome = () => {
                   {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'} / {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-blue-300 rounded-full h-2">
                 <div className="bg-custom rounded-full h-2" style={{ width: '75%' }}></div>
               </div>
             </div>
