@@ -89,9 +89,9 @@ const UserHome = () => {
     calculateBmiStatus();
     scheduleList()
 
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
+          return () => {
+            window.removeEventListener('resize', () => {});
+          };
   }, []);
 
   //전체 운동 일정 조회 - DB 경유
