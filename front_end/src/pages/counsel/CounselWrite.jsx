@@ -19,8 +19,8 @@ const CounselWrite = () => {
     return date.toISOString().split('T')[0];
   };
 
-  const handleTitle = useCallback((e) => setTitle(e), []);
-  const handleContent = useCallback((e) => setContent(e), []);
+  const handleTitle = useCallback((e) => setTitle(e.target.value), []);
+  const handleContent = useCallback((html) => setContent(html), []); // 수정된 부분
 
   const boardInsert = async () => {
     console.log('boardInsert from CounselDBWrite');

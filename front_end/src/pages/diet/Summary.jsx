@@ -233,7 +233,7 @@ const Summary = () => {
     useEffect(() => {
         const fetchMealsAndWaterIntake = async () => {
             try {
-                const response = await axios.get(`/api/meals/${memNo}`, {
+                const response = await axios.get(`${process.env.REACT_APP_SPRING_IP}api/meals/${memNo}`, {
                     params: {
                         date: selectedDate
                     }
@@ -285,7 +285,7 @@ const Summary = () => {
 
                 // 물 섭취량 DB 저장 API
                 const response = await axios.post(
-                    'http://localhost:8000/api/meals/water-intake',
+                    `${process.env.REACT_APP_SPRING_IP}api/meals/water-intake`,
                     payload
                 );
 

@@ -8,20 +8,25 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DietRecordDaoMapper {
-    // Existing methods
-    void insertDietRecord(DietRecordDao dietRecord);
-    List<DietRecordDao> findDietRecordsByMemNo(int memNo);
+  // Existing methods
+  void insertDietRecord(DietRecordDao dietRecord);
 
-    // Find record method
-    DietRecordDao findDietRecordById(int recordId);
+  List<DietRecordDao> findDietRecordsByMemNo(int memNo);
 
-    // Delete method - implementation will be in XML mapper
-    int deleteDietRecordByRecordId(@Param("recordId") int recordId);
+  // Find record method
+  DietRecordDao findDietRecordById(int recordId);
 
-    List<DietRecordDao> findDietRecordsByMemNoAndDate( int memNo, LocalDate date);
+  // Delete method - implementation will be in XML mapper
+  int deleteDietRecordByRecordId(@Param("recordId") int recordId);
 
-    /**
-     * Update the water intake for a specific member and date
-     */
-    void updateWaterIntake(int memNo, String dietDate, int waterIntake);
+  List<DietRecordDao> findDietRecordsByMemNoAndDate(@Param("memNo") int memNo,
+      @Param("date") LocalDate date);
+
+  /**
+   * Update the water intake for a specific member and date
+   */
+  void updateWaterIntake(@Param("memNo") int memNo,
+      @Param("dietDate") String dietDate,
+      @Param("waterIntake") int waterIntake);
+
 }
