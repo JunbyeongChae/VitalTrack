@@ -22,7 +22,9 @@ const WorkoutSummary = () => {
     const [futureWorkout, setFutureWorkout] = useState({})
 
     useEffect(() => {
-        if (!schedules || schedules.length === 0) return; // 데이터 불러와야 실행하도록
+        //console.log(schedules)
+        if (schedules === undefined || schedules === null) return; // 데이터가 undefined 또는 null이면 종료
+        //schedules가 빈배열이면 실행!
         getFutureWorkout()
         getLastWorkout()
     }, [schedules])
@@ -80,7 +82,7 @@ const WorkoutSummary = () => {
             .filter(sc => sc.start > new Date().toISOString() && sc.extendedProps.isFinished === false) // 조건 적용
             .sort((a, b) => new Date(a.start) - new Date(b.start)) // scheduleStart 기준 오름차순 정렬
             [0] // 가장 최근 항목 가져오기
-        console.log(futureWorkout)
+        //console.log(futureWorkout)
         //const response = await getFutureWorkoutDB({memNo: memNo})
         //const futureWorkout = response.data
 

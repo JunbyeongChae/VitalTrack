@@ -28,64 +28,64 @@ const UserHome = () => {
   };
 
   useEffect(() => {
-    const fetchWeightData = async () => {
-    try {
-      const data = await getWeightChanges(user.memNo);
-      const dates = data.map(item => item.weightDate);
-      const weights = data.map(item => item.weight);
+          const fetchWeightData = async () => {
+                try {
+                  const data = await getWeightChanges(user.memNo);
+                  const dates = data.map(item => item.weightDate);
+                  const weights = data.map(item => item.weight);
 
-      const weightChart = echarts.init(document.getElementById('weightChart'));
-      const activityChart = echarts.init(document.getElementById('activityChart'));
+                  const weightChart = echarts.init(document.getElementById('weightChart'));
+                  const activityChart = echarts.init(document.getElementById('activityChart'));
 
-      const weightOption = {
-        animation: false,
-        tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: dates },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            data: weights,
-            type: 'line',
-            smooth: true,
-            lineStyle: { color: '#3B82F6' },
-            itemStyle: { color: '#3B82F6' },
-          },
-        ],
-      };
+                  const weightOption = {
+                    animation: false,
+                    tooltip: { trigger: 'axis' },
+                    xAxis: { type: 'category', data: dates },
+                    yAxis: { type: 'value' },
+                    series: [
+                      {
+                        data: weights,
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { color: '#3B82F6' },
+                        itemStyle: { color: '#3B82F6' },
+                      },
+                    ],
+                  };
 
-    const activityOption = {
-      animation: false,
-      tooltip: { trigger: 'axis' },
-      xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-      yAxis: { type: 'value' },
-      series: [
-        {
-          name: 'Steps',
-          type: 'bar',
-          data: [8000, 9200, 7800, 8432, 7900, 8700, 8200],
-          itemStyle: { color: '#3B82F6' }
-        }
-      ]
-    };
+                const activityOption = {
+                  animation: false,
+                  tooltip: { trigger: 'axis' },
+                  xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+                  yAxis: { type: 'value' },
+                  series: [
+                    {
+                      name: 'Steps',
+                      type: 'bar',
+                      data: [8000, 9200, 7800, 8432, 7900, 8700, 8200],
+                      itemStyle: { color: '#3B82F6' }
+                    }
+                  ]
+                };
 
-    weightChart.setOption(weightOption);
-    activityChart.setOption(activityOption);
+                weightChart.setOption(weightOption);
+                activityChart.setOption(activityOption);
 
-    window.addEventListener('resize', () => {
-      weightChart.resize();
-      activityChart.resize();
-    });
-  } catch (error) {
-    console.error('체중 데이터 가져오기 실패:', error.message);
-  }
-};
+                window.addEventListener('resize', () => {
+                  weightChart.resize();
+                  activityChart.resize();
+                });
+              } catch (error) {
+                console.error('체중 데이터 가져오기 실패:', error.message);
+              }
+           };
 
-    fetchWeightData();
-    calculateBmiStatus();
+          fetchWeightData();
+          calculateBmiStatus();
 
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
+          return () => {
+            window.removeEventListener('resize', () => {});
+          };
   }, []);
 
   return (
