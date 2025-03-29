@@ -152,7 +152,7 @@ const CounselDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row">
         {' '}
         {/* 수정 내용: 반응형 레이아웃 (모바일 세로, PC 가로) */}
         <div className="w-full md:w-1/4">
@@ -160,7 +160,7 @@ const CounselDetail = () => {
           {/* 수정 내용: 사이드바 너비 반응형 대응 */}
           <CounselSidebar />
         </div>
-        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0]">
+        <div className="w-full md:w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 md:mt-0 md:ml-6">
           {' '}
           {/* 수정 내용: 본문 패널 반응형 설정 */}
           <div className="border-b pb-4 mb-4 border-[#c2c8b0]">
