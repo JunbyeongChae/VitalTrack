@@ -2,11 +2,8 @@ import React, { useState, useEffect } from "react";
 import DateExplorer from "../diet/DateExplorer";
 
 const DietCalendar = () => {
-    // localStorage에 선택된 날짜를 저장함
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const storedDate = localStorage.getItem("selectedDate");
-        return storedDate ? new Date(storedDate) : new Date(); // 선택된 날짜가 없을 때는 오늘 날짜를 기본으로 저장
-    });
+    // 항상 오늘 날짜로 초기화
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     // DB에 호환되는 형식으로 일자를 출력함
     const formatDateToDB = (date) => {

@@ -89,9 +89,9 @@ const UserHome = () => {
     calculateBmiStatus();
     scheduleList();
 
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
+          return () => {
+            window.removeEventListener('resize', () => {});
+          };
   }, []);
 
   //전체 운동 일정 조회 - DB 경유
@@ -326,7 +326,7 @@ const UserHome = () => {
                   {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'} / {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).memKcal.toLocaleString() : 'N/A'}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-blue-300 rounded-full h-2">
                 <div className="bg-custom rounded-full h-2" style={{ width: '75%' }}></div>
               </div>
             </div>

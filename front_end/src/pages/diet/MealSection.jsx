@@ -73,7 +73,7 @@ const MealSection = ({ title, meals, onAddMeal, onDeleteMeal }) => {
                 className="w-full mt-4 py-2 bg-green-500 text-white rounded-md flex items-center justify-center hover:bg-green-600 transition-colors"
                 onClick={() => onAddMeal(title)}
             >
-                <FontAwesomeIcon icon={faPlus} /> Add {title}
+                <FontAwesomeIcon icon={faPlus} /> {title} 추가
             </button>
 
             {/* Delete Confirmation Modal */}
