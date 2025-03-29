@@ -84,14 +84,14 @@ const WorkoutChartBox = () => {
 
   return (
       <>
-          <div className="workout-box items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-144 mt-6 shadow-md">
-            <h2 className="text-center text-lg font-bold text-gray-900">일주일 운동량</h2>
+          <div className="workout-box items-center justify-center border border-gray-300 rounded-3xl p-5 w-full h-144 mt-6 shadow-md mb-6">
+            <h2 className="text-center text-base md:text-lg font-bold text-gray-900">일주일 운동량</h2>
             {lastWeekData.weekSchedules.length > 0 ?
                 <>
                   <WoChart />
                 </>
           :
-          <p className="text-center mt-4 text-gray-500">지난주 운동량이 없습니다.</p>
+          <p className="text-center mt-4 text-sm text-gray-500">지난주 운동량이 없습니다.</p>
           }
       </div>
 </>

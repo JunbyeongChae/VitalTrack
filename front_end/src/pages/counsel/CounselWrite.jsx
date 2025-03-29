@@ -50,26 +50,47 @@ const CounselWrite = () => {
 
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex">
-        <CounselSidebar />
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6"> {/* 수정 내용: 모바일에서는 세로, PC에서는 가로 정렬 */}
+        <div className="w-full md:w-1/4"> {/* 수정 내용: 사이드바 반응형 처리 */}
+          <CounselSidebar />
+        </div>
 
-        <div className="w-3/4 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] mt-6 ml-6 h-auto">
+        <div className="w-full md:w-3/4 md:mt-0 md:ml-6 p-6 bg-[#f2f5eb] text-[#5f7a60] rounded-xl shadow-lg border border-[#c2c8b0] h-auto"> {/* 수정 내용: 작성 패널 반응형 처리 */}
           <h1 className="text-2xl font-semibold text-[#7c9473]"> 상담 작성</h1>
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6 mt-4">
-            <input type="text" value={title} onChange={handleTitle} className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]" placeholder="제목을 입력하세요" required />
+            <input
+              type="text"
+              value={title}
+              onChange={handleTitle}
+              className="w-full p-4 text-lg border border-[#a8b18f] bg-[#f2f5eb] rounded-xl focus:ring-2 focus:ring-[#93ac90]"
+              placeholder="제목을 입력하세요"
+              required
+            />
 
-            <div className="flex gap-4">
-              <input type="text" value={memNick} readOnly className="w-1/2 p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed" placeholder="작성자" />
+            <div className="flex gap-4 flex-wrap"> {/* 수정 내용: 모바일 대응 flex-wrap */}
+              <input
+                type="text"
+                value={memNick}
+                readOnly
+                className="w-full sm:w-1/2 p-4 text-lg border border-[#a8b18f] bg-gray-100 rounded-xl text-gray-700 cursor-not-allowed"
+                placeholder="작성자"
+              />
             </div>
 
             <CounselTiptapEditor value={content} handleContent={handleContent} />
 
-            <div className="flex justify-end gap-4 mt-6">
-              <button onClick={() => navigate('/counsel')} className="px-8 py-3 bg-gray-500 text-white text-base font-semibold rounded-lg hover:bg-gray-700 transition-all shadow-sm mx-2">
+            <div className="flex flex-wrap justify-end gap-4 mt-6">
+              <button
+                onClick={() => navigate('/counsel')}
+                className="px-8 py-3 bg-gray-500 text-white text-base font-semibold rounded-lg hover:bg-gray-700 transition-all shadow-sm"
+              >
                 목록
               </button>
-              <button onClick={boardInsert} className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm mx-2">
+              <button
+                onClick={boardInsert}
+                className="px-8 py-3 bg-[#93ac90] text-white text-base font-semibold rounded-lg hover:bg-[#7c9473] transition-all shadow-sm"
+              >
                 작성
               </button>
             </div>

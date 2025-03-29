@@ -105,7 +105,7 @@ const App = () => {
           <Route path="/healthInfo/write" element={<InfoBoardWrite />} />
           <Route path="/healthInfo/:infoNo" element={<InfoBoardDetail />} />
           <Route path="/healthInfo/update/:infoNo" element={<InfoBoardUpdate />} />
-          <Route path="/nutrition" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
+          <Route path="/diet" element={<MealsProvider><Dashboard user={user}/></MealsProvider>}/>
         </Routes>
       </main>
       <Footer />

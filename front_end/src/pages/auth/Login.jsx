@@ -49,19 +49,24 @@ const Login = ({ setUser }) => {
       // JWT 포함된 사용자 정보 요청
       const userData = await oauthLogin(user.email);
   
-      if (userData) {
-        setUser(userData);
-        navigate('/');
-        toast.success(`${userData.memNick}님, 환영합니다!`);
-      }
+      setUser(userData);
+      navigate('/');
+      toast.success(`${userData.memNick}님, 환영합니다!`);
     } catch (error) {
-      toast.error(`Google 로그인 실패: ${error.message}`);
+      // 이메일이 존재하지 않아서 404로 떨어진 경우
+      if (error.message.includes('해당 이메일로 등록된 사용자가 없습니다.')) {
+        toast.warn('회원가입이 필요합니다.');
+        toast.info('회원가입 페이지로 이동합니다.');
+        navigate('/signup', { state: { email: auth.currentUser.email, name: auth.currentUser.displayName } });
+      } else {
+        toast.error(`Google 로그인 실패: ${error.message}`);
+      }
     }
   };
 
   return (
     <>
-      <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-20">
+      <main className="flex flex-col justify-center items-center p-4 w-full flex-grow my-6">
         <div className="w-full max-w-md flex flex-col justify-center space-y-3">
           <div className="flex flex-col items-center space-y-1">
             <img src="../images/logo2_login.png" alt="Logo" style={{ height: '200px' }} />
@@ -91,9 +96,9 @@ const Login = ({ setUser }) => {
 
           <div className="text-center text-gray-600 text-sm mt-1">
             계정이 없으신가요?{' '}
-            <a href="/signup" className="text-indigo-600 hover:underline">
+            <button onClick={() => navigate('/signup')}  className="text-indigo-600 hover:underline">
               회원가입
-            </a>
+            </button>
           </div>
         </div>
       </main>

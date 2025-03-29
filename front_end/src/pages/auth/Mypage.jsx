@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateUser, checkPassword, deleteUser } from '../../services/authLogic'; // 기존 주석 유지
+import { updateUser, checkPassword, deleteUser, getUserByEmail } from '../../services/authLogic'; // 기존 주석 유지
 import { toast } from 'react-toastify';
 
 const Mypage = ({ user, setUser }) => {
@@ -23,8 +23,6 @@ const Mypage = ({ user, setUser }) => {
   });
   const [bmiStatus, setBmiStatus] = useState('');
   const [loading, setLoading] = useState(true);
-
-  const todayDate = new Date().toISOString().split('T')[0];
 
   // 생년월일 선택용 배열 생성
   const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
@@ -116,11 +114,35 @@ const Mypage = ({ user, setUser }) => {
       return;
     }
 
+    // ✅ 변경 여부 검사
+    const isChanged = Object.keys(formData).some((key) => {
+      return formData[key] !== '' && formData[key] !== userData[key];
+    });
+
+    if (!isChanged) {
+      toast.info('변경된 항목이 없습니다.');
+      return;
+    }
+
     try {
-      await updateUser(formData);
-      toast.success('회원 정보가 업데이트되었습니다.');
+      const result = await updateUser(formData);
+
+      if (result.status === 'success') {
+        toast.success(result.message);
+
+        // 최신 사용자 정보 다시 불러오기
+        const response = await getUserByEmail(user.memEmail);
+        const updatedUser = response.member;
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+
+        // 화면 갱신까지 수행
+        await fetchUserData();
+      } else {
+        toast.warn(result.message);
+      }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || '회원 정보 수정 중 오류 발생');
       console.log(error.message);
     }
   };
@@ -167,10 +189,9 @@ const Mypage = ({ user, setUser }) => {
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
       <div className="relative mb-4">
         <h2 className="text-2xl font-bold text-center">{userData?.memNick}님의 회원 정보</h2>
-        <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">{todayDate}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="bg-gray-100 p-4 rounded-lg">
           {/* 이메일 */}
           <div className="mb-4">
