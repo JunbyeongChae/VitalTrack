@@ -1,14 +1,40 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react'; // Add useCallback
+import React, {createContext, useState, useEffect, useCallback, useContext} from 'react'; // Add useCallback
 
 export const MealsContext = createContext();
 
 export const MealsProvider = ({ children }) => {
+    const [ refreshTriggers, setRefreshTriggers] = useState({
+        meals: 0,
+        summary: 0,
+        foodDiary: 0
+    });
     const [breakfastMeals, setBreakfastMeals] = useState([]);
     const [lunchMeals, setLunchMeals] = useState([]);
     const [dinnerMeals, setDinnerMeals] = useState([]);
     const [snackMeals, setSnackMeals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+        // 특정 컴포넌트만 리프레시하는 함수
+        const refreshComponents = useCallback((componentsToRefresh) => {
+            setRefreshTriggers(prev => {
+                const newTriggers = { ...prev };
+
+                // 문자열이면 단일 컴포넌트 리프레시
+                if (typeof componentsToRefresh === 'string') {
+                    newTriggers[componentsToRefresh] = prev[componentsToRefresh] + 1;
+                }
+                // 배열이면 여러 컴포넌트 리프레시
+                else if (Array.isArray(componentsToRefresh)) {
+                    componentsToRefresh.forEach(component => {
+                        if (component in prev) {
+                            newTriggers[component] = prev[component] + 1;
+                        }
+                    });
+                }
+                return newTriggers;
+            });
+        }, []);
 
     const selectedDateString = localStorage.getItem('selectedDate');
     const selectedDate = selectedDateString ? selectedDateString.split(' ')[0] : new Date().toISOString().split('T')[0];
@@ -26,7 +52,7 @@ export const MealsProvider = ({ children }) => {
             const { memNo } = userData;
             const token = localStorage.getItem("token");
 
-            const response = await fetch(`http://localhost:8000/api/meals/${memNo}?date=${selectedDate}`, {
+            const response = await fetch(`${process.env.REACT_APP_SPRING_IP}api/meals/${memNo}?date=${selectedDate}`, {
                 headers: {
                     'Authorization': `Bearer ${token || ''}`,
                     'Content-Type': 'application/json'
@@ -85,7 +111,7 @@ export const MealsProvider = ({ children }) => {
 
 
     // Immutable methods to modify arrays dynamically
-    const addMeal = (mealType, newMeal) => {
+    const addMeal = useCallback((mealType, newMeal) => {
         switch(mealType) {
             case 'Breakfast': setBreakfastMeals(prev => [...prev, newMeal]); break;
             case 'Lunch': setLunchMeals(prev => [...prev, newMeal]); break;
@@ -93,9 +119,9 @@ export const MealsProvider = ({ children }) => {
             case 'Snack': setSnackMeals(prev => [...prev, newMeal]); break;
             default: console.warn(`Unexpected mealType: ${mealType}`);
         }
-    };
+    }, []);
 
-    const removeMeal = (mealType, recordIdToRemove) => {
+    const removeMeal = useCallback((mealType, recordIdToRemove) => {
         switch(mealType) {
             case 'Breakfast': setBreakfastMeals(prev => prev.filter(meal => meal.recordId !== recordIdToRemove)); break;
             case 'Lunch': setLunchMeals(prev => prev.filter(meal => meal.recordId !== recordIdToRemove)); break;
@@ -103,16 +129,21 @@ export const MealsProvider = ({ children }) => {
             case 'Snack': setSnackMeals(prev => prev.filter(meal => meal.recordId !== recordIdToRemove)); break;
             default: console.warn(`Unexpected mealType: ${mealType}`);
         }
-    };
+    }, []);
+
 
     // Context value
     return (
         <MealsContext.Provider value={{
             breakfastMeals, lunchMeals, dinnerMeals, snackMeals,
             addMeal, removeMeal, loadClientMeals,
-            isLoading, error
+            isLoading, error, refreshComponents,
+            refreshTriggers
         }}>
             {children}
         </MealsContext.Provider>
     );
 };
+
+// Custom hook for easier context consumption
+export const useMeals = () => useContext(MealsContext);

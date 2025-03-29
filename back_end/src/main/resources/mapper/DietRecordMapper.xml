@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.vitaltrack.mapper.DietRecordMapper">
+<mapper namespace="com.vitaltrack.dao.DietRecordDaoMapper">
 
     <!-- Insert statement for inserting a record into the diet_records table -->
     <!-- Make sure your mapper XML has this configuration -->

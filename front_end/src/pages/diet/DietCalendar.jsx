@@ -2,60 +2,61 @@ import React, { useState, useEffect } from "react";
 import DateExplorer from "../diet/DateExplorer";
 
 const DietCalendar = () => {
-    // Initialize selectedDate from localStorage or default to today's date
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const storedDate = localStorage.getItem("selectedDate");
-        return storedDate ? new Date(storedDate) : new Date(); // Default to today if no stored date
-    });
+    // 항상 오늘 날짜로 초기화
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // Helper function to format date to DB-compatible format
+    // DB에 호환되는 형식으로 일자를 출력함
     const formatDateToDB = (date) => {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Zero-padded month
-        const day = String(date.getDate()).padStart(2, "0"); // Zero-padded day
-        const hours = String(date.getHours()).padStart(2, "0"); // Zero-padded hours
-        const minutes = String(date.getMinutes()).padStart(2, "0"); // Zero-padded minutes
-        const seconds = String(date.getSeconds()).padStart(2, "0"); // Zero-padded seconds
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
-    // Update localStorage and dispatch custom event when selectedDate changes
+    // 변환된 일자를 localStorage에 저장
     useEffect(() => {
-        const formattedDate = formatDateToDB(selectedDate); // Convert to DB-compatible format
+        const formattedDate = formatDateToDB(selectedDate);
         localStorage.setItem("selectedDate", formattedDate);
 
-        // Dispatch the custom event to notify Meals component
-        window.dispatchEvent(new CustomEvent("selectedDateChanged"));
+        // 일자 변경시 localStorage의 값도 변경됨
+        const dateChangeEvent = new CustomEvent("selectedDateChanged", {
+            detail: {
+                date: formattedDate,
+                source: 'useEffect',
+                timestamp: new Date().getTime()
+            }
+        });
 
-        console.log("Date updated and event dispatched:", formattedDate);
+        // 모든 컴포넌트에 변경된 일자를 전달함
+        window.dispatchEvent(dateChangeEvent);
+
+        console.log("일자 변경 및 이벤트 전달", formattedDate);
     }, [selectedDate]);
 
-    // Function to fetch data for the formatted selectedDate
+
+    // 변환된 선택일자를 기준으로 DB에서 데이터를 불러옴
     useEffect(() => {
         const fetchDatasetForDate = async () => {
-            const formattedDate = formatDateToDB(selectedDate); // Format date for database
+            const formattedDate = formatDateToDB(selectedDate);
             console.log("Fetching data for:", formattedDate);
-
-            // Example: Fetch data from the database
-            // const response = await fetch(`/api/data?date=${formattedDate}`);
-            // const data = await response.json();
-            // console.log("Data for selectedDate:", data);
         };
 
         fetchDatasetForDate();
     }, [selectedDate]);
 
-    // Handle Today Button Click
+    // TODAY버튼을 클릭할 때의 동작
     const handleTodayClick = () => {
-        const today = new Date(); // Get today's date
-        setSelectedDate(today); // Update the selected date
-        // No need to dispatch event here as it will be handled in the useEffect
+        const today = new Date();
+        setSelectedDate(today);
     };
 
-    // Handle date change from DateExplorer
+    // 달력 모달에서 다른 날짜를 클릭할 때의 동작 (날짜 변경처리)
     const handleDateChange = (newDate) => {
         setSelectedDate(newDate);
-        // No need to dispatch event here as it will be handled in the useEffect
+
     };
 
     return (

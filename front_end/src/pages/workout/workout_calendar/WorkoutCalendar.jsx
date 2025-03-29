@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import {motion} from "framer-motion";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction"
-import {Button, Form, Modal, Popover} from "react-bootstrap"; // needed for dayClick
 import "./style/WorkoutCalendar.css"
 import DateClick from "./DateClick";
 import {useScheduleContext} from "../Context";
@@ -12,16 +10,14 @@ import {getScheduleListDB} from "../../../services/workoutLogic";
 const WorkoutCalendar = () => {
     const user = JSON.parse(localStorage.getItem("user")) //문자열 -> 객체로 반환
     const { memNo } = user
-    const {schedules, setSchedules, selectedDate, setSelectedDate,
-                dateSchedules, setDateSchedules, signal} = useScheduleContext()
+    const {schedules, setSchedules, selectedDate, setSelectedDate, signal} = useScheduleContext()
 
     useEffect( () => {
         scheduleList()
         if (selectedDate) { //signal로 재랜더링 되도 날짜선택은 유지 -> DateClik.jsx 창 오픈되어있도록 하고픔
             dateClick({ dateStr: selectedDate})
         }
-    }, [signal]) // schedules가 변경될 때만 실행 -> 넣었더니 무한재부팅....ㄴㅇㄱ 와이라노....
-
+    }, [signal]) // schedules가 변경될 때마다 signal 업데이트됨
 
     //전체 운동 일정 조회 - DB 경유
     const scheduleList = async () => {
@@ -57,11 +53,8 @@ const WorkoutCalendar = () => {
 
     const dateClick = (info) => {
         const clickedDate = info.dateStr
-        //console.log(clickedDate) //2025-03-22
-        //console.log(typeof clickedDate) //String
         setSelectedDate(clickedDate)
     }
-
     const calHeight = ()=>{
         if(selectedDate){
             return "calc(100vh - 485px)"

@@ -1,22 +1,22 @@
-package com.vitaltrack.service;
+package com.vitaltrack.logic;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vitaltrack.dao.DietRecordDaoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.vitaltrack.dao.DietRecordDao;
-import com.vitaltrack.mapper.DietRecordMapper;
 
 @Service
-public class DietRecordService {
-    private final DietRecordMapper dietRecordMapper;
+public class DietRecordLogic {
+    private final DietRecordDaoMapper dietRecordMapper;
 
     @Autowired
-    public DietRecordService(DietRecordMapper dietRecordMapper) {
-        this.dietRecordMapper = dietRecordMapper;
+    public DietRecordLogic(DietRecordDaoMapper dietRecordDaoMapper) {
+        this.dietRecordMapper = dietRecordDaoMapper;
     }
 
     /**
