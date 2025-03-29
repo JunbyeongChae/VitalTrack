@@ -19,11 +19,11 @@ const CounselAdvisor = () => {
           <div className="flex justify-between items-center border-b pb-4 mb-4 border-[#c2c8b0]">
             <h1 className="text-2xl font-semibold text-[#7c9473]">상담사 소개</h1>
           </div>
-          <div className="flex mt-1 flex-wrap gap-1 pb-2">
+          <div className="flex justify-center mt-1 flex-wrap gap-1 pb-2">
             <img
               src="/images/advisor.png"
               alt="영양사 면허"
-              className="rounded-lg shadow-md w-full sm:w-[400px] max-w-full" // 수정 내용: PC에서 보기 좋은 너비 보정
+              className="rounded-lg shadow-md w-full max-w-[400px] mx-auto" // ✅ PC에서 max-width 제한, 중앙정렬
             />
           </div>
         </div>
