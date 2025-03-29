@@ -5,7 +5,7 @@ import 'tailwindcss/tailwind.css';
 const CounselAdvisor = () => {
   return (
     <div className="min-h-screen bg-[#e3e7d3] flex flex-col items-center p-6 relative">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row">
         {' '}
         {/* 수정 내용: 반응형 레이아웃 적용 */}
         <div className="w-full md:w-1/4">
@@ -20,7 +20,7 @@ const CounselAdvisor = () => {
 
           {/* ✅ 이미지 정렬 및 크기 수정 */}
           <div className="flex justify-center mt-1 pb-2">
-            <img src="/images/advisor.png" alt="영양사 면허" className="rounded-lg shadow-md max-w-[500px] mx-auto" />
+            <img src="/images/advisor.png" alt="영양사 면허" className="rounded-lg shadow-md w-full max-w-4xl mx-auto" />
           </div>
         </div>
       </div>
