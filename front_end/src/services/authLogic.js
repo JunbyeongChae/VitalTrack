@@ -65,7 +65,7 @@ export const loginMember = async (formData) => {
 
     // 로그인 성공 후 토큰과 함께 만료 시간 저장 (1시간 기준)
     const now = new Date();
-    const expiresAt = now.getTime() + 1000 * 60 * 60; // 1시간
+    const expiresAt = now.getTime() + 1000 * 60 *1.3; // 1시간
 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
@@ -91,8 +91,7 @@ export const oauthLogin = async (email) => {
       try {
         const errorData = await response.json();
         errorMessage = errorData.error || errorMessage;
-      } catch {
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

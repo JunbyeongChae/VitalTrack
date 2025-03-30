@@ -10,6 +10,7 @@ const Header = ({ user, setUser }) => {
   const [currentUser, setCurrentUser] = useState(user); // 즉시 UI 반영을 위해 별도 상태 관리
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 상태
   const [timeLeft, setTimeLeft] = useState(null); // 세션 남은 시간 상태 추가
+  const [hasWarned, setHasWarned] = useState(false); // 세션 만료 경고 상태
 
   // 네비게이션 클릭 핸들러
   const handleNavClick = (path) => {
@@ -45,75 +46,69 @@ const Header = ({ user, setUser }) => {
     }
   }, [user]); // user 값이 변경될 때마다 실행
 
-  // 🔄 세션 만료 및 연장 처리
+  // ✅ 연장 버튼 핸들러
+  const handleExtendSession = () => {
+    const expiresAt = Number(localStorage.getItem('expiresAt'));
+    if (!expiresAt || Date.now() > expiresAt) {
+      toast.warn('세션이 이미 만료되었습니다. 다시 로그인해주세요.');
+      return;
+    }
+
+    const newExpires = Date.now() + 1000 * 60 * 60;
+    localStorage.setItem('expiresAt', newExpires.toString());
+    toast.success('세션이 1시간 연장되었습니다.');
+    setHasWarned(false);
+  };
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    await signOut(auth);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiresAt');
+    setUser(null);
+    setCurrentUser(null);
+    toast.info('로그아웃하였습니다.');
+    navigate('/');
+  };
+
+  // ✅ 세션 남은 시간 표시 및 만료 감시
   useEffect(() => {
-    let warned = false;
-    let extendTimeoutId = null;
-    let intervalId = null;
-
-    const checkSession = () => {
+    const interval = setInterval(() => {
       const expiresAt = localStorage.getItem('expiresAt');
-      if (!expiresAt) return;
+      if (expiresAt) {
+        const remainingMs = Number(expiresAt) - Date.now();
+        if (remainingMs > 0) {
+          const minutes = Math.floor(remainingMs / 60000);
+          const seconds = Math.floor((remainingMs % 60000) / 1000);
+          setTimeLeft(`세션 남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`);
 
-      const remainingMs = Number(expiresAt) - Date.now();
-
-      if (remainingMs <= 0) {
-        clearInterval(intervalId);
-        if (extendTimeoutId) clearTimeout(extendTimeoutId);
-        toast.warn('세션이 만료되었습니다. 다시 로그인해주세요.');
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('expiresAt');
-        setUser(null);
-        setCurrentUser(null);
-        navigate('/login');
-        return;
+          if (remainingMs <= 60_000 && !hasWarned) {
+            setHasWarned(true);
+            toast.info(
+              <div>
+                <p className="mb-1 font-bold text-lg">세션이 곧 만료됩니다.</p>
+                <button onClick={handleExtendSession} className="ml-2 px-2 py-1 bg-green-500 text-white rounded">
+                  연장
+                </button>
+                <button onClick={handleLogout} className="ml-2 px-2 py-1 bg-red-500 text-white rounded">
+                  로그아웃
+                </button>
+              </div>,
+              { autoClose: false }
+            );
+          }
+        } else {
+          toast.dismiss(); // ✅ 경고 알림 닫기
+          handleLogout(); // ✅ 세션이 실제로 만료되었을 때 자동 로그아웃
+        }
+      } else {
+        setTimeLeft(null);
       }
+    }, 1000);
 
-      if (remainingMs <= 60000 && !warned) {
-        warned = true;
-        toast.info(
-          ({ closeToast }) => (
-            <div>
-              <p>1분 후 세션이 만료됩니다.</p>
-              <button
-                onClick={() => {
-                  const newExpiresAt = Date.now() + 1000 * 60 * 60;
-                  localStorage.setItem('expiresAt', newExpiresAt.toString());
-                  warned = false;
-                  closeToast();
-                  toast.success('세션이 1시간 연장되었습니다.');
-                }}
-                className="text-blue-500 hover:underline mt-2">
-                세션 연장하기
-              </button>
-            </div>
-          ),
-          { autoClose: false, toastId: 'session-expire-warning' }
-        );
-
-        extendTimeoutId = setTimeout(() => {
-          toast.dismiss('session-expire-warning');
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          localStorage.removeItem('expiresAt');
-          setUser(null);
-          setCurrentUser(null);
-          navigate('/login');
-        }, remainingMs);
-      }
-
-      const minutes = Math.floor(remainingMs / 60000);
-      const seconds = Math.floor((remainingMs % 60000) / 1000);
-      setTimeLeft(`세션 남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`);
-    };
-
-    intervalId = setInterval(checkSession, 1000);
-    return () => {
-      clearInterval(intervalId);
-      if (extendTimeoutId) clearTimeout(extendTimeoutId);
-    };
-  }, [navigate, setUser]);
+    return () => clearInterval(interval);
+  }, [hasWarned]);
 
   // 페이지 이동 시 세션 만료 상태를 UI에 반영
   useEffect(() => {
@@ -125,6 +120,7 @@ const Header = ({ user, setUser }) => {
     if (isExpired) {
       // 세션이 만료된 경우에만 알림
       toast.error('세션이 만료되어 로그아웃되었습니다.');
+      console.log('Header.jsx: useEffect() - 세션 만료 처리');
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       localStorage.removeItem('expiresAt');
@@ -136,22 +132,6 @@ const Header = ({ user, setUser }) => {
       setCurrentUser(null);
     }
   }, [location.pathname, setUser]);
-
-  // 로그아웃 처리
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('expiresAt');
-      setUser(null);
-      setCurrentUser(null); // UI 즉시 반영
-      toast.success('로그아웃하였습니다.');
-      navigate('/');
-    } catch (error) {
-      console.error('로그아웃 실패:', error);
-    }
-  };
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-md w-full">
