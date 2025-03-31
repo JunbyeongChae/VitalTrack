@@ -72,7 +72,7 @@ const Header = ({ user, setUser }) => {
     navigate('/');
   };
 
-  // ✅ 세션 남은 시간 표시 및 만료 감시
+  // 세션 남은 시간 표시 및 만료 감시
   useEffect(() => {
     const interval = setInterval(() => {
       const expiresAt = localStorage.getItem('expiresAt');

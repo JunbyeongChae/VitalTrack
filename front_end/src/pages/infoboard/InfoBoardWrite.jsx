@@ -21,7 +21,7 @@ const InfoBoardWrite = () => {
   const handleTitle = useCallback((e) => setTitle(e.target.value), []);
   const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
 
-  // 유튜브 썸네일 자동 추출 기능 포함
+  // 유튜브 썸네일 자동 추출
   const handleContent = useCallback((value) => {
     setContent(value);
     const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/;
@@ -105,7 +105,7 @@ const InfoBoardWrite = () => {
               </select>
             </div>
 
-            {/* ✅ 유튜브 썸네일 미리보기 영역 */}
+            {/* 유튜브 썸네일 미리보기 영역 */}
             {previewUrl && (
               <div>
                 <label className="block text-sm font-medium text-[#5f7a60] mb-2">유튜브 썸네일 미리보기</label>
