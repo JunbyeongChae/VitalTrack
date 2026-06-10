@@ -1,9 +1,8 @@
-#D:\VitalTrack-JunbyeongChae\render.yaml
 services:
   - type: web
     name: vitaltrack-frontend
     env: docker
-    plan: starter
+    plan: free
     dockerfilePath: Dockerfile.frontend
     envVars:
       - key: REACT_APP_SPRING_IP
@@ -12,12 +11,12 @@ services:
   - type: web
     name: vitaltrack-backend
     env: docker
-    plan: starter
+    plan: free
     dockerfilePath: back_end/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://shortline.proxy.rlwy.net:51720/railway
+        sync: false
       - key: SPRING_DATASOURCE_USERNAME
-        value: root
+        sync: false
       - key: SPRING_DATASOURCE_PASSWORD
-        value: dAOzXnOxzHtTZDEzbVIITmoxXArYyVRL
+        sync: false
