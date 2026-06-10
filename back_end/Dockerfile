@@ -16,7 +16,7 @@ RUN chmod +x gradlew
 RUN ./gradlew build -x test --no-daemon
 
 # 2단계: Runtime stage
-FROM openjdk:17
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /build/build/libs/*.jar app.jar
 EXPOSE 8000
