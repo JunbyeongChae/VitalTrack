@@ -1,204 +1,257 @@
-# 개발 계획서
-## VitalTrack (바이탈트랙) 
-#### - 건강 관리의 필수 요소를 추적하는 스마트한 플랫폼
+# VitalTrack
 
-## 1. 프로젝트 개요
+건강 관리의 필수 요소(체중·운동·식단·영양 상담)를 한 곳에서 추적하는 풀스택 웹 애플리케이션입니다.
 
-### 1.1 프로젝트 목표
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Aiven-4479A1?logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Render-2496ED?logo=docker&logoColor=white)
 
-- 사용자의 건강 상태를 체계적으로 관리할 수 있도록 돕는 웹 애플리케이션 개발.
-- 체중, 운동, 식단 등의 기록을 통해 건강 습관을 개선할 수 있도록 지원.
-- 간편한 UI/UX를 제공하여 지속적으로 사용할 수 있는 플랫폼 구축.
-- 영양사의 정보제공 및 상담 컨텐츠로 전문적 프로그램 개발.
+**팀 구성:** 5인 (프론트엔드 2 · 백엔드 2 · 풀스택 1) · 2개월
 
-### 1.2 업무분장
+---
 
-- **프론트엔드**
+## 라이브 데모
 
-  - React 기반 UI 개발.
-  - 사용자 경험(UX) 개선.
-  - **API 연동 및 데이터 시각화(체중 변화, 운동 기록 등).**
-  - 라이브러리 및 상태 관리 (Redux, React Query 등) 적용.
+**배포 URL:** https://vitaltrack-frontend.onrender.com
 
-- **백엔드**
+| 구분 | ID | PW |
+|------|----|----|
+| 관리자 | `admin1` | `asdf1234` |
+| 일반 사용자 | `Test1` | `asdf1234` |
 
-  - Spring Boot 기반 RESTful API 개발.
-  - 회원 관리, 운동 및 식단 기록 저장 및 제공.
-  - Firebase 활용한 데이터 관리.
-  - API 인증 및 보안 적용 (JWT, OAuth 등).
-  - 공공 데이터 활용한 정보 제공.
+> Render 무료 플랜 사용으로 첫 접속 시 30초 내외 로딩이 발생할 수 있습니다.
 
-- **PM(문서화, 채팅방 관리 등.) 및 그 외**
-  - 프로젝트 일정 관리 및 문서화 (API 문서, 회의록 포함).
-  - 커뮤니케이션 툴 관리 (Slack, Git 등).
-  - 테스트 및 유지보수 계획 수립.
+---
 
-## 2. 주요 기능
+## 화면 구성
 
-### 2.1 회원가입 / 로그인
+| 로그인 | 회원가입 |
+|--------|----------|
+| ![로그인](doc/Images/screenshot_login.png) | ![회원가입](doc/Images/screenshot_signup.png) |
 
-- **기능 설명:**
+| 대시보드 | 식단관리 |
+|----------|----------|
+| ![대시보드](doc/Images/screenshot_dashboard.png) | ![식단관리](doc/Images/screenshot_diet.png) |
 
-  - 이메일 및 비밀번호를 사용한 회원가입 및 로그인.
-  - Google 소셜 로그인 지원.
-  - 회원 정보 암호화 및 보안 처리.
+| 운동관리 | 영양상담 게시판 |
+|----------|----------------|
+| ![운동관리](doc/Images/screenshot_workout.png) | ![영양상담](doc/Images/screenshot_counsel.png) |
 
-- **기술 스택:**
-  - 프론트엔드 : React
-  - 백엔드 : Spring Boot
-  - API : Google 소셜 로그인 API
-  - DB : Firebase
-  - 기타 : GitHub, Slack
+| 건강 관리 게시판 |
+|-----------------|
+| ![건강정보](doc/Images/screenshot_infoboard.png) |
 
-### 2.2 건강정보 제공
+---
 
-- **기능 설명:**
+## 나의 기여 (채준병)
 
-  - 건강 관련 정보 제공 (운동 가이드, 영양 정보, 건강 관리 팁 등).
-  - 사용자가 게시글을 검색하고 열람할 수 있도록 게시판 형태로 구성.
-  - 작성자는 관리자 권한으로 설정.
+팀 내에서 DevOps · PM · 프론트엔드 · 백엔드를 모두 담당했습니다.
 
-- **기술 스택:**
-  - 프론트엔드 : React
-  - 백엔드: Spring Boot
-  - DB : Firebase
+### DevOps
+- Docker Compose로 프론트엔드 / 백엔드 컨테이너 분리 구성
+- Render 배포 및 `render.yaml` 작성, 환경변수 분리
+- Railway → Aiven MySQL 무중단 마이그레이션
 
-### 2.3 운동 스케줄 관리
+### PM & 설계
+- 5인 팀 전체 2개월 일정 계획 및 진행 주도
+- ERD 설계 및 테이블 정의서 문서화
+- MyBatis XML 매퍼 쿼리 설계
+- GitHub 브랜치 전략 수립 (feature 브랜치 분리)
+- PR 병합 충돌 해결 및 코드 리뷰 주도
+- 화면정의서 · API 문서 작성
 
-- **기능 설명:**
+### 프론트엔드
+- **영양상담 게시판** 프론트엔드 전체 구현 (목록 / 작성 / 수정 / 상세 / 어드바이저)
+- Quill → **Tiptap** 에디터 교체 (React 18 호환성 이슈 해결)
+- 이미지 삽입 · 유튜브 링크 등 커스텀 에디터 기능 적용
+- 댓글 작성 / 수정 / 삭제 기능
+- 세션 만료 감지 → **Toastify** 알림 UI 개선
 
-  - 날짜별 운동 스케줄 관리.
-  - 수행 내역 체크리스트 및 진행률 확인.
-  - 운동별 칼로리 소모량 제공.
+### 백엔드
+- **JWT** 로그인 인증 및 Spring Security 설정 전체 구현
+- **BCrypt** 비밀번호 암호화 적용
+- Google OAuth 소셜 로그인 연동
+- 회원가입 · 회원정보 수정 · 탈퇴 API
+- 건강정보 자동 계산 (BMI · 권장 칼로리 · 영양소)
+- 영양상담 · 건강정보 게시판 CRUD API
+- 댓글 수정 시 작성자 권한 검증 로직
 
-- **기술 스택:**
-  - 프론트엔드: React
-  - 백엔드: Spring Boot
-  - DB : Firebase, 한국건강증진개발원DB
+---
 
-### 2.4 식단 관리
+## 주요 구현 코드
 
-- **기능 설명:**
+### 1. JWT 인증 필터 (Spring Security)
 
-  - 식약처 음식 영양정보 DB를 활용한 식단 관리.
-  - 사용자가 섭취한 음식 기록 및 영양 정보 제공.
-  - 일별 섭취 칼로리 및 영양소 분석 기능.
+매 요청마다 `Authorization: Bearer <token>` 헤더를 검사하여 유효한 토큰일 때만 `SecurityContext`에 인증 정보를 등록합니다.
 
-- **기술 스택:**
-  - 프론트엔드 : React
-  - 백엔드 : Spring Boot
-  - DB : Firebase, 전국통합식품영양성분정보음식표준데이터
+```java
+// back_end/src/main/java/com/vitaltrack/config/JwtAuthenticationFilter.java
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-### 2.5 개인정보 및 건강 상태 관리
+  private final JwtUtil jwtUtil;
 
-- **기능 설명:**
+  @Override
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
-  - 신장, 체중, BMI 등의 건강 정보 입력 및 관리.
-  - 목표 체중 설정 및 진행 상황 확인.
-  - 건강 데이터 시각화 (차트 및 그래프 활용).
+    final String authHeader = request.getHeader("Authorization");
 
-- **기술 스택:**
-  - 프론트엔드: React
-  - 백엔드: Spring Boot
-  - DB : Firebase
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String jwt = authHeader.substring(7);
+      if (jwtUtil.isTokenValid(jwt)) {
+        String username = jwtUtil.extractUsername(jwt);
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+      }
+    }
+    filterChain.doFilter(request, response);
+  }
+}
+```
 
-### 2.6 영양 상담 게시판
+### 2. BCrypt 암호화 + 건강정보 자동 계산 (회원가입)
 
-- **기능 설명:**
+비밀번호를 암호화하기 전, 입력값 검증 → 중복 검사 → BMI · 권장 칼로리 · 영양소를 자동 계산하여 저장합니다.
 
-  - 사용자가 영양 및 식단 관련 질문을 올릴 수 있는 1:1상담 게시판 기능.
-  - 전문관리자가가 답변을 달 수 있도록 댓글 기능 제공.
+```java
+// back_end/src/main/java/com/vitaltrack/logic/MemberLogic.java
+@Transactional
+public int registerMember(MemberInfo member) {
+  // 중복 검사
+  if (memberDao.findByEmail(member.getMemEmail()) != null)
+    throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+  if (memberDao.existsById(member.getMemId()) > 0)
+    throw new IllegalArgumentException("이미 존재하는 ID입니다.");
 
-- **기술 스택:**
-  - 프론트엔드 : React
-  - 백엔드 : Spring Boot
-  - DB : Firebase
+  // 건강 지표 자동 계산
+  double bmi = calculateBMI(member.getMemHeight(), member.getMemWeight());
+  int calorie = calculateCalories(member.getMemGen(), member.getMemAge(),
+      member.getMemWeight(), member.getMemHeight());
+  calculateStandardNutrition(member, calorie);
+  member.setMemBmi(bmi);
+  member.setMemKcal(calorie);
 
-## 3. 추가 고려 기능
+  // BCrypt 암호화 후 저장
+  member.setMemPw(BCrypt.hashpw(member.getMemPw(), BCrypt.gensalt()));
+  int result = memberDao.insertMember(member);
 
-- 스마트폰 및 웨어러블 기기에서 운동 정보 불러오기 (걸음 수, 복약 알림 등).
-- 챗봇을 통한 건강 관리 코칭 (코칭 방식과 데이터 출처 명확히 필요).
-- AI 기반 식단 추천 및 운동 추천 기능 추가.
-- 커뮤니티 기능 (사용자 간 운동 공유 및 목표 달성 피드백).
+  if (result > 0 && member.getMemNo() != null)
+    memberDao.insertOrUpdateWeightChange(member.getMemNo(),
+        LocalDate.now().toString(), member.getMemWeight());
 
-## 4. 개발 환경 및 기술 스택
+  return result;
+}
+```
 
-- **프론트엔드:** React, Redux, Tailwind CSS
-- **백엔드:** Spring Boot, JWT 인증
-- **데이터베이스:** Firebase, PostgreSQL
-- **API:** Google Fit API, Nutritionix API, Wger API
-- **기타:** GitHub, Slack, Notion, AWS (배포 고려)
+### 3. 세션 만료 감지 → Toastify 알림 (React)
 
-## 5. 개발 일정
+앱 진입 시 `localStorage`의 만료 시각을 확인하고, 중복 로그아웃을 방지하면서 사용자에게 토스트 알림을 표시합니다.
 
-- **1주차:** 요구사항 분석 및 UI/UX 설계.
-- **2주차:** 회원가입/로그인 기능 구현 및 테스트.
-- **3주차:** 건강 정보 제공 및 게시판 기능 개발.
-- **4주차:** 운동 스케줄 및 식단 관리 기능 개발.
-- **5주차:** 건강 상태 관리 및 데이터 시각화 기능 추가.
-- **6주차:** 통합 테스트 및 배포, 피드백 반영 및 유지보수 계획 수립.
+```jsx
+// front_end/src/App.jsx
+const performLogout = useCallback(() => {
+  if (logoutHandled) return; // 중복 실행 방지
+  setLogoutHandled(true);
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('expiresAt');
+  setUser(null);
+  if (window.location.pathname !== '/login') navigate('/');
+  toast.info('세션이 만료되어 로그아웃되었습니다.');
+}, [logoutHandled, navigate]);
 
-## 6. 화면 구성
+useEffect(() => {
+  const expiresAt = localStorage.getItem('expiresAt');
+  if (expiresAt && isSessionExpired()) {
+    performLogout();
+  }
+}, [navigate, performLogout]);
+```
 
-### 6.1 홈 화면
+### 4. Tiptap 에디터 — Quill 교체 (React 18 호환)
 
-- **구성 요소:**
-  - 로그인 상태에 따라 맞춤형 대시보드 제공.
-  - 건강 정보 요약 (체중 변화, 목표 진행 상황 등).
-  - 최근 운동 기록 및 식단 기록.
+Quill이 React 18의 Strict Mode에서 이중 마운트 문제를 일으켜 Tiptap으로 교체했습니다. TextStyle을 확장해 커스텀 폰트 크기를 지원하고, 이미지를 서버에 업로드한 뒤 URL로 삽입합니다.
 
-### 6.2 회원가입 / 로그인 화면
+```jsx
+// front_end/src/pages/counsel/CounselTiptapEditor.jsx
+const FontSize = TextStyle.extend({
+  addAttributes() {
+    return {
+      fontSize: {
+        default: null,
+        parseHTML: (element) => element.style.fontSize || null,
+        renderHTML: (attributes) => {
+          if (!attributes.fontSize) return {};
+          return { style: `font-size: ${attributes.fontSize}` };
+        }
+      }
+    };
+  }
+});
 
-- **구성 요소:**
-  - 이메일 및 비밀번호 입력 창.
-  - 회원가입 버튼, 로그인 버튼.
-  - Google 소셜로그인 버튼.
+const addImage = async () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (event) => {
+    const formData = new FormData();
+    formData.append('image', event.target.files[0]);
+    const res = await uploadImageDB(formData);
+    if (res.data) {
+      const url = `${process.env.REACT_APP_SPRING_IP}api/counsel/imageGet?imageName=${res.data}`;
+      editor.chain().focus().setImage({ src: url }).run();
+    }
+  };
+  input.click();
+};
+```
 
-### 6.3 건강 정보 제공 화면
+---
 
-- **구성 요소:**
-  - 건강 관련 게시글 목록 및 검색 기능.
-  - 인기 게시물 및 추천 게시글 표시.
-  - 상세 페이지에서 건강 정보 열람.
+## 기술 스택
 
-### 6.4 운동 스케줄 관리 화면
+| 영역 | 기술 |
+|------|------|
+| 프론트엔드 | React 18, React Router, Tailwind CSS, Tiptap, Toastify |
+| 백엔드 | Spring Boot 3, Spring Security, JWT, BCrypt, MyBatis |
+| 데이터베이스 | MySQL (Aiven) |
+| 인증 | JWT, Google OAuth 2.0 |
+| 배포 | Docker, Render, Nginx |
+| 협업 | GitHub (feature 브랜치), Notion, Slack |
 
-- **구성 요소:**
-  - 운동 일정 추가 및 편집 기능.
-  - 달력 기반 UI.
-  - 완료 여부 체크 기능.
-  - 운동별 칼로리 소모량 표시.
+---
 
-### 6.5 식단 관리 화면
+## 트러블슈팅
 
-- **구성 요소:**
-  - 음식 검색 및 기록.
-  - 일별 칼로리 섭취량 및 영양소 분석.
-  - 추천 식단 제공 기능.
+`트러블슈팅.md` 파일에 주요 문제 해결 과정을 기록했습니다.
 
-### 6.6 개인정보 및 건강 상태 관리 화면
+- **Quill → Tiptap 마이그레이션:** React 18 Strict Mode 이중 마운트로 인한 에디터 오작동 → Tiptap 교체 및 `useEffect` 의존성 정리
+- **Railway → Aiven 마이그레이션:** DB 엔드포인트 교체 시 CORS 및 환경변수 동시 업데이트 필요
+- **세션 중복 로그아웃:** `performLogout`이 여러 `useEffect`에서 동시에 호출되는 문제 → `logoutHandled` 플래그로 단일 실행 보장
 
-- **구성 요소:**
-  - 신장, 체중, BMI 등의 건강 정보 입력 및 관리.
-  - 사용자정보 바탕으로 맞춤 영양정보 산출.
-  - 목표 체중 설정 및 진행 상황 확인.
-  - 건강 데이터 시각화 (차트 및 그래프 활용).
+---
 
-### 6.7 영양 상담 게시판 화면
+## 프로젝트 구조
 
-- **구성 요소:**
-  - 1:1질문 작성 및 댓글 기능 제공.
-
-### 6.8 추가 기능 화면 (스마트폰 연동, AI 추천 등)
-
-- **구성 요소:**
-  - 스마트폰 및 웨어러블 기기에서 운동 및 건강 데이터 연동.
-  - AI 기반 식단 및 운동 추천 결과 표시.
-
-## 7. 결론
-
-- 건강 관리의 효율성을 높이기 위해 데이터를 체계적으로 관리하는 웹 애플리케이션 개발.
-- React와 Spring Boot를 활용한 풀스택 개발 진행.
-- 무료 API와 공공 데이터를 적극 활용하여 기능 확장.
-- 유저 친화적인 UX/UI 디자인을 통해 지속적인 사용 유도.
-- 일정한 유지보수를 통해 기능을 점진적으로 개선하고 확장할 계획.
+```
+VitalTrack/
+├── back_end/          # Spring Boot API 서버
+│   └── src/main/java/com/vitaltrack/
+│       ├── config/    # Security, JWT 필터
+│       ├── controller/
+│       ├── logic/     # 비즈니스 로직
+│       ├── dao/       # MyBatis DAO
+│       └── model/
+├── front_end/         # React 클라이언트
+│   └── src/
+│       ├── pages/     # counsel / workout / diet / infoboard / auth
+│       ├── components/
+│       ├── contexts/
+│       └── services/
+├── docker-compose.yml
+└── render.yaml
+```
